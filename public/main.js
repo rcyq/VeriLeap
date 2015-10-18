@@ -69,6 +69,7 @@ var ctrl = Leap.loop({
       frames.push({
         confidence : hand.confidence,
         palm: convertToXYZDirection(hand.palmPosition),
+        palmWidth : hand.palmWidth,
         fingers : fingersData
       });
 
