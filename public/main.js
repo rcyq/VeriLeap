@@ -56,9 +56,11 @@ var ctrl = Leap.loop({
       $.each(handFingers, function(index,value){
 
         var fingerData = {
+          confidence : hand.confidence,
           direction : convertToXYZDirection(value.direction), 
           length : value.length,
           width : value.width, 
+          segments: value.bones.map(function(value, index){return value.length})
         };  
 
         fingersData[index] = fingerData;
