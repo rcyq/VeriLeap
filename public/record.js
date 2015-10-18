@@ -15,4 +15,21 @@ var recordStop = function(){
 
 var recordSend = function(){
       console.log("send");
-    }
+      
+
+      // uploading data
+      //frames = {test: "123"};
+      
+
+      $.ajax({
+        type: "POST",
+        url: "/upload",
+        data: JSON.stringify(frames),
+        contentType: "application/json",
+        success: function(data) {
+          console.log(data);
+        }
+
+      });
+      // end 
+ }

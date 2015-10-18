@@ -72,6 +72,7 @@ Leap.loop({background: true},{
       });
 
       console.log("Recording");
+
     }
   }
 
