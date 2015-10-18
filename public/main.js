@@ -1,7 +1,4 @@
 
-
-var riggedHandPlugin;
-
 var convertToXYZDirection = function(direction){
         var namedDirection = {};
         $.each(direction, function(i, v){
@@ -15,10 +12,17 @@ var convertToXYZDirection = function(direction){
         });
 
         return namedDirection;
-}
+};
 
-Leap.loop({background: true},{
-  hand: function(hand){
+var riggedHandPlugin;
+
+var ctrl = Leap.loop({
+  background: true,
+  enableGesture: true,
+  loopWhileDisconnected: true
+  },{
+
+    hand: function(hand){
     
     var label = hand.data('label');
 
@@ -33,10 +37,7 @@ Leap.loop({background: true},{
       label.innerHTML = hand.type + " hand";
 
       hand.data('label', label)
-
     }
-
-    
 
     var handMesh = hand.data('riggedHand.mesh');
 
@@ -48,13 +49,11 @@ Leap.loop({background: true},{
     label.style.left = screenPosition.x + 'px';
     label.style.bottom = screenPosition.y + 'px';
 
-    if(isRecording) {
-
+    if(ctrl.connected() && isRecording) {
       var handFingers = hand.fingers;
       var fingersData = {};
 
       $.each(handFingers, function(index,value){
-
 
         var fingerData = {
           direction : convertToXYZDirection(value.direction), 
@@ -76,7 +75,6 @@ Leap.loop({background: true},{
     }
   }
 
-
 })
 .use('riggedHand')
 .use('handEntry')
@@ -90,7 +88,7 @@ Leap.loop({background: true},{
 .use('playback', {
   recording: './left-or-right-77fps.json.lz',
   timeBetweenLoops: 1000
-});
+})
+.connect();
 
 riggedHandPlugin = Leap.loopController.plugins.riggedHand;
-

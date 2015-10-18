@@ -2,12 +2,13 @@
 <html >
   <head>
     <meta charset="UTF-8">
-    <title>VeriLeap Home</title>
-    <link rel="stylesheet" type="text/css" href="css/homeStyle.css">
+    <title>VeriLeap</title>
+    <link rel="stylesheet" type="text/css" href="/css/homeStyle.css">
     <link rel="stylesheet" type="text/css" href="css/overlayStyle.css">
 
   	<script src="/prefixfree.min.js"></script>
-  	<script src="login.js"></script>
+  	<script src="/modernizr.custom.js"></script>
+
 
   </head>
   <body>
@@ -17,10 +18,37 @@
 			<div>Veri<span>Leap</span></div>
 		</div>
 		<br>
+
+		<!-- Login and register button -->
 		<div class="login">
 			<input id="trigger-overlay" type="button" value="Login">
-			<input type="button" value="Register" onClick="login()">
+			<input id="trigger-overlay-register" type="button" value="Register">
 		</div>
+
+		<!-- Login overlay -->
+		<div class="overlay overlay-hugeinc">
+			<button type="button" class="overlay-close">Close</button>
+			<nav>
+				<ul>
+					<li><a href="#">Login</a></li>
+				</ul>
+			</nav>
+		</div>
+
+		<!-- Register overlay -->
+		<div class="overlay overlay-register overlay-hugeinc">
+			<button type="button" class="overlay-close">Close</button>
+			<nav>
+				<ul>
+					<li><a href="#">Register</a></li>
+				</ul>
+			</nav>
+		</div>
+
     <script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script> 
+    <script src="classie.js"></script>
+    <script src="home.js"></script>
+
+
   </body>
 </html>
