@@ -21,7 +21,7 @@ app.get('/', function (req, res) {
 function extractFeatures(frames) {
 	result = {};
 	
-	start = parseInt(frames.length/5);
+	start = parseInt(frames.length/6);
 	end = parseInt(frames.length - start);
 
 	for (i = 0; i<5; i++) {
@@ -35,7 +35,7 @@ function extractFeatures(frames) {
 
 		entry = frames[frameIndex];
 		fingers = entry.fingers;
-
+		if (entry.confidence <= 0.9) continue;
 		effectiveFrameNumber ++;
 		for (var i in fingers) {
 			if (fingers.hasOwnProperty(i)) {
@@ -49,8 +49,8 @@ function extractFeatures(frames) {
 	}
 
 
-	
-	console.log(effectiveFrameNumber);
+
+	console.log(effectiveFrameNumber + "out of " + (end-start+1));
 
 	for (i = 0; i<5; i++) {
 		result["finger" + i + "_len"] /= effectiveFrameNumber;
@@ -94,6 +94,7 @@ app.post('/upload', jsonParser, function (req, res) {
 
 	entry = extractFeatures(req.body)
 
+
 	readExistingEntries(function(allEntries) {
 		if (allEntries == null) {
 			allEntries = [];
@@ -101,15 +102,27 @@ app.post('/upload', jsonParser, function (req, res) {
 		} else {
 			personIndex = allEntries.length;
 		}
-		entry['person'] = personIndex;
-		allEntries.push(entry);
+		//entry['person'] = "zhian";
+		//allEntries.push(entry);
+
+
 		fs.writeFile(FILENAME, JSON.stringify(allEntries), function(err) {
 			if (err) console.log(err);
-		});		
+		});	
 
+		var rf = new RandomForestClassifier({
+	    	n_estimators: 20
+		});
+
+		rf.fit(allEntries, null, "person", function(err, trees){
+		  //console.log(JSON.stringify(trees, null, 4));
+		  var pred = rf.predict([entry], trees);
+		  console.log("prediction results" + pred);
+		});
 
 
 	});
+
 
 
 
