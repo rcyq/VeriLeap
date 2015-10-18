@@ -56,7 +56,6 @@ var ctrl = Leap.loop({
       $.each(handFingers, function(index,value){
 
         var fingerData = {
-          confidence : hand.confidence,
           direction : convertToXYZDirection(value.direction), 
           length : value.length,
           width : value.width, 
@@ -68,6 +67,7 @@ var ctrl = Leap.loop({
       });
 
       frames.push({
+        confidence : hand.confidence,
         palm: convertToXYZDirection(hand.palmPosition),
         fingers : fingersData
       });
