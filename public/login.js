@@ -1,7 +1,3 @@
-var login = function(){
-	console.log("login");
-};
-
 (function() {
 	var triggerBttn = document.getElementById( 'trigger-overlay' ),
 		overlay = document.querySelector( 'div.overlay' ),
