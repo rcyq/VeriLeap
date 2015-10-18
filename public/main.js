@@ -17,7 +17,10 @@ var convertToXYZDirection = function(direction){
         return namedDirection;
 }
 
-Leap.loop({background: true},{
+Leap.loop({
+  background: true,
+  enableGesture: true
+  },{
   hand: function(hand){
     
     var label = hand.data('label');
@@ -48,13 +51,12 @@ Leap.loop({background: true},{
     label.style.left = screenPosition.x + 'px';
     label.style.bottom = screenPosition.y + 'px';
 
-    if(isRecording) {
+    if(hand && isRecording) {
 
       var handFingers = hand.fingers;
       var fingersData = {};
 
       $.each(handFingers, function(index,value){
-
 
         var fingerData = {
           direction : convertToXYZDirection(value.direction), 
@@ -90,7 +92,8 @@ Leap.loop({background: true},{
 .use('playback', {
   recording: './left-or-right-77fps.json.lz',
   timeBetweenLoops: 1000
-});
+})
+.connect();
 
 riggedHandPlugin = Leap.loopController.plugins.riggedHand;
 
