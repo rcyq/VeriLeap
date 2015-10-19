@@ -14,6 +14,12 @@ var convertToXYZDirection = function(direction){
         return namedDirection;
 };
 
+var isLoginClick = false;
+var onLoginClick = function(){
+  isLoginClick = true;
+
+}
+
 var riggedHandPlugin;
 
 var ctrl = Leap.loop({
@@ -23,11 +29,12 @@ var ctrl = Leap.loop({
   },{
 
     hand: function(hand){
-    
     var label = hand.data('label');
-
+    if(isLoginClick === false){
+      return;
+    }
     if (!label){
-
+      console.log("creating label");
       label = document.createElement('label');
       document.body.appendChild(label);
 
@@ -79,6 +86,7 @@ var ctrl = Leap.loop({
   }
 
 })
+
 .use('riggedHand')
 .use('handEntry')
 .on('handLost', function(hand){
@@ -95,3 +103,8 @@ var ctrl = Leap.loop({
 .connect();
 
 riggedHandPlugin = Leap.loopController.plugins.riggedHand;
+ctrl.on('riggedHand.meshAdded', function(handMesh, leapHand){
+  var canvas = document.querySelector('canvas');
+  canvas.style.display = 'none';
+  canvas.style['z-index'] = 100;
+});

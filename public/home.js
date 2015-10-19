@@ -14,7 +14,9 @@
 		support = { transitions : Modernizr.csstransitions };
 
 	function toggleOverlay() {
+		var canvas = document.querySelector('canvas');
 		if( classie.has( overlay, 'open' ) ) {
+			canvas.style.display = 'none';
 			classie.remove( overlay, 'open' );
 			classie.add( overlay, 'close' );
 			var onEndTransitionFn = function( ev ) {
@@ -33,11 +35,14 @@
 		}
 		else if( !classie.has( overlay, 'close' ) ) {
 			classie.add( overlay, 'open' );
+			canvas.style.display = null;
 		}
 	}
 
 	triggerBttn.addEventListener( 'click', toggleOverlay );
 	closeBttn.addEventListener( 'click', toggleOverlay );
+
+
 })();
 
 // Overlay for Register button 
