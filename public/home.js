@@ -1,17 +1,17 @@
 // Overlay for Login button
 (function() {
 	var triggerBttn = document.getElementById( 'trigger-overlay' ),
-		overlay = document.querySelector( 'div.overlay' ),
-		closeBttn = overlay.querySelector( 'button.overlay-close' );
-		transEndEventNames = {
-			'WebkitTransition': 'webkitTransitionEnd',
-			'MozTransition': 'transitionend',
-			'OTransition': 'oTransitionEnd',
-			'msTransition': 'MSTransitionEnd',
-			'transition': 'transitionend'
-		},
-		transEndEventName = transEndEventNames[ Modernizr.prefixed( 'transition' ) ],
-		support = { transitions : Modernizr.csstransitions };
+	overlay = document.querySelector( 'div.overlay' ),
+	closeBttn = overlay.querySelector( 'button.overlay-close' );
+	transEndEventNames = {
+		'WebkitTransition': 'webkitTransitionEnd',
+		'MozTransition': 'transitionend',
+		'OTransition': 'oTransitionEnd',
+		'msTransition': 'MSTransitionEnd',
+		'transition': 'transitionend'
+	},
+	transEndEventName = transEndEventNames[ Modernizr.prefixed( 'transition' ) ],
+	support = { transitions : Modernizr.csstransitions };
 
 	function toggleOverlay() {
 		var canvas = document.querySelector('canvas');
@@ -53,17 +53,17 @@
 // Overlay for Register button 
 (function() {
 	var triggerBttn = document.getElementById( 'trigger-overlay-register' ),
-		overlay = document.querySelector( 'div.overlay.overlay-register' ),
-		closeBttn = overlay.querySelector( 'button.overlay-close' );
-		transEndEventNames = {
-			'WebkitTransition': 'webkitTransitionEnd',
-			'MozTransition': 'transitionend',
-			'OTransition': 'oTransitionEnd',
-			'msTransition': 'MSTransitionEnd',
-			'transition': 'transitionend'
-		},
-		transEndEventName = transEndEventNames[ Modernizr.prefixed( 'transition' ) ],
-		support = { transitions : Modernizr.csstransitions };
+	overlay = document.querySelector( 'div.overlay.overlay-register' ),
+	closeBttn = overlay.querySelector( 'button.overlay-close' );
+	transEndEventNames = {
+		'WebkitTransition': 'webkitTransitionEnd',
+		'MozTransition': 'transitionend',
+		'OTransition': 'oTransitionEnd',
+		'msTransition': 'MSTransitionEnd',
+		'transition': 'transitionend'
+	},
+	transEndEventName = transEndEventNames[ Modernizr.prefixed( 'transition' ) ],
+	support = { transitions : Modernizr.csstransitions };
 
 	function toggleOverlay() {
 		if( classie.has( overlay, 'open' ) ) {
@@ -91,3 +91,18 @@
 	triggerBttn.addEventListener( 'click', toggleOverlay );
 	closeBttn.addEventListener( 'click', toggleOverlay );
 })();
+
+function swap(a,b){
+	document.getElementById(a).style.display = 'none';
+	document.getElementById(b).style.display = 'block';
+}
+
+document.getElementById('trigger-overlay').addEventListener("click", function(){
+	swap('homeButtons', 'empty');
+	swap('verileapHeader', 'empty');
+});
+
+document.getElementById('overlay-close-button').addEventListener("click", function(){
+	swap('empty','homeButtons');
+	swap('empty', 'verileapHeader');
+});
