@@ -35,7 +35,12 @@
 		}
 		else if( !classie.has( overlay, 'close' ) ) {
 			classie.add( overlay, 'open' );
-			canvas.style.display = null;
+			if (window.isLeapAnimationRunning) {
+				canvas.style.display = null;	
+			} else {
+				startLeap();
+			}
+			
 		}
 	}
 
