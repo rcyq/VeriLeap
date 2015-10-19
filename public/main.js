@@ -14,12 +14,6 @@ var convertToXYZDirection = function(direction){
         return namedDirection;
 };
 
-var isLoginClick = false;
-var onLoginClick = function(){
-  isLoginClick = true;
-
-}
-
 var riggedHandPlugin;
 
 var isConnected = false;
@@ -41,9 +35,6 @@ var ctrl = Leap.loop({
     hand: function(hand){
 
     var label = hand.data('label');
-    if(isLoginClick === false){
-      return;
-    }
 
     if (!label){
       console.log("creating label");
