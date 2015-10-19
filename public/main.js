@@ -1,17 +1,17 @@
 
 var convertToXYZDirection = function(direction){
-        var namedDirection = {};
-        $.each(direction, function(i, v){
-          if(i == 0){
-            namedDirection["x"] = v;
-          } else if (i == 1){
-            namedDirection["y"] = v;
-          } else if (i == 2){
-             namedDirection["z"] = v; 
-          }
-        });
+  var namedDirection = {};
+  $.each(direction, function(i, v){
+    if(i == 0){
+      namedDirection["x"] = v;
+    } else if (i == 1){
+      namedDirection["y"] = v;
+    } else if (i == 2){
+     namedDirection["z"] = v; 
+   }
+ });
 
-        return namedDirection;
+  return namedDirection;
 };
 
 var riggedHandPlugin;
@@ -26,13 +26,24 @@ var onDisconnected = function(){
   isConnected = false;
 };
 
-var ctrl = Leap.loop({
-  background: true,
-  enableGesture: true,
-  loopWhileDisconnected: true
+function startLeap() {
+  window.isLeapAnimationRunning = true;
+
+  var ctrl = Leap.loop({
+    background: true,
+    enableGesture: true,
+    loopWhileDisconnected: true
   }, {
 
     hand: function(hand){
+
+      var label = hand.data('label');
+
+      if (!label){
+        console.log("creating label");
+        label = document.createElement('label');
+        document.body.appendChild(label);
+
 
       // locate 'label' DOM element
       var label = hand.data('label');
@@ -42,9 +53,6 @@ var ctrl = Leap.loop({
         label = document.createElement('label');
         document.body.appendChild(label);
 
-        /**
-         * Here we set the label to show the hand type
-         */
         label.innerHTML = hand.type + " hand";
 
         hand.data('label', label)
@@ -55,7 +63,7 @@ var ctrl = Leap.loop({
       var screenPosition = handMesh.screenPosition(
         hand.palmPosition,
         riggedHandPlugin.camera
-      );
+        );
 
       label.style.left = screenPosition.x + 'px';
       label.style.bottom = screenPosition.y + 'px';
@@ -94,18 +102,23 @@ var ctrl = Leap.loop({
 
       }
     }
+  }
 })
+
+
+
 .on('streamingStarted', onConnected)
 .on('streamingStopped', onDisconnected)
+
 .use('riggedHand')
 .use('handEntry')
 .use('handHold')
 .on('handLost', function(hand){
-    var label = hand.data('label');
-    if (label){
-      document.body.removeChild(label);
-      hand.data({label: undefined});
-    }
+  var label = hand.data('label');
+  if (label){
+    document.body.removeChild(label);
+    hand.data({label: undefined});
+  }
 })
 .use('playback', {
   recording: './left-or-right-77fps.json.lz',
@@ -113,3 +126,10 @@ var ctrl = Leap.loop({
 });
 
 riggedHandPlugin = Leap.loopController.plugins.riggedHand;
+
+ctrl.on('riggedHand.meshAdded', function(handMesh, leapHand){
+  var canvas = document.querySelector('canvas');
+  //canvas.style.display = 'none';
+  canvas.style['z-index'] = 102;
+});
+}

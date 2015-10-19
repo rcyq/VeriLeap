@@ -137,3 +137,11 @@ body{
 ::-moz-input-placeholder{
    color: rgba(255,255,255,0.6);
 }
+
+/* So as to enable clicking through canvas (leapHand) 
+ * to click on Close button of overlay
+ */    
+canvas {
+	pointer-events: none;
+
+}
