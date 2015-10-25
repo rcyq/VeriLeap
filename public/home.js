@@ -92,6 +92,8 @@
 	closeBttn.addEventListener( 'click', toggleOverlay );
 })();
 
+// Upon triggering Login / Register button, hides / displays login and register
+// and VeriLeap logo
 function swap(a,b){
 	document.getElementById(a).style.display = 'none';
 	document.getElementById(b).style.display = 'block';
@@ -106,3 +108,27 @@ document.getElementById('overlay-close-button').addEventListener("click", functi
 	swap('empty','homeButtons');
 	swap('empty', 'verileapHeader');
 });
+
+document.getElementById('trigger-overlay-register').addEventListener("click", function(){
+	swap('homeButtons', 'empty');
+	swap('verileapHeader', 'empty');
+});
+
+document.getElementById('overlay-register-close-button').addEventListener("click", function(){
+	swap('empty','homeButtons');
+	swap('empty', 'verileapHeader');
+});
+
+// Create account functions
+document.getElementById('createAccountButton').addEventListener("click", function(){
+	console.log("Create account!");
+
+});
+
+// $(document.getElementById('createAccountButton')).addEvent("click", function(){
+//   var SM = new SimpleModal({"btn_ok":"Alert button"});
+//       SM.show({
+//         "title":"Title",
+//         "contents":"Your message..."
+//       });
+// });

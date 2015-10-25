@@ -40,16 +40,24 @@
 	<div id="loginOverlay" class="overlay overlay-hugeinc">
 		<button id="overlay-close-button" type="button" class="overlay-close">Close</button>
 		<nav>
+			<div class="register">
+				<input type="text" placeholder="Username" name="user">
+			</div>
 		</nav>
 	</div>
 
 	<!-- Register overlay -->
-	<div class="overlay overlay-register overlay-hugeinc">
-		<button type="button" class="overlay-close">Close</button>
+	<div id="registerOverlay" class="overlay overlay-register overlay-hugeinc">
+		<button id="overlay-register-close-button" type="button" class="overlay-close">Close</button>
 		<nav>
-			<ul>
-				<li><a href="#">Register</a></li>
-			</ul>
+			<div class="register">
+				<input type="text" placeholder="Enter username" name="user">
+			</div>
+
+			<div id="createAccount" class="account">
+				<input id="createAccountButton" type="button" value="Create Account">
+			</div>
+
 		</nav>
 	</div>
 	
@@ -59,3 +67,5 @@
 	<script src="home.js"></script>
 </body>
 </html>
+
+

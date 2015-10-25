@@ -66,6 +66,19 @@ body{
 	z-index: 2;
 }
 
+.register input[type=text]{
+	width: 250px;
+	height: 30px;
+	background: transparent;
+	border: 1px solid rgba(255,255,255,0.6);
+	border-radius: 2px;
+	color: #fff;
+	font-family: 'Exo', sans-serif;
+	font-size: 16px;
+	font-weight: 400;
+	padding: 4px;
+}
+
 .login input[type=text]{
 	width: 250px;
 	height: 30px;
@@ -145,3 +158,40 @@ body{
  	pointer-events: none;
 
  }
+
+/* Create account button in Register overlay */
+.account input[type=button]{
+ 	width: 260px;
+ 	height: 35px;
+ 	background: #fff;
+ 	border: 1px solid #fff;
+ 	cursor: pointer;
+ 	border-radius: 2px;
+ 	color: #a18d6c;
+ 	font-family: 'Exo', sans-serif;
+ 	font-size: 16px;
+ 	font-weight: 400;
+ 	padding: 6px;
+ 	margin-top: 500px;}
+
+.account input[type=button]:hover{
+	opacity: 0.8;
+}
+
+.account input[type=button]:active{
+	opacity: 0.6;
+}
+
+.account input[type=text]:focus{
+	outline: none;
+	border: 1px solid rgba(255,255,255,0.9);
+}
+
+.account input[type=password]:focus{
+	outline: none;
+	border: 1px solid rgba(255,255,255,0.9);
+}
+
+.account input[type=button]:focus{
+	outline: none;
+}
