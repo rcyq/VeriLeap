@@ -79,6 +79,27 @@ body{
 	padding: 4px;
 }
 
+.register.show input[type=text]{
+	display: block !important;
+}
+
+.register.hide input[type=text]{
+	display: none !important;
+}
+
+.register.register-message{
+	background: transparent;
+	color: #fff;
+	font-family: 'Exo', sans-serif;
+	font-size: 16px;
+	font-weight: 400;
+	padding: 4px;
+}
+
+.register.register-message.error{
+	color: #f00 !important;
+}
+
 .login input[type=text]{
 	width: 250px;
 	height: 30px;
@@ -154,10 +175,10 @@ body{
 /* So as to enable clicking through canvas (leapHand) 
  * to click on Close button of overlay
  */    
- canvas {
- 	pointer-events: none;
-
- }
+canvas {
+	pointer-events: none;
+	z-index: 102;
+}
 
 /* Create account button in Register overlay */
 .account input[type=button]{
@@ -172,7 +193,8 @@ body{
  	font-size: 16px;
  	font-weight: 400;
  	padding: 6px;
- 	margin-top: 500px;}
+ 	margin-top: 25%;
+ }
 
 .account input[type=button]:hover{
 	opacity: 0.8;
@@ -194,4 +216,37 @@ body{
 
 .account input[type=button]:focus{
 	outline: none;
+}
+
+#connect-leap{
+	cursor: default !important;
+	pointer-events: none !important;
+}
+
+#connect-leap > img{
+	height: auto !important;
+	width: 25% !important;
+}
+
+.connect-leap-show{
+	z-index: 105 !important;
+	display: block !important;
+}
+
+.connect-leap-hide{
+	z-index: -1 !important;
+	display: none !important; 
+}
+
+#overlay-close-button,
+#overlay-register-close-button{
+	z-index: 110 !important;
+}
+
+.hand-canvas-show{
+	display: block !important;
+}
+
+.hand-canvas-hide{
+	display: none !important;
 }
