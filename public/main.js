@@ -62,6 +62,7 @@ function startLeap() {
       label.style.left = screenPosition.x + 'px';
       label.style.bottom = screenPosition.y + 'px';
 
+      // control connect leap img show/hide
       var canvas = $('canvas');
       var connectLeap = $('#connect-leap');
       if(connectLeap && canvas){
@@ -75,6 +76,7 @@ function startLeap() {
         }
       }
 
+      // control frame recording
       if(isConnected && isRecording) {
         var handFingers = hand.fingers;
         var fingersData = {};
@@ -127,8 +129,5 @@ function startLeap() {
 riggedHandPlugin = Leap.loopController.plugins.riggedHand;
 
 ctrl.on('riggedHand.meshAdded', function(handMesh, leapHand){
-  // var canvas = document.querySelector('canvas');
-  //canvas.style.display = 'none';
-  // canvas.style['z-index'] = 102;
 });
 }
