@@ -14,9 +14,12 @@
 	support = { transitions : Modernizr.csstransitions };
 
 	function toggleOverlay() {
-		var canvas = document.querySelector('canvas');
+		var canvas = $('canvas');
+
 		if( classie.has( overlay, 'open' ) ) {
-			canvas.style.display = 'none';
+			canvas.removeClass('hand-canvas-show');
+			canvas.addClass('hand-canvas-hide');
+
 			classie.remove( overlay, 'open' );
 			classie.add( overlay, 'close' );
 			var onEndTransitionFn = function( ev ) {
@@ -35,8 +38,10 @@
 		}
 		else if( !classie.has( overlay, 'close' ) ) {
 			classie.add( overlay, 'open' );
+
 			if (window.isLeapAnimationRunning) {
-				canvas.style.display = null;	
+				canvas.removeClass('hand-canvas-hide');
+				canvas.addClass('hand-canvas-show');
 			} else {
 				startLeap();
 			}

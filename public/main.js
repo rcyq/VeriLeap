@@ -19,10 +19,12 @@ var riggedHandPlugin;
 var isConnected = false;
 
 var onConnected = function (){
+  console.log('onConnected');
   isConnected = true;
 };
 
 var onDisconnected = function(){
+  console.log('onDisconnected');
   isConnected = false;
 };
 
@@ -36,14 +38,6 @@ function startLeap() {
   }, {
 
     hand: function(hand){
-
-      var label = hand.data('label');
-
-      if (!label){
-        console.log("creating label");
-        label = document.createElement('label');
-        document.body.appendChild(label);
-
 
       // locate 'label' DOM element
       var label = hand.data('label');
@@ -68,12 +62,21 @@ function startLeap() {
       label.style.left = screenPosition.x + 'px';
       label.style.bottom = screenPosition.y + 'px';
 
-      if(ctrl.connected()){
-
-      }else{
-
+      // control connect leap img show/hide
+      var canvas = $('canvas');
+      var connectLeap = $('#connect-leap');
+      if(connectLeap && canvas){
+        
+        if(isConnected || canvas.hasClass('hand-canvas-hide')){
+          connectLeap.removeClass('connect-leap-show');
+          connectLeap.addClass('connect-leap-hide');
+        }else{
+          connectLeap.removeClass('connect-leap-hide');
+          connectLeap.addClass('connect-leap-show');
+        }
       }
 
+      // control frame recording
       if(isConnected && isRecording) {
         var handFingers = hand.fingers;
         var fingersData = {};
@@ -99,9 +102,7 @@ function startLeap() {
         });
 
         console.log("Recording");
-
       }
-    }
   }
 })
 
@@ -128,8 +129,5 @@ function startLeap() {
 riggedHandPlugin = Leap.loopController.plugins.riggedHand;
 
 ctrl.on('riggedHand.meshAdded', function(handMesh, leapHand){
-  var canvas = document.querySelector('canvas');
-  //canvas.style.display = 'none';
-  canvas.style['z-index'] = 102;
 });
 }
