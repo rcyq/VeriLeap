@@ -23,13 +23,13 @@ var client_verify = function() {
 }
 
 var client_verify_in_round = function(round) {
-  console.log("will verify in 2 seconds");
+  console.log("will verify in 3 seconds");
    setTimeout(function() {
     trainer.resume();
     this.round = round;
     console.log("Round" + round + ": about to verify");
     verify = true;
-  }, 2000);
+  }, 3000);
 }
 
 
