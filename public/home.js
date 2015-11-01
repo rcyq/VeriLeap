@@ -158,6 +158,7 @@ document.getElementById('createAccountButton').addEventListener("click", functio
 var current_fs, next_fs, previous_fs; //fieldsets
 var left, opacity, scale; //fieldset properties which we will animate
 var animating; //flag to prevent quick multi-click glitches
+var gestureArray = {};
 
 $('#registerMessage').text("");
 
@@ -169,12 +170,22 @@ $(".next").click(function(){
 	next_fs = $(this).parent().next();
 	currentFieldsetId = current_fs.attr('id');
 
+	// Check username
 	console.log( $('#username').val());
-	if(currentFieldsetId == "step0" && $('#username').val() == ""){
+	if(currentFieldsetId == "zero" && $('#username').val() == ""){
 		$('#registerMessage').text("Username cannot be empty");
 		animating = false;
 		return false;
-	}else{
+	}else if(currentFieldsetId != "confirm"){
+		
+		var currentGesture = gestureArray[currentFieldsetId] || [];
+		if(currentGesture.length > 0){
+			// Recorded before
+		} else {
+			// Not recorded before
+			// Record here
+			$('#registerMessage').text("Recording for ");
+		}
 		$('#registerMessage').text("");
 	}
 
