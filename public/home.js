@@ -140,13 +140,27 @@ document.getElementById('overlay-register-close-button').addEventListener("click
 // Create account functions
 document.getElementById('createAccountButton').addEventListener("click", function(){
 	console.log("Create account!");
+	console.log($('#user').val());
 
+	// $.ajax({
+ //      type: "POST",
+ //      url: "/register",
+ //      data: trainer.toJSON(gestureName),
+ //      contentType: "text/plain",  //"application/json",
+ //      success: function(data) {
+ //        console.log("have successfully submitted registering request");
+ //        console.log("return message is " + data);
+ //      }
+ //  });
 });
 
 //jQuery time
 var current_fs, next_fs, previous_fs; //fieldsets
 var left, opacity, scale; //fieldset properties which we will animate
 var animating; //flag to prevent quick multi-click glitches
+var gestureArray = {};
+
+$('#registerMessage').text("");
 
 $(".next").click(function(){
 	if(animating) return false;
@@ -154,7 +168,27 @@ $(".next").click(function(){
 	
 	current_fs = $(this).parent();
 	next_fs = $(this).parent().next();
-	
+	currentFieldsetId = current_fs.attr('id');
+
+	// Check username
+	console.log( $('#username').val());
+	if(currentFieldsetId == "zero" && $('#username').val() == ""){
+		$('#registerMessage').text("Username cannot be empty");
+		animating = false;
+		return false;
+	}else if(currentFieldsetId != "confirm"){
+		
+		var currentGesture = gestureArray[currentFieldsetId] || [];
+		if(currentGesture.length > 0){
+			// Recorded before
+		} else {
+			// Not recorded before
+			// Record here
+			$('#registerMessage').text("Recording for ");
+		}
+		$('#registerMessage').text("");
+	}
+
 	//activate next step on progressbar using the index of next_fs
 	$("#progressbar li").eq($("fieldset").index(next_fs)).addClass("active");
 	
