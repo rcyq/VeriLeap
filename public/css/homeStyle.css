@@ -267,7 +267,7 @@ http://codepen.io/m-e-conroy/pen/ALsdF
 /*form styles*/
 #msform {
 	width: 80%;
-	margin: 50px auto;
+	margin: 5px auto;
 	text-align: center;
 	position: relative;
 }
@@ -276,7 +276,7 @@ http://codepen.io/m-e-conroy/pen/ALsdF
 	border: 0 none;
 	border-radius: 3px;
 	box-shadow: 0 0 15px 1px rgba(0, 0, 0, 0.4);
-	padding: 40% 20px 30px 30px;
+	padding: 25% 20px 30px 30px;
 	
 	box-sizing: border-box;
 	width: 80%;
@@ -334,8 +334,8 @@ http://codepen.io/m-e-conroy/pen/ALsdF
 }
 /*progressbar*/
 #progressbar {
-	width: 90% !important;
-	margin-bottom: 30px;
+	width: 100% !important;
+	margin-bottom: 5px;
 	overflow: hidden;
 	/*CSS counters to number the steps*/
 	counter-reset: step;

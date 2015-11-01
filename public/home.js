@@ -142,16 +142,16 @@ document.getElementById('createAccountButton').addEventListener("click", functio
 	console.log("Create account!");
 	console.log($('#user').val());
 
-	$.ajax({
-      type: "POST",
-      url: "/register",
-      data: trainer.toJSON(gestureName),
-      contentType: "text/plain",  //"application/json",
-      success: function(data) {
-        console.log("have successfully submitted registering request");
-        console.log("return message is " + data);
-      }
-  });
+	// $.ajax({
+ //      type: "POST",
+ //      url: "/register",
+ //      data: trainer.toJSON(gestureName),
+ //      contentType: "text/plain",  //"application/json",
+ //      success: function(data) {
+ //        console.log("have successfully submitted registering request");
+ //        console.log("return message is " + data);
+ //      }
+ //  });
 });
 
 //jQuery time
@@ -159,13 +159,25 @@ var current_fs, next_fs, previous_fs; //fieldsets
 var left, opacity, scale; //fieldset properties which we will animate
 var animating; //flag to prevent quick multi-click glitches
 
+$('#registerMessage').text("");
+
 $(".next").click(function(){
 	if(animating) return false;
 	animating = true;
 	
 	current_fs = $(this).parent();
 	next_fs = $(this).parent().next();
-	
+	currentFieldsetId = current_fs.attr('id');
+
+	console.log( $('#username').val());
+	if(currentFieldsetId == "step0" && $('#username').val() == ""){
+		$('#registerMessage').text("Username cannot be empty");
+		animating = false;
+		return false;
+	}else{
+		$('#registerMessage').text("");
+	}
+
 	//activate next step on progressbar using the index of next_fs
 	$("#progressbar li").eq($("fieldset").index(next_fs)).addClass("active");
 	

@@ -55,8 +55,6 @@
 		<button id="overlay-register-close-button" type="button" class="overlay-close">Close</button>
 		<nav>
 
-			<div class="register register-message error">message</div>
-
 			<!-- multistep form -->
 			<form id="msform">
 				<!-- progressbar -->
@@ -68,31 +66,32 @@
 					<li>Confirmation</li>
 				</ul>
 				<!-- fieldsets -->
-				<fieldset>
+				<fieldset id="step0">
 					<h2 class="fs-title">Information</h2>
 					<h3 class="fs-subtitle">Please enter your username</h3>
-					<input class="register"type="text" autofocus placeholder="Enter username" name="user" id="user">
+					<input class="register"type="text" placeholder="Enter username" name="username" id="username">
 					<input type="button" name="next" class="next action-button" value="Next" />
+					<h6 id="registerMessage"class="register register-message error">message</h6>
 				</fieldset>
-				<fieldset>
+				<fieldset id="step1">
 					<h2 class="fs-title">Gesture 1</h2>
 					<h3 class="fs-subtitle">Hold your gesture until the next step</h3>
 					<input type="button" name="previous" class="previous action-button" value="Previous" />
 					<input type="button" name="next" class="next action-button" value="Next" />
 				</fieldset>
-				<fieldset>
+				<fieldset id="step2">
 					<h2 class="fs-title">Gesture 2</h2>
 					<h3 class="fs-subtitle">Hold your gesture until the next step</h3>
 					<input type="button" name="previous" class="previous action-button" value="Previous" />
 					<input type="button" name="next" class="next action-button" value="Next" />
 				</fieldset>
-				<fieldset>
+				<fieldset id="step3">
 					<h2 class="fs-title">Gesture 3</h2>
 					<h3 class="fs-subtitle">Hold your gesture until the next step</h3>
 					<input type="button" name="previous" class="previous action-button" value="Previous" />
 					<input type="button" name="next" class="next action-button" value="Next" />
 				</fieldset>
-				<fieldset>
+				<fieldset id="step4">
 					<h2 class="fs-title">Confirmation</h2>
 					<h3 class="fs-subtitle">You are ready to create an account</h3>
 					<input type="button" name="previous" class="previous action-button" value="Previous" />
