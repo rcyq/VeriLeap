@@ -1,4 +1,3 @@
-
 var convertToXYZDirection = function(direction){
         var namedDirection = {};
         $.each(direction, function(i, v){
@@ -15,7 +14,7 @@ var convertToXYZDirection = function(direction){
 };
 
 var riggedHandPlugin;
-
+/*
 var ctrl = Leap.loop({
   background: true,
   enableGesture: true,
@@ -23,7 +22,7 @@ var ctrl = Leap.loop({
   },{
 
     hand: function(hand){
-    
+    //console.log(hand);
     var label = hand.data('label');
 
     if (!label){
@@ -34,6 +33,7 @@ var ctrl = Leap.loop({
       /**
        * Here we set the label to show the hand type
        */
+/*
       label.innerHTML = hand.type + " hand";
 
       hand.data('label', label)
@@ -73,6 +73,7 @@ var ctrl = Leap.loop({
         fingers : fingersData
       });
 
+
       console.log("Recording");
 
     }
@@ -95,3 +96,5 @@ var ctrl = Leap.loop({
 .connect();
 
 riggedHandPlugin = Leap.loopController.plugins.riggedHand;
+
+*/
