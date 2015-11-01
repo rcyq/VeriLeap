@@ -258,7 +258,7 @@ http://codepen.io/m-e-conroy/pen/ALsdF
 
 /*form styles*/
 #msform {
-	width: 400px;
+	width: 80%;
 	margin: 50px auto;
 	text-align: center;
 	position: relative;
@@ -289,7 +289,7 @@ http://codepen.io/m-e-conroy/pen/ALsdF
 	margin-bottom: 10px;
 	width: 100%;
 	box-sizing: border-box;
-	font-family: montserrat;
+	font-family: 'Exo' ,sans-serif;
 	color: #2C3E50;
 	font-size: 13px;
 }
@@ -306,7 +306,7 @@ http://codepen.io/m-e-conroy/pen/ALsdF
 	margin: 10px 5px;
 }
 #msform .action-button:hover, #msform .action-button:focus {
-	box-shadow: 0 0 0 2px white, 0 0 0 3px #27AE60;
+	box-shadow: 0 0 0 2px white, 0 0 0 3px #5eaa02;
 }
 /*headings*/
 .fs-title {
@@ -314,12 +314,14 @@ http://codepen.io/m-e-conroy/pen/ALsdF
 	text-transform: uppercase;
 	color: white;
 	margin-bottom: 10px;
+	font-family: 'Exo' ,sans-serif;
 }
 .fs-subtitle {
 	font-weight: normal;
 	font-size: 13px;
 	color: white;
 	margin-bottom: 20px;
+	font-family: 'Exo' ,sans-serif;
 }
 /*progressbar*/
 #progressbar {
@@ -334,8 +336,9 @@ http://codepen.io/m-e-conroy/pen/ALsdF
 	color: white;
 	text-transform: uppercase;
 	font-size: 9px;
-	width: 33.33%;
+	width: 25%;
 	float: left;
+	font-family: 'Exo' ,sans-serif;
 	position: relative;
 }
 #progressbar li:before {

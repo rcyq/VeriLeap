@@ -140,7 +140,18 @@ document.getElementById('overlay-register-close-button').addEventListener("click
 // Create account functions
 document.getElementById('createAccountButton').addEventListener("click", function(){
 	console.log("Create account!");
+	console.log($('#user').val());
 
+	$.ajax({
+      type: "POST",
+      url: "/register",
+      data: trainer.toJSON(gestureName),
+      contentType: "text/plain",  //"application/json",
+      success: function(data) {
+        console.log("have successfully submitted registering request");
+        console.log("return message is " + data);
+      }
+  });
 });
 
 //jQuery time
