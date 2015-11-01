@@ -2,6 +2,7 @@ var controller = new Leap.Controller();
 var trainer = new LeapTrainer.Controller({controller: controller});
 var verify = false;
 var round;
+var recordingRounds = 3;
 
 var client_register = function() {
   client_register_in_round(1);
@@ -50,7 +51,7 @@ trainer.on('training-complete', function(gestureName, trainingSet, isPose) {
       }
   });
    
-  if(round>=3) {
+  if(round>=recordingRounds) {
     trainer.pause();
   } else {
     round++;
@@ -86,7 +87,7 @@ trainer.on('gesture-detected', function(gesture, frameCount) {
           }
         });
 
-        if(round>=3) {
+        if(round>=recordingRounds) {
           trainer.pause();
         } else {
           round++;
