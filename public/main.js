@@ -1,3 +1,4 @@
+
 var convertToXYZDirection = function(direction){
   var namedDirection = {};
   $.each(direction, function(i, v){
@@ -14,15 +15,6 @@ var convertToXYZDirection = function(direction){
 };
 
 var riggedHandPlugin;
-var ctrl = Leap.loop({
-  background: true,
-  enableGesture: true,
-  loopWhileDisconnected: true
-  },{
-
-    hand: function(hand){
-    //console.log(hand);
-    var label = hand.data('label');
 
 var isConnected = false;
 
@@ -46,6 +38,7 @@ function startLeap() {
   }, {
 
     hand: function(hand){
+
       // locate 'label' DOM element
       var label = hand.data('label');
 
@@ -53,10 +46,9 @@ function startLeap() {
         // 'label' does not exists
         label = document.createElement('label');
         document.body.appendChild(label);
-        /**
-         * Here we set the label to show the hand type
-         */
+
         label.innerHTML = hand.type + " hand";
+
         hand.data('label', label)
       }
 
@@ -102,26 +94,23 @@ function startLeap() {
 
         });
 
-        console.log("Recording");
         frames.push({
           confidence : hand.confidence,
           palm: convertToXYZDirection(hand.palmPosition),
           palmWidth : hand.palmWidth,
           fingers : fingersData
         });
+
         console.log("Recording");
       }
     }
   })
-
-
-
-  .on('streamingStarted', onConnected)
-  .on('streamingStopped', onDisconnected)
-
   .use('riggedHand')
   .use('handEntry')
   .use('handHold')
+  
+  .on('streamingStarted', onConnected)
+  .on('streamingStopped', onDisconnected)
   .on('handLost', function(hand){
     var label = hand.data('label');
     if (label){
@@ -133,8 +122,6 @@ function startLeap() {
     recording: './left-or-right-77fps.json.lz',
     timeBetweenLoops: 1000
   });
-
-  riggedHandPlugin = Leap.loopController.plugins.riggedHand;
 
   riggedHandPlugin = Leap.loopController.plugins.riggedHand;
 
