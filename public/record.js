@@ -2,7 +2,9 @@ var controller = new Leap.Controller();
 var trainer = new LeapTrainer.Controller({controller: controller});
 var verify = false;
 var round;
+var verifyResult = [];
 var recordingRounds = 3;
+
 
 var client_register = function() {
   client_register_in_round(1);
@@ -21,10 +23,13 @@ var client_verify = function() {
 }
 
 var client_verify_in_round = function(round) {
-  trainer.resume();
-  this.round = round;
-  console.log("Round" + round + ": about to verify");
-  verify = true;
+  console.log("will verify in 3 seconds");
+   setTimeout(function() {
+    trainer.resume();
+    this.round = round;
+    console.log("Round" + round + ": about to verify");
+    verify = true;
+  }, 3000);
 }
 
 
@@ -72,6 +77,7 @@ trainer.on('gesture-detected', function(gesture, frameCount) {
   if (verify == true) {
         verify = false;
         data = {
+          'id': $("#username").val()+round,
           'gesture' : gesture,
           'frameCount': frameCount
         };
@@ -81,14 +87,16 @@ trainer.on('gesture-detected', function(gesture, frameCount) {
           url: "/verify",
           data: JSON.stringify(data),
           contentType: "application/json",
-          success: function(data) {
+          success: function(ans) {
             console.log("have successfully submitted verification request");
-            console.log("result is " + data);
+            verifyResult[parseInt(data.id.slice(-1)) -1] = "result is " + ans;
+            console.log(verifyResult);
           }
         });
 
         if(round>=recordingRounds) {
           trainer.pause();
+
         } else {
           round++;
           client_verify_in_round(round);
