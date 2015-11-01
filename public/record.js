@@ -1,10 +1,10 @@
 var controller = new Leap.Controller();
 var trainer = new LeapTrainer.Controller({controller: controller});
 var verify = false;
-var round = 1;
+var round;
 
 var client_register = function() {
-  client_register_in_round(round);
+  client_register_in_round(1);
 }
 
 var client_register_in_round = function(round) {
@@ -16,8 +16,13 @@ var client_register_in_round = function(round) {
 }
 
 var client_verify = function() {
+  client_verify_in_round(1);
+}
+
+var client_verify_in_round = function(round) {
   trainer.resume();
-  console.log("about to verify");
+  this.round = round;
+  console.log("Round" + round + ": about to verify");
   verify = true;
 }
 
@@ -80,7 +85,13 @@ trainer.on('gesture-detected', function(gesture, frameCount) {
             console.log("result is " + data);
           }
         });
-        trainer.pause();
+
+        if(round>=3) {
+          trainer.pause();
+        } else {
+          round++;
+          client_verify_in_round(round);
+        }
   }
 });
 
