@@ -14,14 +14,15 @@
 	support = { transitions : Modernizr.csstransitions };
 
 	function toggleOverlay() {
-		var canvas = $('canvas');
+
+		$('#registerMessage').text("");
 
 		if( classie.has( overlay, 'open' ) ) {
-			canvas.removeClass('hand-canvas-show');
-			canvas.addClass('hand-canvas-hide');
 
 			classie.remove( overlay, 'open' );
 			classie.add( overlay, 'close' );
+			$('canvas').addClass('hide').removeClass('show');
+
 			var onEndTransitionFn = function( ev ) {
 				if( support.transitions ) {
 					if( ev.propertyName !== 'visibility' ) return;
@@ -39,10 +40,7 @@
 		else if( !classie.has( overlay, 'close' ) ) {
 			classie.add( overlay, 'open' );
 
-			if (window.isLeapAnimationRunning) {
-				canvas.removeClass('hand-canvas-hide');
-				canvas.addClass('hand-canvas-show');
-			} else {
+			if (!window.isLeapAnimationRunning){
 				startLeap();
 			}
 			
@@ -71,14 +69,15 @@
 	support = { transitions : Modernizr.csstransitions };
 
 	function toggleOverlay() {
-		var canvas = $('canvas');
+
+		$('#registerMessage').text("");
 
 		if( classie.has( overlay, 'open' ) ) {
-			canvas.removeClass('hand-canvas-show');
-			canvas.addClass('hand-canvas-hide');
 
 			classie.remove( overlay, 'open' );
 			classie.add( overlay, 'close' );
+			$('canvas').addClass('hide').removeClass('show');
+			
 			var onEndTransitionFn = function( ev ) {
 				if( support.transitions ) {
 					if( ev.propertyName !== 'visibility' ) return;
@@ -96,10 +95,7 @@
 		else if( !classie.has( overlay, 'close' ) ) {
 			classie.add( overlay, 'open' );
 
-			if (window.isLeapAnimationRunning) {
-				canvas.removeClass('hand-canvas-hide');
-				canvas.addClass('hand-canvas-show');
-			} else {
+			if (!window.isLeapAnimationRunning){
 				startLeap();
 			}
 			
@@ -160,8 +156,6 @@ var left, opacity, scale; //fieldset properties which we will animate
 var animating; //flag to prevent quick multi-click glitches
 var gestureArray = {};
 
-$('#registerMessage').text("");
-
 $(".next").click(function(){
 	if(animating) return false;
 	animating = true;
@@ -169,25 +163,53 @@ $(".next").click(function(){
 	current_fs = $(this).parent();
 	next_fs = $(this).parent().next();
 	currentFieldsetId = current_fs.attr('id');
+	nextFieldsetId = next_fs.attr('id');
+
+	var canvas = $('canvas');
+	var nextButton = $('#msform .action-button.next');
+	var previousButton = $('#msform .action-button.previous');
+	var registerMessage = $('#registerMessage');
+	var usernameInput = $("#username");
 
 	// Check username
-	console.log( $('#username').val());
-	if(currentFieldsetId == "zero" && $('#username').val() == ""){
-		$('#registerMessage').text("Username cannot be empty");
-		animating = false;
-		return false;
-	}else if(currentFieldsetId != "confirm"){
-		
-		var currentGesture = gestureArray[currentFieldsetId] || [];
-		if(currentGesture.length > 0){
-			// Recorded before
-		} else {
-			// Not recorded before
-			// Record here
-			$('#registerMessage').text("Recording for ");
+	if(currentFieldsetId == "zero"){
+		if(usernameInput.val() == ""){
+			registerMessage.text("Username cannot be empty");
+			animating = false;
+			return false;
 		}
-		$('#registerMessage').text("");
 	}
+
+	if(nextFieldsetId != "confirm"){
+	  username = usernameInput.val();
+
+	  // hide next button
+	  nextButton.removeClass('show');
+	  nextButton.addClass('hide');
+
+	  // show canvas
+	  canvas.removeClass('hide');
+	  canvas.addClass('show');
+	  
+	  Record.startRegistration(username, nextFieldsetId);
+	}else{
+
+		// show next button
+	  nextButton.removeClass('hide');
+	  nextButton.addClass('show');
+		
+	  // hide canvas
+	  canvas.removeClass('show');
+	  canvas.addClass('hide');
+
+		Record.stopRegistration();
+	}
+
+	// show previous button
+	previousButton.removeClass('hide');
+	previousButton.addClass('show');
+
+	registerMessage.text("");
 
 	//activate next step on progressbar using the index of next_fs
 	$("#progressbar li").eq($("fieldset").index(next_fs)).addClass("active");
@@ -223,7 +245,46 @@ $(".previous").click(function(){
 	
 	current_fs = $(this).parent();
 	previous_fs = $(this).parent().prev();
-	
+
+	currentFieldsetId = current_fs.attr('id');
+	previousFieldsetId = previous_fs.attr('id');
+
+	var canvas = $('canvas');
+	var nextButton = $('#msform .action-button.next');
+	var previousButton = $('#msform .action-button.previous');
+	var registerMessage = $('#registerMessage');
+
+	if(previousFieldsetId != "zero"){
+		// show previous button
+	  previousButton.removeClass('hide');
+	  previousButton.addClass('show');
+
+	  // hide next button
+	  nextButton.removeClass('show');
+	  nextButton.addClass('hide');
+
+	  // show canvas
+	  canvas.removeClass('hide');
+	  canvas.addClass('show');
+
+	  username = usernameInput.val();
+	  Record.startRegistration(username, previousFieldsetId);
+	}else{
+		// hide previous button
+	  previousButton.removeClass('show');
+	  previousButton.addClass('hide');
+
+		// show next button
+	  nextButton.removeClass('hide');
+	  nextButton.addClass('show');
+	  
+	  // hide canvas
+	  canvas.removeClass('show');
+	  canvas.addClass('hide');
+
+		Record.stopRegistration();
+	}
+
 	//de-activate current step on progressbar
 	$("#progressbar li").eq($("fieldset").index(current_fs)).removeClass("active");
 	

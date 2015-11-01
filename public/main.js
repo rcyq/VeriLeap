@@ -28,13 +28,13 @@ var onDisconnected = function(){
   isConnected = false;
 };
 
-function startLeap() {
+var startLeap = function() {
   window.isLeapAnimationRunning = true;
 
-  var ctrl = Leap.loop({
-    background: true,
+  window.leapController = Leap.loop({
+    background: false,
     enableGesture: true,
-    loopWhileDisconnected: true
+    loopWhileDisconnected: false
   }, {
 
     hand: function(hand){
@@ -67,12 +67,12 @@ function startLeap() {
       var connectLeap = $('#connect-leap');
       if(connectLeap && canvas){
         
-        if(isConnected || canvas.hasClass('hand-canvas-hide')){
-          connectLeap.removeClass('connect-leap-show');
-          connectLeap.addClass('connect-leap-hide');
-        }else{
+        if(!isConnected && $('div.overlay').hasClass('open')){
           connectLeap.removeClass('connect-leap-hide');
           connectLeap.addClass('connect-leap-show');
+        }else{
+          connectLeap.removeClass('connect-leap-show');
+          connectLeap.addClass('connect-leap-hide');
         }
       }
 
@@ -125,6 +125,69 @@ function startLeap() {
 
   riggedHandPlugin = Leap.loopController.plugins.riggedHand;
 
-  ctrl.on('riggedHand.meshAdded', function(handMesh, leapHand){
+  window.leapController.on('riggedHand.meshAdded', function(handMesh, leapHand){
   });
+
+  var lt = new LeapTrainer.Controller({controller: window.leapController});
+
+  // after resume() this event will be called for each second count down
+  lt.on('training-countdown', Record.onCountdown);
+
+  lt.on('training-complete', Record.onCompleted);
+
+  lt.on('training-started', function(gestureName) {
+    var trainingGestureCount = window.leapTrainer.trainingGestures;
+    console.log(trainingGestureCount + "  " + gestureName);  
+  });
+
+  lt.on('started-recording', function () { console.log("started-recording")});
+
+  lt.on('gesture-detected', Record.onGestureDetected);
+
+  window.leapTrainer = lt;
 }
+
+
+var Record = {
+
+  startRegistration :function(username, round){
+    window.leapTrainer.resume();
+    window.leapTrainer.create(username+round); 
+  },
+
+  stopRegistration : function () {
+    window.leapTrainer.pause();
+  },
+
+  onCountdown : function (countdown) {
+  },
+
+  onGestureDetected : function(gesture, frameCount) {
+    data = {
+      'gesture' : gesture,
+      'frameCount': frameCount
+    };
+    // console.log(JSON.stringify(data));
+    
+    $.ajax({
+      type: "POST",
+      url: "/verify",
+      data: JSON.stringify(data),
+      contentType: "application/json",
+      success: function(data) {
+        console.log("have successfully submitted verification request");
+        console.log("result is " + data);
+      }
+    });
+    
+    window.leapTrainer.pause();
+  },
+
+  onCompleted : function(gestureName, trainingSet, isPose) {
+
+    console.log(gestureName + (isPose ? ' pose' : ' gesture') + ' learned!');
+    // console.log(window.leapTrainer.toJSON(gestureName));
+     
+    window.leapTrainer.pause();
+  }
+};
