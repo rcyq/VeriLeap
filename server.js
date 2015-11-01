@@ -42,7 +42,16 @@ function db_find(criteria, callback) {
 	    	callback(result);
 	    }
 	});
+}
 
+function db_exist(criteria, callback) {
+	var value;
+	db.users.findOne(criteria, function(err, result) {
+		if (callback != null) {
+			callback(result != null);
+		}
+
+	});
 }
 
 app.use(express.static(__dirname + '/public'));
@@ -50,6 +59,15 @@ app.use(express.static(__dirname + '/public'));
 
 app.get('/', function (req, res) {
   res.render('/index.html');
+});
+
+
+app.post('/checkExisting', textParser, function(req, res) {
+	// to replace test2 with the username
+	db_exist({user: "test2" }, function(result) {
+		console.log(result);
+		res.send(result);
+	});
 });
 
 
