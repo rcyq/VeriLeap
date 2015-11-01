@@ -180,6 +180,14 @@ canvas {
 	z-index: 102;
 }
 
+.account.show{
+	display: block !important;
+}
+
+.account.hide{
+	display: none !important;
+}
+
 /* Create account button in Register overlay */
 .account input[type=button]{
  	width: 260px;
@@ -268,7 +276,7 @@ http://codepen.io/m-e-conroy/pen/ALsdF
 	border: 0 none;
 	border-radius: 3px;
 	box-shadow: 0 0 15px 1px rgba(0, 0, 0, 0.4);
-	padding: 20px 30px;
+	padding: 40% 20px 30px 30px;
 	
 	box-sizing: border-box;
 	width: 80%;
@@ -283,15 +291,16 @@ http://codepen.io/m-e-conroy/pen/ALsdF
 }
 /*inputs*/
 #msform input, #msform textarea {
-	padding: 15px;
-	border: 1px solid #ccc;
+	padding: 4px;
 	border-radius: 3px;
 	margin-bottom: 10px;
-	width: 100%;
-	box-sizing: border-box;
+	width: 50%;
 	font-family: 'Exo' ,sans-serif;
-	color: #2C3E50;
 	font-size: 13px;
+	background: transparent;
+	border: 1px solid rgba(255,255,255,0.6);
+	border-radius: 2px;
+	color: #fff;
 }
 /*buttons*/
 #msform .action-button {
@@ -336,7 +345,7 @@ http://codepen.io/m-e-conroy/pen/ALsdF
 	color: white;
 	text-transform: uppercase;
 	font-size: 9px;
-	width: 25%;
+	width: 20%;
 	float: left;
 	font-family: 'Exo' ,sans-serif;
 	position: relative;
