@@ -5,7 +5,6 @@ var io = require('socket.io')(server);
 var fs = require('fs');
 var RandomForestClassifier = require('random-forest-classifier').RandomForestClassifier;
 
-var FILENAME = "data.txt";
 var bodyParser = require('body-parser')
 var jsonParser = bodyParser.json({limit: '5mb'})
 var textParser = bodyParser.text()
@@ -13,9 +12,28 @@ var textParser = bodyParser.text()
 var trainerFile = require("leaptrainer.js");
 var trainer = new trainerFile.LeapTrainer.Controller({controller:1});
 
+var db = require('mongoskin').db('mongodb://localhost:27017/leap'); 
+db.bind("users");
+
+
 var port = process.env.PORT || 4344;
 console.log("Listening on port "+port);
 server.listen(port);
+
+
+function updateDatabase(data) {
+
+	var imp = JSON.parse(data);
+		
+	var id = imp.name;
+	var userName = id.slice(0, -2);	
+		
+		 //articles.update({foo:'bar'}, {foo: 'bar', val:'val2'}, {strict: true}, function(err) {
+	db.users.update( {_id: id}, { user: userName, _id: id, gesture: data }, {upsert: true}, function(err) {
+	    if (err) throw err;
+	});
+
+}
 
 
 app.use(express.static(__dirname + '/public'));
@@ -28,6 +46,7 @@ app.get('/', function (req, res) {
 
 app.post('/register', textParser, function(req, res) {
 	console.log(trainer.fromJSON(req.body));
+	updateDatabase(req.body);
 	res.send("success");
 });
 
