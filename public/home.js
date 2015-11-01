@@ -38,6 +38,7 @@
 			}
 		}
 		else if( !classie.has( overlay, 'close' ) ) {
+			resetForm();
 			classie.add( overlay, 'open' );
 
 			if (!window.isLeapAnimationRunning){
@@ -93,6 +94,7 @@
 			}
 		}
 		else if( !classie.has( overlay, 'close' ) ) {
+			resetForm();
 			classie.add( overlay, 'open' );
 
 			if (!window.isLeapAnimationRunning){
@@ -105,6 +107,25 @@
 	triggerBttn.addEventListener( 'click', toggleOverlay );
 	closeBttn.addEventListener( 'click', toggleOverlay );
 })();
+
+var resetForm =function () {
+	$('fieldset').hide();
+	var firstFS = $('fieldset#zero');
+	firstFS.show();
+	firstFS.css({'opacity':1});
+	
+	$('fieldset#zero .next').addClass('show').removeClass('hide');
+	
+	$('#progressbar li:first-of-type').addClass("active");
+	$("#progressbar li:not(:first-of-type)").removeClass("active");
+	
+	$('#username').val('');
+
+	var allFS = 'fieldset .fs-subtitle';
+	var infoFS = '#zero .fs-subtitle';
+	var confirmFS = '#confirm .fs-subtitle';
+  $(allFS+':not('+infoFS+','+confirmFS+')').text('Place your hand');
+}
 
 // Upon triggering Login / Register button, hides / displays login and register
 // and VeriLeap logo
@@ -162,12 +183,13 @@ $(".next").click(function(){
 	
 	current_fs = $(this).parent();
 	next_fs = $(this).parent().next();
-	currentFieldsetId = current_fs.attr('id');
-	nextFieldsetId = next_fs.attr('id');
+	
+	var currentFieldsetId = current_fs.attr('id');
+	var nextFieldsetId = next_fs.attr('id');
 
 	var canvas = $('canvas');
-	var nextButton = $('#msform .action-button.next');
-	var previousButton = $('#msform .action-button.previous');
+	var nextButton = $('#msform #'+nextFieldsetId+' .action-button.next');
+	var previousButton = $('#msform #'+nextFieldsetId+'.action-button.previous');
 	var registerMessage = $('#registerMessage');
 	var usernameInput = $("#username");
 
@@ -180,6 +202,7 @@ $(".next").click(function(){
 		}
 	}
 
+	var onComplete;
 	if(nextFieldsetId != "confirm"){
 	  username = usernameInput.val();
 
@@ -191,7 +214,9 @@ $(".next").click(function(){
 	  canvas.removeClass('hide');
 	  canvas.addClass('show');
 	  
-	  Record.startRegistration(username, nextFieldsetId);
+	  onComplete = function () {
+		  Record.startRegistration(username, nextFieldsetId);
+	  };
 	}else{
 
 		// show next button
@@ -202,7 +227,9 @@ $(".next").click(function(){
 	  canvas.removeClass('show');
 	  canvas.addClass('hide');
 
-		Record.stopRegistration();
+	  onComplete = function () {
+			Record.stopRegistration();
+		}
 	}
 
 	// show previous button
@@ -233,6 +260,7 @@ $(".next").click(function(){
 		complete: function(){
 			current_fs.hide();
 			animating = false;
+			onComplete();
 		}, 
 		//this comes from the custom easing plugin
 		easing: 'easeInOutBack'
@@ -246,13 +274,14 @@ $(".previous").click(function(){
 	current_fs = $(this).parent();
 	previous_fs = $(this).parent().prev();
 
-	currentFieldsetId = current_fs.attr('id');
-	previousFieldsetId = previous_fs.attr('id');
+	var currentFieldsetId = current_fs.attr('id');
+	var previousFieldsetId = previous_fs.attr('id');
 
 	var canvas = $('canvas');
-	var nextButton = $('#msform .action-button.next');
-	var previousButton = $('#msform .action-button.previous');
+	var nextButton = $('#msform #'+previousFieldsetId+' .action-button.next');
+	var previousButton = $('#msform #'+previousFieldsetId+'.action-button.previous');
 	var registerMessage = $('#registerMessage');
+	var usernameInput = $("#username");
 
 	if(previousFieldsetId != "zero"){
 		// show previous button

@@ -135,59 +135,97 @@ var startLeap = function() {
 
   lt.on('training-complete', Record.onCompleted);
 
-  lt.on('training-started', function(gestureName) {
-    var trainingGestureCount = window.leapTrainer.trainingGestures;
-    console.log(trainingGestureCount + "  " + gestureName);  
-  });
+  lt.on('training-started', Record.onStarted);
 
-  lt.on('started-recording', function () { console.log("started-recording")});
+  lt.on('started-recording', Record.onRecording);
 
   lt.on('gesture-detected', Record.onGestureDetected);
 
   window.leapTrainer = lt;
 }
 
+var isTrackingStarted = false;
 
 var Record = {
 
   startRegistration :function(username, round){
+    isTrackingStarted = true;
     window.leapTrainer.resume();
     window.leapTrainer.create(username+round); 
   },
 
   stopRegistration : function () {
+    isTrackingStarted = false;
     window.leapTrainer.pause();
   },
 
   onCountdown : function (countdown) {
+    if(!isTrackingStarted){
+      return false;
+    }
+
+    currentFSId = $('fieldset:visible').attr('id');
+    if(currentFSId != "zero" && currentFSId != "confirm"){
+      $('fieldset#'+currentFSId+' .fs-subtitle').text('Ready in '+countdown);
+    }
+  },
+
+  onStarted: function () { 
+    if(!isTrackingStarted){
+      return false;
+    }
+
+    console.log("training-recording");
+
+    currentFSId = $('fieldset:visible').attr('id');
+    if(currentFSId != "zero" && currentFSId != "confirm"){
+      $('fieldset#'+currentFSId+' .fs-subtitle').text('Analysing...');
+    }
+  },
+
+  onRecording: function () {
+    if(!isTrackingStarted){
+      return false;
+    }
+
+    console.log('started-recording');
   },
 
   onGestureDetected : function(gesture, frameCount) {
+
+    if(!isTrackingStarted){
+      return false;
+    }
+
     data = {
       'gesture' : gesture,
       'frameCount': frameCount
     };
-    // console.log(JSON.stringify(data));
+    console.log('Gesture Detected');
+    console.log(data);
     
-    $.ajax({
-      type: "POST",
-      url: "/verify",
-      data: JSON.stringify(data),
-      contentType: "application/json",
-      success: function(data) {
-        console.log("have successfully submitted verification request");
-        console.log("result is " + data);
-      }
-    });
+    // $.ajax({
+    //   type: "POST",
+    //   url: "/verify",
+    //   data: JSON.stringify(data),
+    //   contentType: "application/json",
+    //   success: function(data) {
+    //     console.log("have successfully submitted verification request");
+    //     console.log("result is " + data);
+    //   }
+    // });
     
-    window.leapTrainer.pause();
+    $('fieldset#'+currentFSId+' .fs-subtitle').text('Done');
+    $('fieldset#'+currentFSId+' .next').addClass('show').removeClass('hide');
+    Record.stopRegistration();
   },
 
   onCompleted : function(gestureName, trainingSet, isPose) {
+    if(!isTrackingStarted){
+      return false;
+    }
 
-    console.log(gestureName + (isPose ? ' pose' : ' gesture') + ' learned!');
-    // console.log(window.leapTrainer.toJSON(gestureName));
-     
-    window.leapTrainer.pause();
+    console.log(gestureName + (isPose ? ' pose' : ' gesture') + ' learned!'); 
+    Record.stopRegistration();
   }
 };
