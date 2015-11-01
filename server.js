@@ -26,15 +26,24 @@ function updateDatabase(data) {
 	var imp = JSON.parse(data);
 		
 	var id = imp.name;
-	var userName = id.slice(0, -2);	
-		
-		 //articles.update({foo:'bar'}, {foo: 'bar', val:'val2'}, {strict: true}, function(err) {
+	var userName = id.slice(0, -1);	
+	
 	db.users.update( {_id: id}, { user: userName, _id: id, gesture: data }, {upsert: true}, function(err) {
 	    if (err) throw err;
 	});
 
 }
 
+function db_find(criteria, callback) {
+	db.users.find(criteria).toArray(function(err, result) {
+	    //console.log('Band members of Road Crew');
+	    //console.log(result[0].members);
+	    if (callback != null) {
+	    	callback(result);
+	    }
+	});
+
+}
 
 app.use(express.static(__dirname + '/public'));
 
@@ -45,14 +54,27 @@ app.get('/', function (req, res) {
 
 
 app.post('/register', textParser, function(req, res) {
-	console.log(trainer.fromJSON(req.body));
+	//console.log(trainer.fromJSON(req.body));
 	updateDatabase(req.body);
 	res.send("success");
 });
 
+
 app.post('/verify', jsonParser, function(req, res) {
-	ans = trainer.recognize( req.body.gesture, req.body.frameCount);
-	res.send(JSON.stringify(ans));
+	db_find({_id: req.body.id}, function(results) {
+		if (results.length == 0) {
+			res.send("no associated user");
+		} else {
+			training = JSON.parse(results[0].gesture);
+			if (training.pose != (req.body.frameCount == 1)) {
+				hit = 0.0;
+			} else {
+				hit = trainer.correlate(req.body.id, training.data, req.body.gesture);		
+			}		
+			percent = Math.min(parseInt(100 * hit), 100);		
+			res.send("percent = " + percent);
+		}		
+	});
 });
 
 
