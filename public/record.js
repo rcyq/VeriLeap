@@ -1,13 +1,18 @@
 var controller = new Leap.Controller();
 var trainer = new LeapTrainer.Controller({controller: controller});
 var verify = false;
-
+var round = 1;
 
 var client_register = function() {
+  client_register_in_round(round);
+}
+
+var client_register_in_round = function(round) {
   verify = false;
+  this.round = round;
   username = $("#username").val();
   trainer.resume();
-  trainer.create(username); 
+  trainer.create(username+round); 
 }
 
 var client_verify = function() {
@@ -40,7 +45,12 @@ trainer.on('training-complete', function(gestureName, trainingSet, isPose) {
       }
   });
    
-  trainer.pause();
+  if(round>=3) {
+    trainer.pause();
+  } else {
+    round++;
+    client_register_in_round(round);
+  }
   
 });
 
