@@ -77,7 +77,7 @@ function startLeap() {
       }
 
       // control frame recording
-      if(isConnected && isRecording) {
+      if(isConnected && false) {
         var handFingers = hand.fingers;
         var fingersData = {};
 
@@ -108,7 +108,7 @@ function startLeap() {
   .use('riggedHand')
   .use('handEntry')
   .use('handHold')
-  
+
   .on('streamingStarted', onConnected)
   .on('streamingStopped', onDisconnected)
   .on('handLost', function(hand){
