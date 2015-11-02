@@ -99,7 +99,10 @@ var isValidTracking = function(){
 
 var onHandFound = function(hand){
 
-  if(!isValidTracking()){
+  var currentFSId = $('fieldset:visible').attr('id');
+  if(!window.isTrackingStart || 
+    (currentFSId != "first" && currentFSId != "second" && 
+    currentFSId != "last")){
     return false;
   }
 
@@ -117,7 +120,10 @@ var onHandFound = function(hand){
 
 var onHandLost = function(hand){
 
-  if(!isValidTracking()){
+  var currentFSId = $('fieldset:visible').attr('id');
+  if(!window.isTrackingStart || 
+    (currentFSId != "first" && currentFSId != "second" && 
+    currentFSId != "last")){
     return false;
   }
   
