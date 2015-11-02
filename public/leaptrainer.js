@@ -542,7 +542,7 @@ LeapTrainer.Controller = Class.extend({
 			
 			countdown--;
 			
-			setTimeout(function() { this.startTraining(gestureName, countdown); }.bind(this), 1000);
+			this.trainingTimout = setTimeout(function() { this.startTraining(gestureName, countdown); }.bind(this), 1000);
 			
 			return;
 		} 
@@ -976,7 +976,13 @@ LeapTrainer.Controller = Class.extend({
 	 * 
 	 * @returns {Object} The leaptrainer controller, for chaining.
 	 */
-	pause: function() { this.paused = true; return this; },
+	pause: function() { 
+		this.paused = true; 
+		if(this.trainingTimout){
+			clearTimeout(this.trainingTimout);
+			this.trainingTimout = null;
+		}
+		return this; },
 	
 	/**
 	 * This function resumes paused frame monitoring.
