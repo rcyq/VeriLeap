@@ -80,52 +80,47 @@ var startLeap = function() {
           registerMessage.text('');
         }
       }
-
-      // control frame recording
-      if(isConnected && false) {
-        var handFingers = hand.fingers;
-        var fingersData = {};
-
-        $.each(handFingers, function(index,value){
-
-          var fingerData = {
-            direction : convertToXYZDirection(value.direction), 
-            length : value.length,
-            width : value.width, 
-            segments: value.bones.map(function(value, index){return value.length})
-          };  
-
-          fingersData[index] = fingerData;
-
-        });
-
-        frames.push({
-          confidence : hand.confidence,
-          palm: convertToXYZDirection(hand.palmPosition),
-          palmWidth : hand.palmWidth,
-          fingers : fingersData
-        });
-
-        console.log("Recording");
-      }
     }
   })
   .use('riggedHand')
   .use('handEntry')
   .use('handHold')
+  .use('playback', {
+    recording: './left-or-right-77fps.json.lz',
+    pauseOnHand: true,
+    timeBetweenLoops: 1000
+  })
 
   .on('streamingStarted', onConnected)
   .on('streamingStopped', onDisconnected)
-  .on('handLost', function(hand){
-    var label = hand.data('label');
-    if (label){
-      document.body.removeChild(label);
-      hand.data({label: undefined});
+  .on('handFound', function(hand){
+    console.log('hand found');
+
+    if(isConnected && !isPlayback() && 
+      window.isTrackingStart && !window.leapTrainer.recordingPose){
+      console.log('Record.start');
+      Record.start(registration.username, registration.round);
     }
   })
-  .use('playback', {
-    recording: './left-or-right-77fps.json.lz',
-    timeBetweenLoops: 1000
+  .on('handLost', function(hand){
+    console.log('hand lost');
+
+    // On real hand lost,
+    // playback will play right away, hence it is real hand lost
+    // On play hand lost,
+    // playback will stop before this event fired, hence it is playback hand lost
+    if(isPlayback()){
+      console.log('real hand');
+      $('fieldset#'+currentFSId+' .fs-subtitle').text('Done');
+
+      actionButton = $('#msform .action-button');
+      actionButton.attr('disabled', false);    
+      
+      currentFSId = $('fieldset:visible').attr('id');
+      $('fieldset#'+currentFSId+' .fs-subtitle').text('Place your hand');
+
+      Record.stop();
+    }
   });
 
   riggedHandPlugin = Leap.loopController.plugins.riggedHand;
@@ -152,23 +147,49 @@ var startLeap = function() {
 window.isTrackingStart = false;
 window.gestureStored = {};
 
+var isPlayback = function(){
+  try{
+    return window.leapController.plugins.playback.player.state != 'idle';
+  }catch(e){
+    return true; 
+  }
+}
+
+var registration = {
+  username : '',
+  round : ''
+};
+
 var Record = {
 
   startRegistration :function(username, round){
     window.isTrackingStart = true;
+    registration.username = username;
+    registration.round = round;
+  },
+
+  start: function(username, round){
     window.leapTrainer.resume();
     window.leapTrainer.create(username+round); 
   },
 
   stopRegistration : function () {
     window.isTrackingStart = false;
+  },
+
+  stop: function(){
     window.leapTrainer.pause();
+    registration = {
+      username : '',
+      round : ''
+    };
   },
 
   onCountdown : function (countdown) {
     currentFSId = $('fieldset:visible').attr('id');
-    if(!window.isTrackingStart || (currentFSId != "first" && 
-      currentFSId != "second" && currentFSId != "last")){
+    if(!window.isTrackingStart ||  isPlayback() ||
+      (currentFSId != "first" && currentFSId != "second" && 
+      currentFSId != "last")){
       return false;
     }
 
@@ -179,8 +200,9 @@ var Record = {
 
   onStarted: function () { 
     currentFSId = $('fieldset:visible').attr('id');
-    if(!window.isTrackingStart || (currentFSId != "first" && 
-      currentFSId != "second" && currentFSId != "last")){
+    if(!window.isTrackingStart ||  isPlayback() ||
+      (currentFSId != "first" && currentFSId != "second" && 
+      currentFSId != "last")){
       return false;
     }
     
@@ -191,8 +213,9 @@ var Record = {
 
   onRecording: function () {
     currentFSId = $('fieldset:visible').attr('id');
-    if(!window.isTrackingStart || (currentFSId != "first" && 
-      currentFSId != "second" && currentFSId != "last")){
+    if(!window.isTrackingStart ||  isPlayback() ||
+      (currentFSId != "first" && currentFSId != "second" && 
+      currentFSId != "last")){
       return false;
     }
 
@@ -200,9 +223,9 @@ var Record = {
   },
 
   onGestureDetected : function(gesture, frameCount) {
-    currentFSId = $('fieldset:visible').attr('id');
-    if(!window.isTrackingStart || (currentFSId != "first" && 
-      currentFSId != "second" && currentFSId != "last")){
+    if(!window.isTrackingStart ||  isPlayback() ||
+      (currentFSId != "first" && currentFSId != "second" && 
+      currentFSId != "last")){
       return false;
     }
 
@@ -231,9 +254,9 @@ var Record = {
   },
 
   onCompleted : function(gestureName, trainingSet, isPose) {
-    currentFSId = $('fieldset:visible').attr('id');
-    if(!window.isTrackingStart || (currentFSId != "first" && 
-      currentFSId != "second" && currentFSId != "last")){
+    if(!window.isTrackingStart ||  isPlayback() ||
+      (currentFSId != "first" && currentFSId != "second" && 
+      currentFSId != "last")){
       return false;
     }
 
