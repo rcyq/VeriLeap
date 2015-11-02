@@ -87,6 +87,63 @@ var onDisconnected = function(){
   }
 };
 
+var isValidTracking = function(){
+  var currentFSId = $('fieldset:visible').attr('id');
+  if(!window.isTrackingStart ||  isPlayback() ||
+    (currentFSId != "first" && currentFSId != "second" && 
+    currentFSId != "last")){
+    return false;
+  }
+  return true;
+}
+
+var onHandFound = function(hand){
+
+  if(!isValidTracking()){
+    return false;
+  }
+
+  if(isConnected && !isPlayback() && 
+    window.isTrackingStart && !window.leapTrainer.recordingPose){
+    Record.start(registration.username, registration.round);
+  }
+
+  if(!isPlayback()){
+    console.log('real hand found');
+  }else{
+    console.log('playback hand found');
+  }
+};
+
+var onHandLost = function(hand){
+
+  if(!isValidTracking()){
+    return false;
+  }
+  
+  // On real hand lost,
+  // playback will play right away, hence it is real hand lost
+  // On play hand lost,
+  // playback will stop before this event fired, hence it is playback hand lost
+  if(isPlayback()){
+    console.log('real hand lost');
+
+    var msg = 'Place your hand';
+    if(!window.isTrackingStart){
+      msg= 'Done';
+    }
+    currentFSId = $('fieldset:visible').attr('id');
+    $('fieldset#'+currentFSId+' .fs-subtitle').text(msg);
+
+    actionButton = $('#msform .action-button');
+    actionButton.attr('disabled', false);    
+
+    Record.stop();
+  }else{
+    console.log('playback hand lost');
+  }
+};
+
 var startLeap = function() {
   window.isLeapAnimationRunning = true;
 
@@ -140,43 +197,8 @@ var startLeap = function() {
 
   .on('streamingStarted', onConnected)
   .on('streamingStopped', onDisconnected)
-  .on('handFound', function(hand){
-
-    if(isConnected && !isPlayback() && 
-      window.isTrackingStart && !window.leapTrainer.recordingPose){
-      Record.start(registration.username, registration.round);
-    }
-
-    if(!isPlayback()){
-      console.log('real hand found');
-    }else{
-      console.log('playback hand found');
-    }
-  })
-  .on('handLost', function(hand){
-
-    // On real hand lost,
-    // playback will play right away, hence it is real hand lost
-    // On play hand lost,
-    // playback will stop before this event fired, hence it is playback hand lost
-    if(isPlayback()){
-      console.log('real hand lost');
-
-      var msg = 'Place your hand';
-      if(!window.isTrackingStart){
-        msg= 'Done';
-      }
-      currentFSId = $('fieldset:visible').attr('id');
-      $('fieldset#'+currentFSId+' .fs-subtitle').text(msg);
-
-      actionButton = $('#msform .action-button');
-      actionButton.attr('disabled', false);    
-
-      Record.stop();
-    }else{
-      console.log('playback hand lost');
-    }
-  });
+  .on('handFound', onHandFound)
+  .on('handLost', onHandLost);
 
   riggedHandPlugin = Leap.loopController.plugins.riggedHand;
 
@@ -245,50 +267,40 @@ var Record = {
   },
 
   onCountdown : function (countdown) {
-    var currentFSId = $('fieldset:visible').attr('id');
-    if(!window.isTrackingStart ||  isPlayback() ||
-      (currentFSId != "first" && currentFSId != "second" && 
-      currentFSId != "last")){
+    if(!isValidTracking()){
       return false;
     }
 
+    var currentFSId = $('fieldset:visible').attr('id');
     var actionButton = $('#msform .action-button');
     actionButton.attr('disabled', true);
     $('fieldset#'+currentFSId+' .fs-subtitle').text('Ready in '+countdown);
   },
 
   onStarted: function () { 
-    var currentFSId = $('fieldset:visible').attr('id');
-    if(!window.isTrackingStart ||  isPlayback() ||
-      (currentFSId != "first" && currentFSId != "second" && 
-      currentFSId != "last")){
+    if(!isValidTracking()){
       return false;
     }
     
     console.log("training-recording");
 
+    var currentFSId = $('fieldset:visible').attr('id');
     $('fieldset#'+currentFSId+' .fs-subtitle').text('Analysing...');
   },
 
   onRecording: function () {
-    var currentFSId = $('fieldset:visible').attr('id');
-    if(!window.isTrackingStart ||  isPlayback() ||
-      (currentFSId != "first" && currentFSId != "second" && 
-      currentFSId != "last")){
+    if(!isValidTracking()){
       return false;
     }
-
     console.log('started-recording');
   },
 
   onGestureDetected : function(gesture, frameCount) {
-    var currentFSId = $('fieldset:visible').attr('id');
-    if(!window.isTrackingStart ||  isPlayback() ||
-      (currentFSId != "first" && currentFSId != "second" && 
-      currentFSId != "last")){
+    if(!isValidTracking()){
       return false;
     }
 
+    var currentFSId = $('fieldset:visible').attr('id');
     $('fieldset#'+currentFSId+' .fs-subtitle').text('Done');
     $('fieldset#'+currentFSId+' .next').addClass('show').removeClass('hide');
 
@@ -314,14 +326,13 @@ var Record = {
   },
 
   onCompleted : function(gestureName, trainingSet, isPose) {
-    var currentFSId = $('fieldset:visible').attr('id');
-    if(!window.isTrackingStart ||  isPlayback() ||
-      (currentFSId != "first" && currentFSId != "second" && 
-      currentFSId != "last")){
+    if(!isValidTracking()){
       return false;
     }
 
     console.log(gestureName + (isPose ? ' pose' : ' gesture') + ' learned!'); 
+
+    var currentFSId = $('fieldset:visible').attr('id');
     Record.stopRegistration();
   }
 };
