@@ -327,7 +327,7 @@ $(".previous").click(function(){
 	var usernameInput = $("#username");
 
 // check gesture stored
-	var isStored = isGestureStored(nextFieldsetId);
+	var isStored = isGestureStored(previousFieldsetId);
 	
 	if(isStored){
 
@@ -421,6 +421,8 @@ $(".record").click(function(){
 	Record.stopRegistration();
 
   currentFSId = $('fieldset:visible').attr('id');
+  $('fieldset#'+currentFSId+' .fs-subtitle').text('Place your hand');
+  
   Record.startRegistration(username, currentFSId);
 
 });

@@ -94,32 +94,39 @@ var startLeap = function() {
   .on('streamingStarted', onConnected)
   .on('streamingStopped', onDisconnected)
   .on('handFound', function(hand){
-    console.log('hand found');
 
     if(isConnected && !isPlayback() && 
       window.isTrackingStart && !window.leapTrainer.recordingPose){
-      console.log('Record.start');
       Record.start(registration.username, registration.round);
+    }
+
+    if(!isPlayback()){
+      console.log('real hand found');
+    }else{
+      console.log('playback hand found');
     }
   })
   .on('handLost', function(hand){
-    console.log('hand lost');
 
     // On real hand lost,
     // playback will play right away, hence it is real hand lost
     // On play hand lost,
     // playback will stop before this event fired, hence it is playback hand lost
     if(isPlayback()){
-      console.log('real hand');
-      $('fieldset#'+currentFSId+' .fs-subtitle').text('Done');
+      console.log('real hand lost');
+
+      var msg = 'Place your hand';
+      if(!window.isTrackingStart){
+        msg= 'Done';
+      }
+      $('fieldset#'+currentFSId+' .fs-subtitle').text(msg);
 
       actionButton = $('#msform .action-button');
       actionButton.attr('disabled', false);    
-      
-      currentFSId = $('fieldset:visible').attr('id');
-      $('fieldset#'+currentFSId+' .fs-subtitle').text('Place your hand');
 
       Record.stop();
+    }else{
+      console.log('playback hand lost');
     }
   });
 
@@ -166,6 +173,10 @@ var Record = {
     window.isTrackingStart = true;
     registration.username = username;
     registration.round = round;
+
+    if(!isPlayback()){
+      Record.start(username, round);
+    }
   },
 
   start: function(username, round){
