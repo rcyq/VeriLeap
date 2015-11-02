@@ -185,6 +185,13 @@ document.getElementById('createAccountButton').addEventListener("click", functio
  //  });
 });
 
+var isGestureStored = function(fieldsetId){
+	var id = fieldsetId || 'first';
+	var stored = window.gestureStored[id];
+	
+	return stored && stored.gesture && stored.gesture.length;
+}
+
 //jQuery time
 var current_fs, next_fs, previous_fs; //fieldsets
 var left, opacity, scale; //fieldset properties which we will animate
@@ -202,7 +209,8 @@ $(".next").click(function(){
 
 	var canvas = $('canvas');
 	var nextButton = $('#msform #'+nextFieldsetId+' .action-button.next');
-	var previousButton = $('#msform #'+nextFieldsetId+'.action-button.previous');
+	var previousButton = $('#msform #'+nextFieldsetId+' .action-button.previous');
+	var recordButton = $('#msform #'+nextFieldsetId+' .action-button.record');
 	var registerMessage = $('#registerMessage');
 	var usernameInput = $("#username");
 
@@ -215,21 +223,42 @@ $(".next").click(function(){
 		}
 	}
 
+	// check gesture stored
+	var isStored = isGestureStored(nextFieldsetId);
+	
+	if(isStored){
+		
+		recordButton.removeClass('hide');
+		recordButton.addClass('show');
+
+	}else if(recordButton){
+		recordButton.removeClass('show');
+		recordButton.addClass('hide');
+	}
+
 	var onComplete;
 	if(nextFieldsetId != "confirm"){
 	  username = usernameInput.val();
-
-	  // hide next button
-	  nextButton.removeClass('show');
-	  nextButton.addClass('hide');
 
 	  // show canvas
 	  canvas.removeClass('hide');
 	  canvas.addClass('show');
 	  
-	  onComplete = function () {
-		  Record.startRegistration(username, nextFieldsetId);
-	  };
+	  if(isStored){
+		  // show next button
+		  nextButton.removeClass('hide');
+		  nextButton.addClass('show');
+
+	  	onComplete = function(){};
+	  }else{
+			// hide next button
+			nextButton.removeClass('show');
+			nextButton.addClass('hide');
+
+		  onComplete = function () {
+			  Record.startRegistration(username, nextFieldsetId);
+		  };
+		}
 	}else{
 
 		// show next button
@@ -292,9 +321,27 @@ $(".previous").click(function(){
 
 	var canvas = $('canvas');
 	var nextButton = $('#msform #'+previousFieldsetId+' .action-button.next');
-	var previousButton = $('#msform #'+previousFieldsetId+'.action-button.previous');
+	var previousButton = $('#msform #'+previousFieldsetId+' .action-button.previous');
+	var recordButton = $('#msform #'+previousFieldsetId+' .action-button.record');
 	var registerMessage = $('#registerMessage');
 	var usernameInput = $("#username");
+
+// check gesture stored
+	var isStored = isGestureStored(nextFieldsetId);
+	
+	if(isStored){
+
+		recordButton.addClass('show');
+		recordButton.removeClass('hide');
+
+	}else {
+
+		if(recordButton){
+			recordButton.addClass('hide');
+			recordButton.removeClass('show');
+		}
+
+	}
 
 	var onComplete;
 	if(previousFieldsetId != "zero"){
@@ -302,19 +349,27 @@ $(".previous").click(function(){
 	  previousButton.removeClass('hide');
 	  previousButton.addClass('show');
 
-	  // hide next button
-	  nextButton.removeClass('show');
-	  nextButton.addClass('hide');
-
 	  // show canvas
 	  canvas.removeClass('hide');
 	  canvas.addClass('show');
 
 	  username = usernameInput.val();
 
-	  onComplete = function () {
-		  Record.startRegistration(username, previousFieldsetId);
-	  };
+		if(isStored){
+			// hide next button
+		  nextButton.removeClass('hide');
+		  nextButton.addClass('show');
+
+	  	onComplete = function(){};
+	  }else{
+		  // hide next button
+		  nextButton.removeClass('show');
+		  nextButton.addClass('hide');
+
+		  onComplete = function () {
+			  Record.startRegistration(username, previousFieldsetId);
+		  };
+		}
 	}else{
 		// hide previous button
 	  previousButton.removeClass('show');
@@ -361,7 +416,16 @@ $(".previous").click(function(){
 	});
 });
 
+$(".record").click(function(){
+
+	Record.stopRegistration();
+
+  currentFSId = $('fieldset:visible').attr('id');
+  Record.startRegistration(username, currentFSId);
+
+});
+
 $(".submit").click(function(){
 	return false;
-})
+});
 

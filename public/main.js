@@ -182,34 +182,33 @@ var Record = {
   },
 
   onCountdown : function (countdown) {
-    if(!window.isTrackingStart){
+    currentFSId = $('fieldset:visible').attr('id');
+    if(!window.isTrackingStart || (currentFSId != "first" && 
+      currentFSId != "second" && currentFSId != "last")){
       return false;
     }
 
     actionButton = $('#msform .action-button');
     actionButton.attr('disabled', true);
-
-    currentFSId = $('fieldset:visible').attr('id');
-    if(currentFSId != "zero" && currentFSId != "confirm"){
-      $('fieldset#'+currentFSId+' .fs-subtitle').text('Ready in '+countdown);
-    }
+    $('fieldset#'+currentFSId+' .fs-subtitle').text('Ready in '+countdown);
   },
 
   onStarted: function () { 
-    if(!window.isTrackingStart){
+    currentFSId = $('fieldset:visible').attr('id');
+    if(!window.isTrackingStart || (currentFSId != "first" && 
+      currentFSId != "second" && currentFSId != "last")){
       return false;
     }
-
+    
     console.log("training-recording");
 
-    currentFSId = $('fieldset:visible').attr('id');
-    if(currentFSId != "zero" && currentFSId != "confirm"){
-      $('fieldset#'+currentFSId+' .fs-subtitle').text('Analysing...');
-    }
+    $('fieldset#'+currentFSId+' .fs-subtitle').text('Analysing...');
   },
 
   onRecording: function () {
-    if(!window.isTrackingStart){
+    currentFSId = $('fieldset:visible').attr('id');
+    if(!window.isTrackingStart || (currentFSId != "first" && 
+      currentFSId != "second" && currentFSId != "last")){
       return false;
     }
 
@@ -217,10 +216,14 @@ var Record = {
   },
 
   onGestureDetected : function(gesture, frameCount) {
-
-    if(!window.isTrackingStart){
+    currentFSId = $('fieldset:visible').attr('id');
+    if(!window.isTrackingStart || (currentFSId != "first" && 
+      currentFSId != "second" && currentFSId != "last")){
       return false;
     }
+
+    $('fieldset#'+currentFSId+' .fs-subtitle').text('Done');
+    $('fieldset#'+currentFSId+' .next').addClass('show').removeClass('hide');
 
     data = {
       'gesture' : gesture,
@@ -229,18 +232,24 @@ var Record = {
     console.log('Gesture Detected');
     console.log(data);
 
-    currentFSId = $('fieldset:visible').attr('id');
-    $('fieldset#'+currentFSId+' .fs-subtitle').text('Done');
-    $('fieldset#'+currentFSId+' .next').addClass('show').removeClass('hide');
+    gestureStored[currentFSId] = data;
 
     actionButton = $('#msform .action-button');
     actionButton.attr('disabled', false);
+
+    recordButton = $('#msform #'+currentFSId+' .action-button.record');
+    if(recordButton){
+      recordButton.removeClass('hide');
+      recordButton.removeClass('show');
+    }
 
     Record.stopRegistration();
   },
 
   onCompleted : function(gestureName, trainingSet, isPose) {
-    if(!window.isTrackingStart){
+    currentFSId = $('fieldset:visible').attr('id');
+    if(!window.isTrackingStart || (currentFSId != "first" && 
+      currentFSId != "second" && currentFSId != "last")){
       return false;
     }
 
