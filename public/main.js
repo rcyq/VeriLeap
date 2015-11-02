@@ -21,11 +21,70 @@ var isConnected = false;
 var onConnected = function (){
   console.log('onConnected');
   isConnected = true;
+
+  // control connect leap img show/hide
+  var canvas = $('canvas');
+  var connectLeap = $('#connect-leap');
+  var msform = $('#msform');
+  var registerMessage = $('#registerMessage');
+  if(connectLeap && canvas){
+    
+    var isOverlayOpen = $('div.overlay').hasClass('open');
+
+    // leap is connected or overlay is closed
+    connectLeap.removeClass('connect-leap-show');
+    connectLeap.addClass('connect-leap-hide');
+
+    if(isOverlayOpen){
+      msform.removeClass('hide');
+      msform.addClass('show');   
+    }else{
+      msform.removeClass('show');
+      msform.addClass('hide');  
+    }
+    registerMessage.text('');
+  }
 };
 
 var onDisconnected = function(){
   console.log('onDisconnected');
   isConnected = false;
+
+  // connect leap img show/hide
+  var canvas = $('canvas');
+  var connectLeap = $('#connect-leap');
+  var msform = $('#msform');
+  var registerMessage = $('#registerMessage');
+  if(connectLeap && canvas){
+    
+    var isOverlayOpen = $('div.overlay').hasClass('open');
+    if(isOverlayOpen){
+      // leap not connected
+      // and overlay is opened
+      connectLeap.removeClass('connect-leap-hide');
+      connectLeap.addClass('connect-leap-show');
+
+      msform.removeClass('show');
+      msform.addClass('hide');
+
+      registerMessage.text('Please connect leap motion device');
+    
+    }else{
+
+      // leap is connected or overlay is closed
+      connectLeap.removeClass('connect-leap-show');
+      connectLeap.addClass('connect-leap-hide');
+
+      if(isOverlayOpen){
+        msform.removeClass('hide');
+        msform.addClass('show');   
+      }else{
+        msform.removeClass('show');
+        msform.addClass('hide');  
+      }
+      registerMessage.text('');
+    }
+  }
 };
 
 var startLeap = function() {
@@ -39,47 +98,35 @@ var startLeap = function() {
 
     hand: function(hand){
 
-      var handMesh = hand.data('riggedHand.mesh');
+      // not in use
+      return;
 
-      var screenPosition = handMesh.screenPosition(
+      // locate 'label' DOM element
+      var label = hand.data('label');
+
+      if (!label){
+        // 'label' does not exists
+        label = document.createElement('label');
+        document.body.appendChild(label);
+
+
+        /**
+         * Here we set the label to show the hand type
+         */
+         label.innerHTML = hand.type + " hand";
+
+         hand.data('label', label)
+       }
+
+       var handMesh = hand.data('riggedHand.mesh');
+
+       var screenPosition = handMesh.screenPosition(
         hand.palmPosition,
         riggedHandPlugin.camera
-      );
+        );
 
-      // control connect leap img show/hide
-      var canvas = $('canvas');
-      var connectLeap = $('#connect-leap');
-      var msform = $('#msform');
-      var registerMessage = $('#registerMessage');
-      if(connectLeap && canvas){
-        
-        var isOverlayOpen = $('div.overlay').hasClass('open');
-        if(!isConnected && isOverlayOpen){
-          // leap not connected
-          // and overlay is opened
-          connectLeap.removeClass('connect-leap-hide');
-          connectLeap.addClass('connect-leap-show');
-
-          msform.removeClass('show');
-          msform.addClass('hide');
-
-          registerMessage.text('Please connect leap motion device');
-        }else{
-
-          // leap is connected or overlay is closed
-          connectLeap.removeClass('connect-leap-show');
-          connectLeap.addClass('connect-leap-hide');
-
-          if(isOverlayOpen){
-            msform.removeClass('hide');
-            msform.addClass('show');   
-          }else{
-            msform.removeClass('show');
-            msform.addClass('hide');  
-          }
-          registerMessage.text('');
-        }
-      }
+       label.style.left = screenPosition.x + 'px';
+       label.style.bottom = screenPosition.y + 'px';
     }
   })
   .use('riggedHand')
@@ -119,6 +166,7 @@ var startLeap = function() {
       if(!window.isTrackingStart){
         msg= 'Done';
       }
+      currentFSId = $('fieldset:visible').attr('id');
       $('fieldset#'+currentFSId+' .fs-subtitle').text(msg);
 
       actionButton = $('#msform .action-button');
@@ -197,20 +245,20 @@ var Record = {
   },
 
   onCountdown : function (countdown) {
-    currentFSId = $('fieldset:visible').attr('id');
+    var currentFSId = $('fieldset:visible').attr('id');
     if(!window.isTrackingStart ||  isPlayback() ||
       (currentFSId != "first" && currentFSId != "second" && 
       currentFSId != "last")){
       return false;
     }
 
-    actionButton = $('#msform .action-button');
+    var actionButton = $('#msform .action-button');
     actionButton.attr('disabled', true);
     $('fieldset#'+currentFSId+' .fs-subtitle').text('Ready in '+countdown);
   },
 
   onStarted: function () { 
-    currentFSId = $('fieldset:visible').attr('id');
+    var currentFSId = $('fieldset:visible').attr('id');
     if(!window.isTrackingStart ||  isPlayback() ||
       (currentFSId != "first" && currentFSId != "second" && 
       currentFSId != "last")){
@@ -223,7 +271,7 @@ var Record = {
   },
 
   onRecording: function () {
-    currentFSId = $('fieldset:visible').attr('id');
+    var currentFSId = $('fieldset:visible').attr('id');
     if(!window.isTrackingStart ||  isPlayback() ||
       (currentFSId != "first" && currentFSId != "second" && 
       currentFSId != "last")){
@@ -234,6 +282,7 @@ var Record = {
   },
 
   onGestureDetected : function(gesture, frameCount) {
+    var currentFSId = $('fieldset:visible').attr('id');
     if(!window.isTrackingStart ||  isPlayback() ||
       (currentFSId != "first" && currentFSId != "second" && 
       currentFSId != "last")){
@@ -252,10 +301,10 @@ var Record = {
 
     gestureStored[currentFSId] = data;
 
-    actionButton = $('#msform .action-button');
+    var actionButton = $('#msform .action-button');
     actionButton.attr('disabled', false);
 
-    recordButton = $('#msform #'+currentFSId+' .action-button.record');
+    var recordButton = $('#msform #'+currentFSId+' .action-button.record');
     if(recordButton){
       recordButton.removeClass('hide');
       recordButton.removeClass('show');
@@ -265,6 +314,7 @@ var Record = {
   },
 
   onCompleted : function(gestureName, trainingSet, isPose) {
+    var currentFSId = $('fieldset:visible').attr('id');
     if(!window.isTrackingStart ||  isPlayback() ||
       (currentFSId != "first" && currentFSId != "second" && 
       currentFSId != "last")){
