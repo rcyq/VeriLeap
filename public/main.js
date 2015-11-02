@@ -65,14 +65,35 @@ var startLeap = function() {
       // control connect leap img show/hide
       var canvas = $('canvas');
       var connectLeap = $('#connect-leap');
+      var msform = $('#msform');
+      var registerMessage = $('#registerMessage');
       if(connectLeap && canvas){
         
-        if(!isConnected && $('div.overlay').hasClass('open')){
+        var isOverlayOpen = $('div.overlay').hasClass('open');
+        if(!isConnected && isOverlayOpen){
+          // leap not connected
+          // and overlay is opened
           connectLeap.removeClass('connect-leap-hide');
           connectLeap.addClass('connect-leap-show');
+
+          msform.removeClass('show');
+          msform.addClass('hide');
+
+          registerMessage.text('Please connect leap motion device');
         }else{
+
+          // leap is connected or overlay is closed
           connectLeap.removeClass('connect-leap-show');
           connectLeap.addClass('connect-leap-hide');
+
+          if(isOverlayOpen){
+            msform.removeClass('hide');
+            msform.addClass('show');   
+          }else{
+            msform.removeClass('show');
+            msform.addClass('hide');  
+          }
+          registerMessage.text('');
         }
       }
 
