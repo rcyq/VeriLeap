@@ -133,6 +133,10 @@ var resetForm =function () {
 	var confirmFS = '#confirm .fs-subtitle';
   $(allFS+':not('+infoFS+','+confirmFS+')').text('Place your hand');
 
+  // enable all action buttons
+  actionButton = $('#msform .action-button');
+  actionButton.attr('disabled', false);
+
   // clear gesture stored
   window.gestureStored = {};
 }

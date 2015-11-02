@@ -331,8 +331,17 @@ http://codepen.io/m-e-conroy/pen/ALsdF
 #msform .action-button.hide {
 	display: none;
 }
-#msform .action-button:hover, #msform .action-button:focus {
+#msform .action-button:hover, 
+#msform .action-button:focus {
 	box-shadow: 0 0 0 2px white, 0 0 0 3px #5eaa02;
+}
+#msform .action-button:disabled, 
+#msform .action-button:disabled{
+		opacity: 0.6;
+}
+#msform .action-button:hover:disabled, 
+#msform .action-button:focus:disabled{
+	box-shadow: none;
 }
 /*headings*/
 .fs-title {

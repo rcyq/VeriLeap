@@ -186,6 +186,9 @@ var Record = {
       return false;
     }
 
+    actionButton = $('#msform .action-button');
+    actionButton.attr('disabled', true);
+
     currentFSId = $('fieldset:visible').attr('id');
     if(currentFSId != "zero" && currentFSId != "confirm"){
       $('fieldset#'+currentFSId+' .fs-subtitle').text('Ready in '+countdown);
@@ -230,7 +233,8 @@ var Record = {
     $('fieldset#'+currentFSId+' .fs-subtitle').text('Done');
     $('fieldset#'+currentFSId+' .next').addClass('show').removeClass('hide');
 
-
+    actionButton = $('#msform .action-button');
+    actionButton.attr('disabled', false);
 
     Record.stopRegistration();
   },
