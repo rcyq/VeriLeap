@@ -109,22 +109,32 @@
 })();
 
 var resetForm =function () {
+	// hide all fieldset
 	$('fieldset').hide();
+
+	// show first fieldset
 	var firstFS = $('fieldset#zero');
 	firstFS.show();
 	firstFS.css({'opacity':1});
-	
 	$('fieldset#zero .next').addClass('show').removeClass('hide');
 	
+	// reset all progress
 	$('#progressbar li:first-of-type').addClass("active");
+
+	// set first progress
 	$("#progressbar li:not(:first-of-type)").removeClass("active");
 	
+	// clear username
 	$('#username').val('');
 
+	// reset all registerMessage
 	var allFS = 'fieldset .fs-subtitle';
 	var infoFS = '#zero .fs-subtitle';
 	var confirmFS = '#confirm .fs-subtitle';
   $(allFS+':not('+infoFS+','+confirmFS+')').text('Place your hand');
+
+  // clear gesture stored
+  window.gestureStored = {};
 }
 
 // Upon triggering Login / Register button, hides / displays login and register
