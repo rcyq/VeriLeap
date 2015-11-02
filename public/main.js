@@ -39,28 +39,12 @@ var startLeap = function() {
 
     hand: function(hand){
 
-      // locate 'label' DOM element
-      var label = hand.data('label');
-
-      if (!label){
-        // 'label' does not exists
-        label = document.createElement('label');
-        document.body.appendChild(label);
-
-        label.innerHTML = hand.type + " hand";
-
-        hand.data('label', label)
-      }
-
       var handMesh = hand.data('riggedHand.mesh');
 
       var screenPosition = handMesh.screenPosition(
         hand.palmPosition,
         riggedHandPlugin.camera
-        );
-
-      label.style.left = screenPosition.x + 'px';
-      label.style.bottom = screenPosition.y + 'px';
+      );
 
       // control connect leap img show/hide
       var canvas = $('canvas');
