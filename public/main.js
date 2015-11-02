@@ -165,23 +165,24 @@ var startLeap = function() {
   window.leapTrainer = lt;
 }
 
-var isTrackingStarted = false;
+window.isTrackingStart = false;
+window.gestureStored = {};
 
 var Record = {
 
   startRegistration :function(username, round){
-    isTrackingStarted = true;
+    window.isTrackingStart = true;
     window.leapTrainer.resume();
     window.leapTrainer.create(username+round); 
   },
 
   stopRegistration : function () {
-    isTrackingStarted = false;
+    window.isTrackingStart = false;
     window.leapTrainer.pause();
   },
 
   onCountdown : function (countdown) {
-    if(!isTrackingStarted){
+    if(!window.isTrackingStart){
       return false;
     }
 
@@ -192,7 +193,7 @@ var Record = {
   },
 
   onStarted: function () { 
-    if(!isTrackingStarted){
+    if(!window.isTrackingStart){
       return false;
     }
 
@@ -205,7 +206,7 @@ var Record = {
   },
 
   onRecording: function () {
-    if(!isTrackingStarted){
+    if(!window.isTrackingStart){
       return false;
     }
 
@@ -214,7 +215,7 @@ var Record = {
 
   onGestureDetected : function(gesture, frameCount) {
 
-    if(!isTrackingStarted){
+    if(!window.isTrackingStart){
       return false;
     }
 
@@ -224,25 +225,18 @@ var Record = {
     };
     console.log('Gesture Detected');
     console.log(data);
-    
-    // $.ajax({
-    //   type: "POST",
-    //   url: "/verify",
-    //   data: JSON.stringify(data),
-    //   contentType: "application/json",
-    //   success: function(data) {
-    //     console.log("have successfully submitted verification request");
-    //     console.log("result is " + data);
-    //   }
-    // });
-    
+
+    currentFSId = $('fieldset:visible').attr('id');
     $('fieldset#'+currentFSId+' .fs-subtitle').text('Done');
     $('fieldset#'+currentFSId+' .next').addClass('show').removeClass('hide');
+
+
+
     Record.stopRegistration();
   },
 
   onCompleted : function(gestureName, trainingSet, isPose) {
-    if(!isTrackingStarted){
+    if(!window.isTrackingStart){
       return false;
     }
 
