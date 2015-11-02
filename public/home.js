@@ -185,7 +185,6 @@ document.getElementById('createAccountButton').addEventListener("click", functio
 var current_fs, next_fs, previous_fs; //fieldsets
 var left, opacity, scale; //fieldset properties which we will animate
 var animating; //flag to prevent quick multi-click glitches
-var gestureArray = {};
 
 $(".next").click(function(){
 	if(animating) return false;
@@ -293,6 +292,7 @@ $(".previous").click(function(){
 	var registerMessage = $('#registerMessage');
 	var usernameInput = $("#username");
 
+	var onComplete;
 	if(previousFieldsetId != "zero"){
 		// show previous button
 	  previousButton.removeClass('hide');
@@ -307,7 +307,10 @@ $(".previous").click(function(){
 	  canvas.addClass('show');
 
 	  username = usernameInput.val();
-	  Record.startRegistration(username, previousFieldsetId);
+
+	  onComplete = function () {
+		  Record.startRegistration(username, previousFieldsetId);
+	  };
 	}else{
 		// hide previous button
 	  previousButton.removeClass('show');
@@ -321,7 +324,9 @@ $(".previous").click(function(){
 	  canvas.removeClass('show');
 	  canvas.addClass('hide');
 
-		Record.stopRegistration();
+		onComplete = function () {
+		  Record.stopRegistration();
+	  };
 	}
 
 	//de-activate current step on progressbar
