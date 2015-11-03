@@ -26,7 +26,7 @@ var onConnected = function (){
   var canvas = $('canvas');
   var connectLeap = $('#connect-leap');
   var msform = $('#msform');
-  var registerMessage = $('#registerMessage');
+  var registerMessage = $('.register.register-message');
   if(connectLeap && canvas){
     
     var isOverlayOpen = $('div.overlay').hasClass('open');
@@ -36,13 +36,22 @@ var onConnected = function (){
     connectLeap.addClass('connect-leap-hide');
 
     if(isOverlayOpen){
+
+      registerMessage.removeClass('error');
+      if(window.isRegistration){
+        registerMessage.text('Registration');
+      }else if(window.isLogin){
+        registerMessage.text('Login');
+      }else{
+        registerMessage.text('');
+      }
+      
       msform.removeClass('hide');
       msform.addClass('show');   
     }else{
       msform.removeClass('show');
       msform.addClass('hide');  
     }
-    registerMessage.text('');
   }
 };
 
@@ -54,7 +63,7 @@ var onDisconnected = function(){
   var canvas = $('canvas');
   var connectLeap = $('#connect-leap');
   var msform = $('#msform');
-  var registerMessage = $('#registerMessage');
+  var registerMessage = $('.register.register-message');
   if(connectLeap && canvas){
     
     var isOverlayOpen = $('div.overlay').hasClass('open');
@@ -67,6 +76,7 @@ var onDisconnected = function(){
       msform.removeClass('show');
       msform.addClass('hide');
 
+      registerMessage.addClass('error');
       registerMessage.text('Please connect leap motion device');
     
     }else{
@@ -82,6 +92,8 @@ var onDisconnected = function(){
         msform.removeClass('show');
         msform.addClass('hide');  
       }
+
+      registerMessage.removeClass('error');
       registerMessage.text('');
     }
   }
@@ -172,7 +184,6 @@ var startLeap = function() {
         label = document.createElement('label');
         document.body.appendChild(label);
 
-
         /**
          * Here we set the label to show the hand type
          */
@@ -228,6 +239,8 @@ var startLeap = function() {
 }
 
 window.isTrackingStart = false;
+window.isRegistration = false;
+window.isLogin = false;
 window.gestureStored = {};
 
 var isPlayback = function(){
@@ -256,20 +269,18 @@ var Record = {
   },
 
   start: function(username, round){
+    console.log('start:'+username+'-'+round);
     window.leapTrainer.resume();
     window.leapTrainer.create(username+round); 
   },
 
   stopRegistration : function () {
     window.isTrackingStart = false;
+    Record.stop();
   },
 
   stop: function(){
     window.leapTrainer.pause();
-    registration = {
-      username : '',
-      round : ''
-    };
   },
 
   onCountdown : function (countdown) {
@@ -288,7 +299,7 @@ var Record = {
       return false;
     }
     
-    console.log("training-recording");
+    console.log("training-started");
 
     var currentFSId = $('fieldset:visible').attr('id');
     $('fieldset#'+currentFSId+' .fs-subtitle').text('Analysing...');
@@ -306,18 +317,31 @@ var Record = {
       return false;
     }
 
+    console.log('Gesture Detected');
+
+    // only use for login
+    // data = {
+    //   'gesture' : gesture,
+    //   'frameCount': frameCount
+    // };
+  },
+
+  onCompleted : function(gestureName, trainingSet, isPose) {
+
+    if(!isValidTracking()){
+      console.log('onCompleted invalid');
+      return false;
+    }
+
+    console.log(gestureName + (isPose ? ' pose' : ' gesture') + ' learned!'); 
+
     var currentFSId = $('fieldset:visible').attr('id');
     $('fieldset#'+currentFSId+' .fs-subtitle').text('Done');
     $('fieldset#'+currentFSId+' .next').addClass('show').removeClass('hide');
 
-    data = {
-      'gesture' : gesture,
-      'frameCount': frameCount
-    };
-    console.log('Gesture Detected');
-    console.log(data);
 
-    gestureStored[currentFSId] = data;
+    var JSONobj = JSON.parse(window.leapTrainer.toJSON(gestureName));
+    gestureStored[currentFSId] = JSONobj;
 
     var actionButton = $('#msform .action-button');
     actionButton.attr('disabled', false);
@@ -328,17 +352,6 @@ var Record = {
       recordButton.removeClass('show');
     }
 
-    Record.stopRegistration();
-  },
-
-  onCompleted : function(gestureName, trainingSet, isPose) {
-    if(!isValidTracking()){
-      return false;
-    }
-
-    console.log(gestureName + (isPose ? ' pose' : ' gesture') + ' learned!'); 
-
-    var currentFSId = $('fieldset:visible').attr('id');
     Record.stopRegistration();
   }
 };
