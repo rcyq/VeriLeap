@@ -147,6 +147,7 @@ var resetForm =function () {
       round : ''
   };
 
+  $('.submit').attr({'disabled': true});
 }
 
 // Upon triggering Login / Register button, hides / displays login and register
@@ -300,6 +301,8 @@ $(".next").click(function(){
 		}
 	}
 
+  $('.submit').attr({'disabled': nextFieldsetId != "confirm"});
+
 	// show previous button
 	previousButton.removeClass('hide');
 	previousButton.addClass('show');
@@ -413,6 +416,8 @@ $(".previous").click(function(){
 		  Record.stopRegistration();
 	  };
 	}
+
+  $('.submit').attr({'disabled': previousFieldsetId != "confirm"});
 
 	//de-activate current step on progressbar
 	$("#progressbar li").eq($("fieldset").index(current_fs)).removeClass("active");
