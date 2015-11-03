@@ -18,6 +18,8 @@
     var registerMessage = $('.register.register-message');
     var connectLeap = $('#connect-leap');
 
+    resetForm();
+
     if( classie.has( overlay, 'open' ) ) {
 
       window.isLogin = false;
@@ -44,7 +46,6 @@
     else if( !classie.has( overlay, 'close' ) ) {
       
       window.isLogin = true;
-      resetForm();
       
       if(isConnected){
         registerMessage.removeClass('error');
@@ -98,6 +99,8 @@
     var registerMessage = $('.register.register-message');
     var connectLeap = $('#connect-leap');
 
+    resetForm();
+
     if( classie.has( overlay, 'open' ) ) {
 
       window.isRegistration = false;
@@ -149,7 +152,6 @@
         connectLeap.removeClass('connect-leap-hide');
         connectLeap.addClass('connect-leap-show');
       }
-      resetForm();
 
       classie.add( overlay, 'open' );
 
