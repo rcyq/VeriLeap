@@ -205,7 +205,9 @@ var resetForm =function () {
       round : ''
   };
 
-  window.leapTrainer.gestures = {};
+  if(window.leapTrainer){
+    window.leapTrainer.gestures = {}; 
+  }
 
   $('.submit').attr({'disabled': true});
 }
