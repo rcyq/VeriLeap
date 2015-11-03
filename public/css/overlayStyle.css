@@ -38,6 +38,10 @@
 	transform: translateY(-50%);
 }
 
+.overlay div{
+	font-size:20px;
+}
+
 .overlay ul {
 	list-style: none;
 	padding: 0;

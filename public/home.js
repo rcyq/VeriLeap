@@ -126,6 +126,8 @@ var resetForm =function () {
 	
 	// clear username
 	$('#username').val('');
+	// clear email
+	$('#email').val('');
 
 	// reset all registerMessage
 	var allFS = 'fieldset .fs-subtitle';
@@ -139,6 +141,13 @@ var resetForm =function () {
 
   // clear gesture stored
   window.gestureStored = {};
+
+  registration = {
+      username : '',
+      round : ''
+  };
+
+  $('.submit').attr({'disabled': true});
 }
 
 // Upon triggering Login / Register button, hides / displays login and register
@@ -185,6 +194,11 @@ document.getElementById('createAccountButton').addEventListener("click", functio
  //  });
 });
 
+var validateEmail = function(email) {
+    var re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
+    return re.test(email);
+}
+
 var isGestureStored = function(fieldsetId){
 	var id = fieldsetId || 'first';
 	var stored = window.gestureStored[id];
@@ -213,11 +227,23 @@ $(".next").click(function(){
 	var recordButton = $('#msform #'+nextFieldsetId+' .action-button.record');
 	var registerMessage = $('#registerMessage');
 	var usernameInput = $("#username");
+	var emailInput = $("#email");
 
 	// Check username
 	if(currentFieldsetId == "zero"){
+		var isValidFields = true;
+		var errMsg = "";
+
 		if(usernameInput.val() == ""){
-			registerMessage.text("Username cannot be empty");
+			errMsg = "Username cannot be empty";
+			isValidFields = false;
+		}else if(!validateEmail(emailInput.val())){
+			errMsg = "Invalid email";
+			isValidFields = false;
+		}
+
+		if(!isValidFields){
+			registerMessage.text(errMsg);
 			animating = false;
 			return false;
 		}
@@ -259,6 +285,7 @@ $(".next").click(function(){
 			  Record.startRegistration(username, nextFieldsetId);
 		  };
 		}
+
 	}else{
 
 		// show next button
@@ -273,6 +300,8 @@ $(".next").click(function(){
 			Record.stopRegistration();
 		}
 	}
+
+  $('.submit').attr({'disabled': nextFieldsetId != "confirm"});
 
 	// show previous button
 	previousButton.removeClass('hide');
@@ -387,6 +416,8 @@ $(".previous").click(function(){
 		  Record.stopRegistration();
 	  };
 	}
+
+  $('.submit').attr({'disabled': previousFieldsetId != "confirm"});
 
 	//de-activate current step on progressbar
 	$("#progressbar li").eq($("fieldset").index(current_fs)).removeClass("active");
