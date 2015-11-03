@@ -16,10 +16,43 @@ var db = require('mongoskin').db('mongodb://localhost:27017/leap');
 db.bind("users");
 
 
+var nodemailer = require('nodemailer');
+var smtpTransport = require('nodemailer-smtp-transport');
+
+
+var transporter = nodemailer.createTransport({
+    service: 'Gmail',
+    auth: {
+        user: 'verileap@gmail.com',
+        pass: 'cs3235steps7'
+    }
+});
+
+
+
 var port = process.env.PORT || 4344;
 console.log("Listening on port "+port);
 server.listen(port);
 
+
+function sendEmail(data) {
+	var mailOptions = {
+	    from: 'Zhao Pengran <zhaopengran@gmail.com>', // sender address
+	    to: 'zhaopengran@gmail.com', // list of receivers
+	    subject: 'Hello ✔', // Subject line
+	    text: 'Hello world ✔', // plaintext body
+	    html: '<b>Hello world ✔</b>' // html body
+	};
+
+	// send mail with defined transport object
+	transporter.sendMail(mailOptions, function(error, info){
+	    if(error){
+	        return console.log(error);
+	    }
+	    console.log('Message sent: ' + info.response);
+
+	});	
+}
 
 function updateDatabase(data) {
 
