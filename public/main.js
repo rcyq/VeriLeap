@@ -239,6 +239,7 @@ var startLeap = function() {
 }
 
 window.isTrackingStart = false;
+window.isVerify= false;
 window.isRegistration = false;
 window.isLogin = false;
 window.gestureStored = {};
@@ -258,6 +259,15 @@ var registration = {
 
 var Record = {
 
+  startVerify :function(){
+    window.isTrackingStart = true;
+    window.isVerify = true;
+
+    if(!isPlayback()){
+      Record.start(username, round);
+    }
+  },
+
   startRegistration :function(username, round){
     window.isTrackingStart = true;
     registration.username = username;
@@ -270,8 +280,18 @@ var Record = {
 
   start: function(username, round){
     console.log('start:'+username+'-'+round);
+
     window.leapTrainer.resume();
-    window.leapTrainer.create(username+round); 
+    
+    if(!window.isVerify){
+      window.leapTrainer.create(username+round);   
+    }
+  },
+
+  stopVerify : function () {
+    window.isTrackingStart = false;
+    window.isVerify = false;
+    Record.stop();
   },
 
   stopRegistration : function () {
@@ -319,11 +339,25 @@ var Record = {
 
     console.log('Gesture Detected');
 
-    // only use for login
-    // data = {
-    //   'gesture' : gesture,
-    //   'frameCount': frameCount
-    // };
+    if(window.isRegistration && window.isVerify){
+      // local verification
+
+      var hit = 0.0;
+      if((gesture.pose && frameCount == 1) || !gesture.pose){
+        var gestureName = registration.username + registration.round;
+        hit = window.leapTrainer.correlate(gestureName, gesture.data, gesture);
+      }
+      Record.stopVerify();
+
+    }else if(window.isLogin){
+      // login
+
+      // data = {
+      //   'id': $("#username").val()+round,
+      //   'gesture' : gesture,
+      //   'frameCount': frameCount
+      // };
+    }
   },
 
   onCompleted : function(gestureName, trainingSet, isPose) {
@@ -335,23 +369,27 @@ var Record = {
 
     console.log(gestureName + (isPose ? ' pose' : ' gesture') + ' learned!'); 
 
-    var currentFSId = $('fieldset:visible').attr('id');
-    $('fieldset#'+currentFSId+' .fs-subtitle').text('Done');
-    $('fieldset#'+currentFSId+' .next').addClass('show').removeClass('hide');
+    if(window.isRegistration && !window.isVerify){
+
+      // registration
+      var currentFSId = $('fieldset:visible').attr('id');
+      $('fieldset#'+currentFSId+' .fs-subtitle').text('Done');
+      $('fieldset#'+currentFSId+' .next').addClass('show').removeClass('hide');
 
 
-    var JSONobj = JSON.parse(window.leapTrainer.toJSON(gestureName));
-    gestureStored[currentFSId] = JSONobj;
+      var JSONobj = JSON.parse(window.leapTrainer.toJSON(gestureName));
+      gestureStored[currentFSId] = JSONobj;
 
-    var actionButton = $('#msform .action-button');
-    actionButton.attr('disabled', false);
+      var actionButton = $('#msform .action-button');
+      actionButton.attr('disabled', false);
 
-    var recordButton = $('#msform #'+currentFSId+' .action-button.record');
-    if(recordButton){
-      recordButton.removeClass('hide');
-      recordButton.removeClass('show');
+      var recordButton = $('#msform #'+currentFSId+' .action-button.record');
+      if(recordButton){
+        recordButton.removeClass('hide');
+        recordButton.removeClass('show');
+      }
+
+      Record.stopRegistration();
     }
-
-    Record.stopRegistration();
   }
 };

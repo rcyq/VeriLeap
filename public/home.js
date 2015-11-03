@@ -290,6 +290,7 @@ $(".next").click(function(){
   var nextButton = $('#msform #'+nextFieldsetId+' .action-button.next');
   var previousButton = $('#msform #'+nextFieldsetId+' .action-button.previous');
   var recordButton = $('#msform #'+nextFieldsetId+' .action-button.record');
+  var verifyButton = $('#msform #'+nextFieldsetId+' .action-button.verify');
   var registerMessage = $('.register.register-message');
   var usernameInput = $("#username");
   var emailInput = $("#email");
@@ -323,9 +324,20 @@ $(".next").click(function(){
     recordButton.removeClass('hide');
     recordButton.addClass('show');
 
-  }else if(recordButton){
-    recordButton.removeClass('show');
-    recordButton.addClass('hide');
+    verifyButton.removeClass('hide');
+    verifyButton.addClass('show');
+
+  }else {
+
+    if(recordButton){
+      recordButton.removeClass('show');
+      recordButton.addClass('hide');
+    }
+
+    if(verifyButton){
+      verifyButton.removeClass('show');
+      verifyButton.addClass('hide');
+    }
   }
 
   var onComplete;
@@ -425,6 +437,7 @@ $(".previous").click(function(){
   var nextButton = $('#msform #'+previousFieldsetId+' .action-button.next');
   var previousButton = $('#msform #'+previousFieldsetId+' .action-button.previous');
   var recordButton = $('#msform #'+previousFieldsetId+' .action-button.record');
+  var verifyButton = $('#msform #'+previousFieldsetId+' .action-button.verify');
   var registerMessage = $('.register.register-message');
   var usernameInput = $("#username");
 
@@ -436,6 +449,9 @@ $(".previous").click(function(){
     recordButton.addClass('show');
     recordButton.removeClass('hide');
 
+    verifyButton.addClass('show');
+    verifyButton.removeClass('hide');
+
   }else {
 
     if(recordButton){
@@ -443,6 +459,10 @@ $(".previous").click(function(){
       recordButton.removeClass('show');
     }
 
+    if(verifyButton){
+      verifyButton.addClass('hide');
+      verifyButton.removeClass('show');
+    }
   }
 
   var onComplete;
@@ -536,6 +556,17 @@ $(".record").click(function(){
   $('fieldset#'+currentFSId+' .fs-subtitle').text('Place your hand');
   
   Record.startRegistration(username, currentFSId);
+
+});
+
+$(".verify").click(function(){
+
+  Record.stopRegistration();
+
+  currentFSId = $('fieldset:visible').attr('id');
+  $('fieldset#'+currentFSId+' .fs-subtitle').text('Place your hand');
+  
+  Record.startVerify();
 
 });
 

@@ -326,6 +326,7 @@ http://codepen.io/m-e-conroy/pen/ALsdF
 	margin: 10px 5px;
 }
 #msform .action-button.record,
+#msform .action-button.verify,
 #msform .action-button.submit{
  	background: #fff;
  	border: 1px solid #fff;
@@ -333,6 +334,8 @@ http://codepen.io/m-e-conroy/pen/ALsdF
  	font-family: 'Exo', sans-serif;
 }
 
+#msform .action-button.verify:hover,
+#msform .action-button.verify:focus,
 #msform .action-button.record:hover,
 #msform .action-button.record:focus,
 #msform .action-button.submit:focus,
