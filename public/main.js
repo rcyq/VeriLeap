@@ -21,23 +21,160 @@ var isConnected = false;
 var onConnected = function (){
   console.log('onConnected');
   isConnected = true;
+
+  // control connect leap img show/hide
+  var canvas = $('canvas');
+  var connectLeap = $('#connect-leap');
+  var msform = $('#msform');
+  var registerMessage = $('.register.register-message');
+  if(connectLeap && canvas){
+    
+    var isOverlayOpen = $('div.overlay').hasClass('open');
+
+    // leap is connected or overlay is closed
+    connectLeap.removeClass('connect-leap-show');
+    connectLeap.addClass('connect-leap-hide');
+
+    if(isOverlayOpen){
+
+      registerMessage.removeClass('error');
+      if(window.isRegistration){
+        registerMessage.text('Registration');
+      }else if(window.isLogin){
+        registerMessage.text('Login');
+      }else{
+        registerMessage.text('');
+      }
+      
+      msform.removeClass('hide');
+      msform.addClass('show');   
+    }else{
+      msform.removeClass('show');
+      msform.addClass('hide');  
+    }
+  }
 };
 
 var onDisconnected = function(){
   console.log('onDisconnected');
   isConnected = false;
+
+  // connect leap img show/hide
+  var canvas = $('canvas');
+  var connectLeap = $('#connect-leap');
+  var msform = $('#msform');
+  var registerMessage = $('.register.register-message');
+  if(connectLeap && canvas){
+    
+    var isOverlayOpen = $('div.overlay').hasClass('open');
+    if(isOverlayOpen){
+      // leap not connected
+      // and overlay is opened
+      connectLeap.removeClass('connect-leap-hide');
+      connectLeap.addClass('connect-leap-show');
+
+      msform.removeClass('show');
+      msform.addClass('hide');
+
+      registerMessage.addClass('error');
+      registerMessage.text('Please connect leap motion device');
+    
+    }else{
+
+      // leap is connected or overlay is closed
+      connectLeap.removeClass('connect-leap-show');
+      connectLeap.addClass('connect-leap-hide');
+
+      if(isOverlayOpen){
+        msform.removeClass('hide');
+        msform.addClass('show');   
+      }else{
+        msform.removeClass('show');
+        msform.addClass('hide');  
+      }
+
+      registerMessage.removeClass('error');
+      registerMessage.text('');
+    }
+  }
 };
 
-function startLeap() {
+var isValidTracking = function(){
+  var currentFSId = $('fieldset:visible').attr('id');
+  if(!window.isTrackingStart ||  isPlayback() ||
+    (currentFSId != "first" && currentFSId != "second" && 
+    currentFSId != "last")){
+    return false;
+  }
+  return true;
+}
+
+var onHandFound = function(hand){
+
+  var currentFSId = $('fieldset:visible').attr('id');
+  if(!window.isTrackingStart || 
+    (currentFSId != "first" && currentFSId != "second" && 
+    currentFSId != "last")){
+    return false;
+  }
+
+  if(isConnected && !isPlayback() && 
+    window.isTrackingStart && !window.leapTrainer.recordingPose){
+    Record.start(registration.username, registration.round);
+  }
+
+  if(!isPlayback()){
+    console.log('real hand found');
+  }else{
+    console.log('playback hand found');
+  }
+};
+
+var onHandLost = function(hand){
+
+  var currentFSId = $('fieldset:visible').attr('id');
+  if(!window.isTrackingStart || 
+    (currentFSId != "first" && currentFSId != "second" && 
+    currentFSId != "last")){
+    return false;
+  }
+  
+  // On real hand lost,
+  // playback will play right away, hence it is real hand lost
+  // On play hand lost,
+  // playback will stop before this event fired, hence it is playback hand lost
+  if(isPlayback()){
+    console.log('real hand lost');
+
+    var msg = 'Place your hand';
+    if(!window.isTrackingStart){
+      msg= 'Done';
+    }
+    currentFSId = $('fieldset:visible').attr('id');
+    $('fieldset#'+currentFSId+' .fs-subtitle').text(msg);
+
+    actionButton = $('#msform .action-button');
+    actionButton.attr('disabled', false);    
+
+    Record.stop();
+  }else{
+    console.log('playback hand lost');
+  }
+};
+
+var startLeap = function() {
   window.isLeapAnimationRunning = true;
 
-  var ctrl = Leap.loop({
-    background: true,
+  window.leapController = Leap.loop({
+    background: false,
     enableGesture: true,
-    loopWhileDisconnected: true
+    loopWhileDisconnected: false
   }, {
 
     hand: function(hand){
+
+      // not in use
+      return;
 
       // locate 'label' DOM element
       var label = hand.data('label');
@@ -47,84 +184,174 @@ function startLeap() {
         label = document.createElement('label');
         document.body.appendChild(label);
 
-        label.innerHTML = hand.type + " hand";
+        /**
+         * Here we set the label to show the hand type
+         */
+         label.innerHTML = hand.type + " hand";
 
-        hand.data('label', label)
-      }
+         hand.data('label', label)
+       }
 
-      var handMesh = hand.data('riggedHand.mesh');
+       var handMesh = hand.data('riggedHand.mesh');
 
-      var screenPosition = handMesh.screenPosition(
+       var screenPosition = handMesh.screenPosition(
         hand.palmPosition,
         riggedHandPlugin.camera
         );
 
-      label.style.left = screenPosition.x + 'px';
-      label.style.bottom = screenPosition.y + 'px';
-
-      // control connect leap img show/hide
-      var canvas = $('canvas');
-      var connectLeap = $('#connect-leap');
-      if(connectLeap && canvas){
-        
-        if(isConnected || canvas.hasClass('hand-canvas-hide')){
-          connectLeap.removeClass('connect-leap-show');
-          connectLeap.addClass('connect-leap-hide');
-        }else{
-          connectLeap.removeClass('connect-leap-hide');
-          connectLeap.addClass('connect-leap-show');
-        }
-      }
-
-      // control frame recording
-      if(isConnected && false) {
-        var handFingers = hand.fingers;
-        var fingersData = {};
-
-        $.each(handFingers, function(index,value){
-
-          var fingerData = {
-            direction : convertToXYZDirection(value.direction), 
-            length : value.length,
-            width : value.width, 
-            segments: value.bones.map(function(value, index){return value.length})
-          };  
-
-          fingersData[index] = fingerData;
-
-        });
-
-        frames.push({
-          confidence : hand.confidence,
-          palm: convertToXYZDirection(hand.palmPosition),
-          palmWidth : hand.palmWidth,
-          fingers : fingersData
-        });
-
-        console.log("Recording");
-      }
+       label.style.left = screenPosition.x + 'px';
+       label.style.bottom = screenPosition.y + 'px';
     }
   })
   .use('riggedHand')
   .use('handEntry')
   .use('handHold')
+  .use('playback', {
+    recording: './left-or-right-77fps.json.lz',
+    pauseOnHand: true,
+    timeBetweenLoops: 1000
+  })
 
   .on('streamingStarted', onConnected)
   .on('streamingStopped', onDisconnected)
-  .on('handLost', function(hand){
-    var label = hand.data('label');
-    if (label){
-      document.body.removeChild(label);
-      hand.data({label: undefined});
-    }
-  })
-  .use('playback', {
-    recording: './left-or-right-77fps.json.lz',
-    timeBetweenLoops: 1000
-  });
+  .on('handFound', onHandFound)
+  .on('handLost', onHandLost);
 
   riggedHandPlugin = Leap.loopController.plugins.riggedHand;
 
-  ctrl.on('riggedHand.meshAdded', function(handMesh, leapHand){
+  window.leapController.on('riggedHand.meshAdded', function(handMesh, leapHand){
   });
+
+  var lt = new LeapTrainer.Controller({controller: window.leapController});
+
+  // after resume() this event will be called for each second count down
+  lt.on('training-countdown', Record.onCountdown);
+
+  lt.on('training-complete', Record.onCompleted);
+
+  lt.on('training-started', Record.onStarted);
+
+  lt.on('started-recording', Record.onRecording);
+
+  lt.on('gesture-detected', Record.onGestureDetected);
+
+  window.leapTrainer = lt;
 }
+
+window.isTrackingStart = false;
+window.isRegistration = false;
+window.isLogin = false;
+window.gestureStored = {};
+
+var isPlayback = function(){
+  try{
+    return window.leapController.plugins.playback.player.state != 'idle';
+  }catch(e){
+    return true; 
+  }
+}
+
+var registration = {
+  username : '',
+  round : ''
+};
+
+var Record = {
+
+  startRegistration :function(username, round){
+    window.isTrackingStart = true;
+    registration.username = username;
+    registration.round = round;
+
+    if(!isPlayback()){
+      Record.start(username, round);
+    }
+  },
+
+  start: function(username, round){
+    console.log('start:'+username+'-'+round);
+    window.leapTrainer.resume();
+    window.leapTrainer.create(username+round); 
+  },
+
+  stopRegistration : function () {
+    window.isTrackingStart = false;
+    Record.stop();
+  },
+
+  stop: function(){
+    window.leapTrainer.pause();
+  },
+
+  onCountdown : function (countdown) {
+    if(!isValidTracking()){
+      return false;
+    }
+
+    var currentFSId = $('fieldset:visible').attr('id');
+    var actionButton = $('#msform .action-button');
+    actionButton.attr('disabled', true);
+    $('fieldset#'+currentFSId+' .fs-subtitle').text('Ready in '+countdown);
+  },
+
+  onStarted: function () { 
+    if(!isValidTracking()){
+      return false;
+    }
+    
+    console.log("training-started");
+
+    var currentFSId = $('fieldset:visible').attr('id');
+    $('fieldset#'+currentFSId+' .fs-subtitle').text('Analysing...');
+  },
+
+  onRecording: function () {
+    if(!isValidTracking()){
+      return false;
+    }
+    console.log('started-recording');
+  },
+
+  onGestureDetected : function(gesture, frameCount) {
+    if(!isValidTracking()){
+      return false;
+    }
+
+    console.log('Gesture Detected');
+
+    // only use for login
+    // data = {
+    //   'gesture' : gesture,
+    //   'frameCount': frameCount
+    // };
+  },
+
+  onCompleted : function(gestureName, trainingSet, isPose) {
+
+    if(!isValidTracking()){
+      console.log('onCompleted invalid');
+      return false;
+    }
+
+    console.log(gestureName + (isPose ? ' pose' : ' gesture') + ' learned!'); 
+
+    var currentFSId = $('fieldset:visible').attr('id');
+    $('fieldset#'+currentFSId+' .fs-subtitle').text('Done');
+    $('fieldset#'+currentFSId+' .next').addClass('show').removeClass('hide');
+
+
+    var JSONobj = JSON.parse(window.leapTrainer.toJSON(gestureName));
+    gestureStored[currentFSId] = JSONobj;
+
+    var actionButton = $('#msform .action-button');
+    actionButton.attr('disabled', false);
+
+    var recordButton = $('#msform #'+currentFSId+' .action-button.record');
+    if(recordButton){
+      recordButton.removeClass('hide');
+      recordButton.removeClass('show');
+    }
+
+    Record.stopRegistration();
+  }
+};

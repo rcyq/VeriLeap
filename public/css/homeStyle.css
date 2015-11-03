@@ -89,11 +89,12 @@ body{
 
 .register.register-message{
 	background: transparent;
-	color: #fff;
+	color: #5eaa02;
 	font-family: 'Exo', sans-serif;
 	font-size: 16px;
 	font-weight: 400;
 	padding: 4px;
+	height: 20px;
 }
 
 .register.register-message.error{
@@ -178,7 +179,17 @@ body{
 canvas {
 	pointer-events: none;
 	z-index: 102;
+	display: none;
 }
+
+canvas.show{
+	display: block !important;
+}
+
+ canvas.hide{
+	display: none !important;
+}
+
 
 .account.show{
 	display: block !important;
@@ -255,15 +266,6 @@ http://codepen.io/m-e-conroy/pen/ALsdF
 	z-index: 110 !important;
 }
 
-.hand-canvas-show{
-	display: block !important;
-}
-
-.hand-canvas-hide{
-	display: none !important;
-}
-
-
 /*form styles*/
 #msform {
 	width: 80%;
@@ -271,6 +273,15 @@ http://codepen.io/m-e-conroy/pen/ALsdF
 	text-align: center;
 	position: relative;
 }
+
+#msform.show{
+	display: initial !important;
+}
+
+#msform.hide{
+	display: none !important;
+}
+
 #msform fieldset {
 	background: transparent;
 	border: 0 none;
@@ -294,7 +305,7 @@ http://codepen.io/m-e-conroy/pen/ALsdF
 	padding: 4px;
 	border-radius: 3px;
 	margin-bottom: 10px;
-	width: 50%;
+	width: 30%;
 	font-family: 'Exo' ,sans-serif;
 	font-size: 13px;
 	background: transparent;
@@ -314,8 +325,37 @@ http://codepen.io/m-e-conroy/pen/ALsdF
 	padding: 10px 5px;
 	margin: 10px 5px;
 }
-#msform .action-button:hover, #msform .action-button:focus {
+#msform .action-button.record,
+#msform .action-button.submit{
+ 	background: #fff;
+ 	border: 1px solid #fff;
+ 	color: #a18d6c;
+ 	font-family: 'Exo', sans-serif;
+}
+
+#msform .action-button.record:hover,
+#msform .action-button.record:focus,
+#msform .action-button.submit:focus,
+#msform .action-button.submit:hover{
+	box-shadow: 0 0 0 2px white, 0 0 0 3px #a18d6c;
+}
+#msform .action-button.show {
+	display: initial;
+}
+#msform .action-button.hide {
+	display: none;
+}
+#msform .action-button:hover, 
+#msform .action-button:focus {
 	box-shadow: 0 0 0 2px white, 0 0 0 3px #5eaa02;
+}
+#msform .action-button:disabled, 
+#msform .action-button:disabled{
+		opacity: 0.6;
+}
+#msform .action-button:hover:disabled, 
+#msform .action-button:focus:disabled{
+	box-shadow: none;
 }
 /*headings*/
 .fs-title {
@@ -335,6 +375,7 @@ http://codepen.io/m-e-conroy/pen/ALsdF
 /*progressbar*/
 #progressbar {
 	width: 100% !important;
+	height: 40px !important;
 	margin-bottom: 5px;
 	overflow: hidden;
 	/*CSS counters to number the steps*/
@@ -383,6 +424,7 @@ http://codepen.io/m-e-conroy/pen/ALsdF
 	background: #5eaa02;
 	color: white;
 }
+
 
 
 
