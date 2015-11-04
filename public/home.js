@@ -243,17 +243,24 @@ document.getElementById('overlay-register-close-button').addEventListener("click
 document.getElementById('createAccountButton').addEventListener("click", function(){
   console.log("Create account!");
   console.log($('#user').val());
+  console.log($("#email").val());
+  
+  var dataToSubmit = {
+    userName: $('#user').val(),
+    email: $("#email").val(),
+    gestures: window.gestureStored   // format {"first": trained gesture, "second": trained gesture, "last": trained gesture}
+  }
 
-  // $.ajax({
- //      type: "POST",
- //      url: "/register",
- //      data: trainer.toJSON(gestureName),
- //      contentType: "text/plain",  //"application/json",
- //      success: function(data) {
- //        console.log("have successfully submitted registering request");
- //        console.log("return message is " + data);
- //      }
- //  });
+  $.ajax({
+      type: "POST",
+      url: "/register",
+      data: JSON.stringify(dataToSubmit),
+      contentType: "text/plain",
+      success: function(data) {
+        console.log(data.flag);
+        console.log(data.msg);
+      }
+  });
 });
 
 var validateEmail = function(email) {
@@ -308,11 +315,27 @@ $(".next").click(function(){
       isValidFields = false;
     }
 
-    if(!isValidFields){
-      registerMessage.addClass('error');
-      registerMessage.text(errMsg);
-      animating = false;
-      return false;
+    if(isValidFields){
+        // check if username has been used
+        $.ajax({
+          type: "POST",
+          url: "/checkExisting",
+          data: usernameInput.val(),
+          contentType: "text/plain", 
+          success: function(response) {
+              if (response.flag == true) {
+                  registerMessage.addClass('error');
+                  registerMessage.text(errMsg);
+                  animating = false;
+                  return false;
+              }  /// else do what it supposed to do next
+          }
+        });
+    } else {
+        registerMessage.addClass('error');
+        registerMessage.text(errMsg);
+        animating = false;
+        return false;
     }
   }
 
