@@ -74,7 +74,7 @@ function sendEmail(username, email, id) {
 
 }
 
-sendEmail("Pengran", "zhaopengran@gmail.com", 1);
+// sendEmail("Pengran", "zhaopengran@gmail.com", 1);
 
 
 function updateDatabase(data) {
