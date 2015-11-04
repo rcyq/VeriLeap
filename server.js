@@ -35,16 +35,35 @@ console.log("Listening on port "+port);
 server.listen(port);
 
 
-function sendEmail(data) {
+function sendEmail(username, email, id) {
+
+	var html = "Dear " + username + ", <br/>"
+			+"<p>You are about to login using VeriLeap verification software. Please replace one of your password gesture with our One-Time-Password (OTP)"
+			+" gesture as shown below (also attached to the email) when you are prompted to input your gestures."
+			+"If you did not attempt to login, your account details could have been compromised. Please login and change your password (gestures) immediately.</p>"
+			+"<p>Step 1: Place your Leap Motion device in this orientation</p>"
+			+'<img src="cid:orientation"/>'
+			+"<p>Step 2: Place your hand as shown over the device</p>"
+			+'<img src="cid:gesture"/>'
+			+"<p>-VeriLeap</p>";
+
 	var mailOptions = {
-	    from: 'Zhao Pengran <zhaopengran@gmail.com>', // sender address
-	    to: 'zhaopengran@gmail.com', // list of receivers
-	    subject: 'Hello ✔', // Subject line
-	    text: 'Hello world ✔', // plaintext body
-	    html: '<b>Hello world ✔</b>' // html body
+	    from: 'VeriLeap <verileap@gmail.com>', // sender address
+	    to: email, // list of receivers
+	    subject: 'VeriLeap Login Notification', // Subject line
+	    html: html,
+	    attachments: [{
+	    	path: 'docs/Email Instructions/Orientation.png',
+	        cid: 'orientation' //same cid value as in the html img src
+	    },{
+	        path: 'docs/Email Instructions/Gesture '+id+'.png',
+	        cid: 'gesture' //same cid value as in the html img src
+	    }],
 	};
 
+
 	// send mail with defined transport object
+	
 	transporter.sendMail(mailOptions, function(error, info){
 	    if(error){
 	        return console.log(error);
@@ -52,7 +71,11 @@ function sendEmail(data) {
 	    console.log('Message sent: ' + info.response);
 
 	});	
+
 }
+
+sendEmail("Pengran", "zhaopengran@gmail.com", 1);
+
 
 function updateDatabase(data) {
 
