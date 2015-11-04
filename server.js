@@ -14,6 +14,7 @@ var trainer = new trainerFile.LeapTrainer.Controller({controller:1});
 
 var db = require('mongoskin').db('mongodb://localhost:27017/leap'); 
 db.bind("users");
+db.bind("emails");
 
 
 var nodemailer = require('nodemailer');
@@ -28,14 +29,16 @@ var transporter = nodemailer.createTransport({
     }
 });
 
-
+var email_resend_threshold_in_seconds = 300; // 5 minutes
+var gesture_regen_threshold_in_seconds = 900; // 15 minutes
+var gesturePoolSize = 6;
 
 var port = process.env.PORT || 4344;
 console.log("Listening on port "+port);
 server.listen(port);
 
 
-function sendEmail(username, email, id) {
+function sendEmail(username, email, id, callback) {
 
 	var html = "Dear " + username + ", <br/>"
 			+"<p>You are about to login using VeriLeap verification software. Please replace one of your password gesture with our One-Time-Password (OTP)"
@@ -65,11 +68,12 @@ function sendEmail(username, email, id) {
 	// send mail with defined transport object
 	
 	transporter.sendMail(mailOptions, function(error, info){
-	    if(error){
-	        return console.log(error);
-	    }
-	    console.log('Message sent: ' + info.response);
-
+		if (callback != null) {
+			callback( error || info.response.slice(0,3)!="250" );
+		} else {
+			if (error) console.log(error); 
+			else console.log(info.response);
+		}
 	});	
 
 }
@@ -77,32 +81,47 @@ function sendEmail(username, email, id) {
 sendEmail("Pengran", "zhaopengran@gmail.com", 1);
 
 
-function updateDatabase(data) {
+function updateDatabaseNewUser(data) {
 
 	var imp = JSON.parse(data);
 		
 	var id = imp.name;
 	var userName = id.slice(0, -1);	
 	
+	var email = imp.email;
+
+	if (email != null && email!=undefined) {
+		// if email is passed in, update the email associated with the username
+		db.emails.update( {_id: userName, email: email, gesture: null, timestamp: null},  {upsert: true}, function(err) {
+			if (err) throw err;
+		});
+	}
+
 	db.users.update( {_id: id}, { user: userName, _id: id, gesture: data }, {upsert: true}, function(err) {
 	    if (err) throw err;
 	});
 
 }
 
-function db_find(criteria, callback) {
-	db.users.find(criteria).toArray(function(err, result) {
-	    //console.log('Band members of Road Crew');
-	    //console.log(result[0].members);
-	    if (callback != null) {
-	    	callback(result);
-	    }
-	});
+function db_find(findOne, table, criteria, callback) {
+	if (findOne){
+		table.find(criteria).toArray(function(err, result) {
+	    	if (callback != null) {
+	    		callback(result);
+	   		}
+		});
+	} else {
+		table.find(criteria).toArray(function(err, result) {
+		    if (callback != null) {
+		    	callback(result);
+		    }
+		});
+	}
 }
 
-function db_exist(criteria, callback) {
+function db_exist(table, criteria, callback) {
 	var value;
-	db.users.findOne(criteria, function(err, result) {
+	table.findOne(criteria, function(err, result) {
 		if (callback != null) {
 			callback(result != null);
 		}
@@ -120,26 +139,75 @@ app.get('/', function (req, res) {
 
 app.post('/checkExisting', textParser, function(req, res) {
 	// to replace test2 with the username
-	db_exist({user: "test2" }, function(result) {
+	db_exist(db.users, {user: "test2" }, function(result) {
 		console.log(result);
 		res.send(result);
 	});
 });
 
 
+// before register, checkExisting should be called to make sure the user name does not exist
 app.post('/register', textParser, function(req, res) {
-	//console.log(trainer.fromJSON(req.body));
-	updateDatabase(req.body);
+	updateDatabaseNewUser(req.body);
 	res.send("success");
 });
 
+app.post('/startVerify', textParser, function(req, res) {
+	var username = req.body;
+	var reply = {
+		success: true,
+		message: "An email has been sent to your mailbox",
+	};
+	db_find(true, db.emails, {_id: username}, function(results) {
+		currentTime = new Date().getTime(); // uNIX timestamp in millisecond
+		if (results == null) {
+			// no email ever entered... which shall never be the case
+			reply.success = false;
+			reply.message = "No user found.";
+			res.send(JSON.stringify(reply));
+		} else {
+			if (results.gesture == null || currentTime - results.timestamp >= email_resend_threshold_in_seconds*1000) {
+				// if there's no gesture associated or the previous email sent is threshold minutes ago
+				if (results.gesture==null || currentTime - results.timestamp >= gesture_regen_threshold_in_seconds*1000) {
+					// regenerate a gesture
+					gestureId = Math.floor((Math.random() * gesturePoolSize) + 1);
+				} else {
+					gestureId = results.gesture
+				}
+
+				// send email
+				sendEmail(username, results.email, gestureId, function(error) {
+					if (error) {
+						reply.success = false;
+						reply.message = "Error in sending email. Please try again";
+						res.send(JSON.stringify(reply));
+
+					} else {
+						// successfully send the email. Update database
+						currentTime = new Date().getTime();
+						db.emails.update({_id: username}, {$set: {timestamp: currentTime, gesture: gestureId}}, function (err, result) {
+							if (err) console.log(err);
+							res.send(JSON.stringify(reply));
+						});
+					}
+				});
+
+			} else {
+				reply.success = false;
+				reply.message = "Try again in " + Math.floor((currentTime - results.timestamp)/1000) + "seconds";
+				res.send(JSON.stringify(reply));
+			}
+
+		}
+	});
+});
 
 app.post('/verify', jsonParser, function(req, res) {
-	db_find({_id: req.body.id}, function(results) {
-		if (results.length == 0) {
+	db_find(true, db.users, {_id: req.body.id}, function(results) {
+		if (results == null) {
 			res.send("no associated user");
 		} else {
-			training = JSON.parse(results[0].gesture);
+			training = JSON.parse(results.gesture);
 			if (training.pose != (req.body.frameCount == 1)) {
 				hit = 0.0;
 			} else {
@@ -150,135 +218,3 @@ app.post('/verify', jsonParser, function(req, res) {
 		}		
 	});
 });
-
-
-
-
-/*
-// assume always 5 fingers
-function extractFeatures(frames) {
-	result = {};
-	
-	start = parseInt(frames.length/6);
-	end = parseInt(frames.length - start);
-
-	for (i = 0; i<5; i++) {
-		result["f" + i + "_len"] = 0;
-		result["f" + i + "_width"] = 0;
-		for (var j = 0; j < 4; j++)
-			result["f" + i + "_seg_"+j] = 0;
-	}
-//	result["palm_width"] = 0;
-
-	effectiveFrameNumber = 0;
-
-	for (frameIndex = start; frameIndex <= end; frameIndex ++ ) {
-
-		entry = frames[frameIndex];
-		fingers = entry.fingers;
-		if (entry.confidence <= 0.9) continue;
-		effectiveFrameNumber ++;
-		t = 0;
-		for (var i in fingers) {
-			if (fingers.hasOwnProperty(i)) {
-				eachFinger = fingers[i];
-				if (t ==0) {
-					console.log(frameIndex + " " + eachFinger.length);
-					t = 1;
-				}
-				result["f" + i + "_len"] += eachFinger.length;
-				result["f" + i + "_width"] += eachFinger.width;
-				for (var j = 0; j < 4; j++)
-					result["f" + i + "_seg_"+j] += eachFinger.segments[j];
-			}
-		}
-	//	result["palm_width"] += entry.palmWidth;
-	}
-
-
-
-	console.log(effectiveFrameNumber + "out of " + (end-start+1));
-
-	for (i = 0; i<5; i++) {
-		result["f" + i + "_len"] /= effectiveFrameNumber;
-		result["f" + i + "_width"] /= effectiveFrameNumber;
-		for (var j = 0; j < 4; j++)
-			result["f" + i + "_seg_"+j] /= effectiveFrameNumber;
-	}
-	//result["palm_width"] /= effectiveFrameNumber;
-
-	return result;
-
-}
-
-function readExistingEntries(callback) {
-	fs.readFile(FILENAME, 'utf8', function(err, data) {
-		if (err) {
-			// file not exist
-			if (callback) callback(null);
-		} else {
-			if (callback) callback(JSON.parse(data));
-		}
-	});
-}
-
-function addPerson(entry) {
-
-	var rf = new RandomForestClassifier({
-	    n_estimators: 20
-	});
-
-	data = readExistingEntries();
-	data.push(entry);
-	writeNewEntryToFile();
-
-	rf.fit(data, null, "person", function(err, trees){
-	  console.log(JSON.stringify(trees, null, 4));
-	});
-
-	return rf;
-}
-
-app.post('/register', jsonParser, function(req, res) {
-
-
-});
-
-app.post('/upload', jsonParser, function (req, res) {
-	//console.log(req.body);
-
-	entry = extractFeatures(req.body)
-
-
-	readExistingEntries(function(allEntries) {
-		if (allEntries == null) {
-			allEntries = [];
-			personIndex = 0;
-		} else {
-			personIndex = allEntries.length;
-		}
-		//entry['person'] = "Ryan";
-		//allEntries.push(entry);
-
-
-		fs.writeFile(FILENAME, JSON.stringify(allEntries), function(err) {
-			if (err) console.log(err);
-		});	
-
-		var rf = new RandomForestClassifier({
-	    	n_estimators: 10
-		});
-
-		rf.fit(allEntries, null, "person", function(err, trees){
-		  //console.log(JSON.stringify(trees, null, 4));
-		  console.log("fit_tree");
-		  var pred = rf.predict([entry], trees);
-		  console.log("prediction results" + pred);
-		});
-
-
-	});
-
-	res.send(entry);
-});
-*/
