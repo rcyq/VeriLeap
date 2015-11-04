@@ -28,6 +28,10 @@
       classie.add( overlay, 'close' );
       $('canvas').addClass('hide').removeClass('show');
 
+      // hide leap connect img
+      connectLeap.removeClass('connect-leap-show');
+      connectLeap.addClass('connect-leap-hide');
+
       var onEndTransitionFn = function( ev ) {
         if( support.transitions ) {
           if( ev.propertyName !== 'visibility' ) return;
