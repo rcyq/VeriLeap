@@ -220,6 +220,14 @@ var startLeap = function() {
   riggedHandPlugin = Leap.loopController.plugins.riggedHand;
 
   window.leapController.on('riggedHand.meshAdded', function(handMesh, leapHand){
+
+    var isOverlayOpen = $('div.overlay').hasClass('open');
+    if(!isConnected && isOverlayOpen){
+      // show leap connect img
+      var connectLeap = $('#connect-leap');
+      connectLeap.removeClass('connect-leap-hide');
+      connectLeap.addClass('connect-leap-show');
+    }
   });
 
   var lt = new LeapTrainer.Controller({controller: window.leapController});
