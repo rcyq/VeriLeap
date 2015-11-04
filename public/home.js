@@ -175,10 +175,10 @@ var resetForm =function () {
   $('fieldset').hide();
 
   // show first fieldset
-  var firstFS = $('fieldset#zero');
+  var firstFS = $('fieldset#s0');
   firstFS.show();
   firstFS.css({'opacity':1});
-  $('fieldset#zero .next').addClass('show').removeClass('hide');
+  $('fieldset#s0 .next').addClass('show').removeClass('hide');
   
   // reset all progress
   $('#progressbar li:first-of-type').addClass("active");
@@ -193,8 +193,8 @@ var resetForm =function () {
 
   // reset all registerMessage
   var allFS = 'fieldset .fs-subtitle';
-  var infoFS = '#zero .fs-subtitle';
-  var confirmFS = '#confirm .fs-subtitle';
+  var infoFS = '#s0 .fs-subtitle';
+  var confirmFS = '#s4 .fs-subtitle';
   $(allFS+':not('+infoFS+','+confirmFS+')').text('Place your hand');
 
   // enable all action buttons
@@ -300,7 +300,7 @@ $(".next").click(function(){
   var emailInput = $("#email");
 
   // Check username
-  if(currentFieldsetId == "zero"){
+  if(currentFieldsetId == "s0"){
     var isValidFields = true;
     var errMsg = "";
 
@@ -345,7 +345,7 @@ $(".next").click(function(){
   }
 
   var onComplete;
-  if(nextFieldsetId != "confirm"){
+  if(nextFieldsetId != "s4"){
     username = usernameInput.val();
 
     // show canvas
@@ -383,7 +383,7 @@ $(".next").click(function(){
     }
   }
 
-  $('.submit').attr({'disabled': nextFieldsetId != "confirm"});
+  $('.submit').attr({'disabled': nextFieldsetId != "s4"});
 
   // show previous button
   previousButton.removeClass('hide');
@@ -470,7 +470,7 @@ $(".previous").click(function(){
   }
 
   var onComplete;
-  if(previousFieldsetId != "zero"){
+  if(previousFieldsetId != "s0"){
     // show previous button
     previousButton.removeClass('hide');
     previousButton.addClass('show');
@@ -514,7 +514,7 @@ $(".previous").click(function(){
     };
   }
 
-  $('.submit').attr({'disabled': previousFieldsetId != "confirm"});
+  $('.submit').attr({'disabled': previousFieldsetId != "s4"});
 
   registerMessage.removeClass('error');
   if(window.isRegistration){
