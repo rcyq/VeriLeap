@@ -267,22 +267,26 @@ http://codepen.io/m-e-conroy/pen/ALsdF
 }
 
 /*form styles*/
-#msform {
+#msform,
+#msform-login{
 	width: 80%;
 	margin: 5px auto;
 	text-align: center;
 	position: relative;
 }
 
-#msform.show{
+#msform.show,
+#msform-login.show{
 	display: initial !important;
 }
 
-#msform.hide{
+#msform.hide,
+#msform-login.hide{
 	display: none !important;
 }
 
-#msform fieldset {
+#msform fieldset,
+#msform-login fieldset {
 	background: transparent;
 	border: 0 none;
 	border-radius: 3px;
@@ -297,11 +301,13 @@ http://codepen.io/m-e-conroy/pen/ALsdF
 	position: absolute;
 }
 /*Hide all except first fieldset*/
-#msform fieldset:not(:first-of-type) {
+#msform fieldset:not(:first-of-type) ,
+#msform-login fieldset:not(:first-of-type) {
 	display: none;
 }
 /*inputs*/
-#msform input, #msform textarea {
+#msform input, #msform textarea,
+#msform-login input, #msform-login textarea {
 	padding: 4px;
 	border-radius: 3px;
 	margin-bottom: 10px;
@@ -314,7 +320,8 @@ http://codepen.io/m-e-conroy/pen/ALsdF
 	color: #fff;
 }
 /*buttons*/
-#msform .action-button {
+#msform .action-button,
+#msform-login .action-button {
 	width: 100px;
 	background: #5eaa02;
 	font-weight: bold;
@@ -327,7 +334,10 @@ http://codepen.io/m-e-conroy/pen/ALsdF
 }
 #msform .action-button.record,
 #msform .action-button.verify,
-#msform .action-button.submit{
+#msform .action-button.submit,
+#msform-login .action-button.record,
+#msform-login .action-button.verify,
+#msform-login .action-button.submit{
  	background: #fff;
  	border: 1px solid #fff;
  	color: #a18d6c;
@@ -339,25 +349,38 @@ http://codepen.io/m-e-conroy/pen/ALsdF
 #msform .action-button.record:hover,
 #msform .action-button.record:focus,
 #msform .action-button.submit:focus,
-#msform .action-button.submit:hover{
+#msform .action-button.submit:hover,
+#msform-login .action-button.verify:hover,
+#msform-login .action-button.verify:focus,
+#msform-login .action-button.record:hover,
+#msform-login .action-button.record:focus,
+#msform-login .action-button.submit:focus,
+#msform-login .action-button.submit:hover{
 	box-shadow: 0 0 0 2px white, 0 0 0 3px #a18d6c;
 }
-#msform .action-button.show {
+#msform .action-button.show,
+#msform-login .action-button.show {
 	display: initial;
 }
 #msform .action-button.hide {
 	display: none;
 }
 #msform .action-button:hover, 
-#msform .action-button:focus {
+#msform .action-button:focus,
+#msform-login .action-button:hover, 
+#msform-login .action-button:focus {
 	box-shadow: 0 0 0 2px white, 0 0 0 3px #5eaa02;
 }
 #msform .action-button:disabled, 
-#msform .action-button:disabled{
+#msform .action-button:disabled,
+#msform-login .action-button:disabled, 
+#msform-login .action-button:disabled{
 		opacity: 0.6;
 }
 #msform .action-button:hover:disabled, 
-#msform .action-button:focus:disabled{
+#msform .action-button:focus:disabled,
+#msform-login .action-button:hover:disabled, 
+#msform-login .action-button:focus:disabled{
 	box-shadow: none;
 }
 /*headings*/
