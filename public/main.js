@@ -102,8 +102,8 @@ var onDisconnected = function(){
 var isValidTracking = function(){
   var currentFSId = $('fieldset:visible').attr('id');
   if(!window.isTrackingStart ||  isPlayback() ||
-    (currentFSId != "s1" && currentFSId != "s2" && 
-    currentFSId != "s3")){
+    (window.isRegstration && currentFSId != "s1" && currentFSId != "s2" && 
+    currentFSId != "s3") || (window.isLogin && currentFSId != "l1")){
     return false;
   }
   return true;
