@@ -102,8 +102,8 @@ var onDisconnected = function(){
 var isValidTracking = function(){
   var currentFSId = $('fieldset:visible').attr('id');
   if(!window.isTrackingStart ||  isPlayback() ||
-    (currentFSId != "first" && currentFSId != "second" && 
-    currentFSId != "last")){
+    (currentFSId != "s1" && currentFSId != "s2" && 
+    currentFSId != "s3")){
     return false;
   }
   return true;
@@ -113,8 +113,8 @@ var onHandFound = function(hand){
 
   var currentFSId = $('fieldset:visible').attr('id');
   if(!window.isTrackingStart || 
-    (currentFSId != "first" && currentFSId != "second" && 
-    currentFSId != "last")){
+    (currentFSId != "s1" && currentFSId != "s2" && 
+    currentFSId != "s3")){
     return false;
   }
 
@@ -134,8 +134,8 @@ var onHandLost = function(hand){
 
   var currentFSId = $('fieldset:visible').attr('id');
   if(!window.isTrackingStart || 
-    (currentFSId != "first" && currentFSId != "second" && 
-    currentFSId != "last")){
+    (currentFSId != "s1" && currentFSId != "s2" && 
+    currentFSId != "s3")){
     return false;
   }
   
@@ -292,6 +292,7 @@ var Record = {
     window.leapTrainer.resume();
     
     if(!window.isVerify){
+      console.log('not verify');
       window.leapTrainer.create(username+round);   
     }
   },
