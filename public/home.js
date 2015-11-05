@@ -240,11 +240,7 @@ var resetForm =function () {
   $('#msform-login fieldset#l1 .fs-title').text('Gesture');
   $('#msform-login fieldset#l2 .fs-title').text('Result');
   
-  var allFS = '#msform-login fieldset .fs-subtitle';
-  var infoFS = '#msform-login #l0 .fs-subtitle';
-  var confirmFS = '#msform-login  #l2 .fs-subtitle';
-  $(allFS+':not('+infoFS+','+confirmFS+')').text('Place your hand');
-  $('#msform-login fieldset#l1 .fs-subtitle').text('Place your gesture');
+  $('#msform-login fieldset#l1 .fs-subtitle').text('Place your hand (may replace with OTP)');
   $('#msform-login fieldset#l2 .fs-subtitle').text('Your login has failed');
 
   // enable all action buttons
@@ -419,7 +415,7 @@ $("#msform .next").click(function(){
       nextButton.addClass('hide');
 
       onComplete = function () {
-        Record.startRegistration(username, nextFieldsetId);
+        Record.startRegistration(false, username, nextFieldsetId);
       };
     }
 
@@ -542,7 +538,7 @@ $("#msform .previous").click(function(){
       nextButton.addClass('hide');
 
       onComplete = function () {
-        Record.startRegistration(username, previousFieldsetId);
+        Record.startRegistration(false, username, previousFieldsetId);
       };
     }
   }else{
@@ -604,7 +600,8 @@ $("#msform .record").click(function(){
   currentFSId = $('#msform fieldset:visible').attr('id');
   $('#msform fieldset#'+currentFSId+' .fs-subtitle').text('Place your hand');
   
-  Record.startRegistration(username, currentFSId);
+  window.isRerecord = true;
+  Record.startRegistration(true, username, currentFSId);
 
 });
 
@@ -617,7 +614,7 @@ $("#msform .verify").click(function(){
   $('#msform fieldset#'+currentFSId+' .fs-subtitle').text('Place your hand');
   
   var usernameInput = $("#msform #username");
-  Record.startVerify(usernameInput.val(), currentFSId);
+  Record.startVerify(true, usernameInput.val(), currentFSId);
 
 });
 
@@ -687,7 +684,7 @@ $("#msform-login .next").click(function(){
     nextButton.addClass('hide');
     console.log(nextButton);
     onComplete = function () {
-      Record.startLogin(username, nextFieldsetId);
+      Record.startLogin(false, username, nextFieldsetId);
     };
 
   }else{
@@ -784,7 +781,7 @@ $("#msform-login .previous").click(function(){
     login.count = 0;
 
     onComplete = function () {
-      Record.startLogin(username, previousFieldsetId);
+      Record.startLogin(false, username, previousFieldsetId);
     };
 
   }else{
