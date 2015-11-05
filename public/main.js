@@ -267,9 +267,12 @@ var registration = {
 
 var Record = {
 
-  startVerify :function(){
+  startVerify :function(username, round){
     window.isTrackingStart = true;
     window.isVerify = true;
+
+    registration.username = username;
+    registration.round = round;
 
     if(!isPlayback()){
       Record.start(username, round);
@@ -350,12 +353,16 @@ var Record = {
 
     if(window.isRegistration && window.isVerify){
       // local verification
-
+      console.log('local verification');
       var hit = 0.0;
       if((gesture.pose && frameCount == 1) || !gesture.pose){
-        var gestureName = registration.username + registration.round;
-        hit = window.leapTrainer.correlate(gestureName, gesture.data, gesture);
+
+        var currentFSId = $('fieldset:visible').attr('id');
+        var gestureName = registration.username + currentFSId;
+        var previousGesture = window.gestureStored[currentFSId];
+        hit = window.leapTrainer.correlate(gestureName, previousGesture.data, gesture);
       }
+      console.log('hit:'+hit);
       Record.stopVerify();
 
     }else if(window.isLogin){
@@ -397,6 +404,13 @@ var Record = {
         recordButton.removeClass('hide');
         recordButton.removeClass('show');
       }
+
+      var verifyButton = $('#msform #'+currentFSId+' .action-button.verify');
+      if(verifyButton){
+        verifyButton.removeClass('hide');
+        verifyButton.removeClass('show');
+      }
+
 
       Record.stopRegistration();
     }

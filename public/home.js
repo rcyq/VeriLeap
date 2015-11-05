@@ -567,10 +567,11 @@ $(".verify").click(function(){
 
   Record.stopRegistration();
 
-  currentFSId = $('fieldset:visible').attr('id');
+  var currentFSId = $('fieldset:visible').attr('id');
   $('fieldset#'+currentFSId+' .fs-subtitle').text('Place your hand');
   
-  Record.startVerify();
+  var usernameInput = $("#username");
+  Record.startVerify(usernameInput.val(), currentFSId);
 
 });
 
