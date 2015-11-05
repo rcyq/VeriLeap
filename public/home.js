@@ -18,11 +18,11 @@
     var registerMessage = $('.register.register-message');
     var connectLeap = $('#connect-leap');
 
-    resetForm();
-
     if( classie.has( overlay, 'open' ) ) {
 
       window.isLogin = false;
+
+      resetForm();
 
       classie.remove( overlay, 'open' );
       classie.add( overlay, 'close' );
@@ -51,6 +51,8 @@
       
       window.isLogin = true;
       
+      resetForm();
+
       if(isConnected){
         registerMessage.removeClass('error');
         registerMessage.text("Login");
@@ -103,11 +105,11 @@
     var registerMessage = $('.register.register-message');
     var connectLeap = $('#connect-leap');
 
-    resetForm();
-
     if( classie.has( overlay, 'open' ) ) {
 
       window.isRegistration = false;
+
+      resetForm();
 
       registerMessage.removeClass('error');
       registerMessage.text("");
@@ -138,6 +140,8 @@
     else if( !classie.has( overlay, 'close' ) ) {
       
       window.isRegistration = true;
+      
+      resetForm();
 
       if(isConnected){
         
@@ -171,36 +175,67 @@
 })();
 
 var resetForm =function () {
-  // hide all fieldset
-  $('fieldset').hide();
-
-  // show first fieldset
-  var firstFS = $('fieldset#s0');
-  firstFS.show();
-  firstFS.css({'opacity':1});
-  $('fieldset#s0 .next').addClass('show').removeClass('hide');
   
+  // For registration 
+
+  // hide all fieldset
+  $('#msform fieldset').hide();
+
+  if(window.isRegistration){
+    // show first fieldset
+    var firstFS = $('#msform fieldset#s0');
+    firstFS.show();
+    firstFS.css({'opacity':1});
+    $('#msform fieldset#s0 .next').addClass('show').removeClass('hide');
+  }
   // reset all progress
-  $('#progressbar li:first-of-type').addClass("active");
+  $('#msform #progressbar li:first-of-type').addClass("active");
 
   // set first progress
-  $("#progressbar li:not(:first-of-type)").removeClass("active");
+  $("#msform #progressbar li:not(:first-of-type)").removeClass("active");
   
   // clear username
-  $('#username').val('');
+  $('#msform #username').val('');
   // clear email
-  $('#email').val('');
+  $('#msform #email').val('');
 
   // reset all registerMessage
-  var allFS = 'fieldset .fs-subtitle';
-  var infoFS = '#s0 .fs-subtitle';
-  var confirmFS = '#s4 .fs-subtitle';
+  var allFS = '#msform fieldset .fs-subtitle';
+  var infoFS = '#msform #s0 .fs-subtitle';
+  var confirmFS = '#msform  #s4 .fs-subtitle';
   $(allFS+':not('+infoFS+','+confirmFS+')').text('Place your hand');
 
   // enable all action buttons
   actionButton = $('#msform .action-button');
   actionButton.attr('disabled', false);
 
+
+  // For login
+
+  // hide all fieldset
+  $('#msform-login fieldset').hide();
+
+  if(window.isLogin){
+    // show first fieldset
+    var firstFS = $('#msform-login fieldset#l0');
+    firstFS.show();
+    firstFS.css({'opacity':1});
+    $('#msform-login fieldset#l0 .next').addClass('show').removeClass('hide');    
+  }
+
+  // clear username
+  $('#msform-login #username-login').val('');
+  
+  // reset all registerMessage
+  var allFS = '#msform-login fieldset .fs-subtitle';
+  var infoFS = '#msform-login #l0 .fs-subtitle';
+  var confirmFS = '#msform-login  #l2 .fs-subtitle';
+  $(allFS+':not('+infoFS+','+confirmFS+')').text('Place your hand');
+
+  // enable all action buttons
+  actionButton = $('#msform-login .action-button');
+  actionButton.attr('disabled', false);
+  
   // clear gesture stored
   window.gestureStored = {};
 
@@ -213,7 +248,7 @@ var resetForm =function () {
     window.leapTrainer.gestures = {}; 
   }
 
-  $('.submit').attr({'disabled': true});
+  $('#msform .submit').attr({'disabled': true});
 }
 
 // Upon triggering Login / Register button, hides / displays login and register
@@ -246,7 +281,7 @@ document.getElementById('overlay-register-close-button').addEventListener("click
 // Create account functions
 document.getElementById('createAccountButton').addEventListener("click", function(){
   console.log("Create account!");
-  console.log($('#user').val());
+  console.log($('#msform #username').val());
 
   // $.ajax({
  //      type: "POST",
@@ -266,7 +301,7 @@ var validateEmail = function(email) {
 }
 
 var isGestureStored = function(fieldsetId){
-  var id = fieldsetId || 'first';
+  var id = fieldsetId || 's1';
   
   try{
     return window.gestureStored[id].data.length;
@@ -280,7 +315,7 @@ var current_fs, next_fs, previous_fs; //fieldsets
 var left, opacity, scale; //fieldset properties which we will animate
 var animating; //flag to prevent quick multi-click glitches
 
-$(".next").click(function(){
+$("#msform .next").click(function(){
   if(animating) return false;
   animating = true;
   
@@ -296,8 +331,8 @@ $(".next").click(function(){
   var recordButton = $('#msform #'+nextFieldsetId+' .action-button.record');
   var verifyButton = $('#msform #'+nextFieldsetId+' .action-button.verify');
   var registerMessage = $('.register.register-message');
-  var usernameInput = $("#username");
-  var emailInput = $("#email");
+  var usernameInput = $("#msform #username");
+  var emailInput = $("#msform #email");
 
   // Check username
   if(currentFieldsetId == "s0"){
@@ -383,7 +418,7 @@ $(".next").click(function(){
     }
   }
 
-  $('.submit').attr({'disabled': nextFieldsetId != "s4"});
+  $('#msform .submit').attr({'disabled': nextFieldsetId != "s4"});
 
   // show previous button
   previousButton.removeClass('hide');
@@ -399,7 +434,7 @@ $(".next").click(function(){
   }
 
   //activate next step on progressbar using the index of next_fs
-  $("#progressbar li").eq($("fieldset").index(next_fs)).addClass("active");
+  $("#msform #progressbar li").eq($("#msform fieldset").index(next_fs)).addClass("active");
   
   //show the next fieldset
   next_fs.show(); 
@@ -442,8 +477,8 @@ $(".previous").click(function(){
   var previousButton = $('#msform #'+previousFieldsetId+' .action-button.previous');
   var recordButton = $('#msform #'+previousFieldsetId+' .action-button.record');
   var verifyButton = $('#msform #'+previousFieldsetId+' .action-button.verify');
-  var registerMessage = $('.register.register-message');
-  var usernameInput = $("#username");
+  var registerMessage = $('#msform .register.register-message');
+  var usernameInput = $("#msform #username");
 
 // check gesture stored
   var isStored = isGestureStored(previousFieldsetId);
@@ -514,7 +549,7 @@ $(".previous").click(function(){
     };
   }
 
-  $('.submit').attr({'disabled': previousFieldsetId != "s4"});
+  $('#msform .submit').attr({'disabled': previousFieldsetId != "s4"});
 
   registerMessage.removeClass('error');
   if(window.isRegistration){
@@ -525,7 +560,7 @@ $(".previous").click(function(){
     registerMessage.text('');
   }
   //de-activate current step on progressbar
-  $("#progressbar li").eq($("fieldset").index(current_fs)).removeClass("active");
+  $("#msform #progressbar li").eq($("#msform fieldset").index(current_fs)).removeClass("active");
   
   //show the previous fieldset
   previous_fs.show(); 
@@ -552,30 +587,30 @@ $(".previous").click(function(){
   });
 });
 
-$(".record").click(function(){
+$("#msform .record").click(function(){
 
   Record.stopRegistration();
 
-  currentFSId = $('fieldset:visible').attr('id');
-  $('fieldset#'+currentFSId+' .fs-subtitle').text('Place your hand');
+  currentFSId = $('#msform fieldset:visible').attr('id');
+  $('#msform fieldset#'+currentFSId+' .fs-subtitle').text('Place your hand');
   
   Record.startRegistration(username, currentFSId);
 
 });
 
-$(".verify").click(function(){
+$("#msform .verify").click(function(){
 
   Record.stopRegistration();
 
-  var currentFSId = $('fieldset:visible').attr('id');
-  $('fieldset#'+currentFSId+' .fs-subtitle').text('Place your hand');
+  var currentFSId = $('#msform fieldset:visible').attr('id');
+  $('#msform fieldset#'+currentFSId+' .fs-subtitle').text('Place your hand');
   
-  var usernameInput = $("#username");
+  var usernameInput = $("#msform #username");
   Record.startVerify(usernameInput.val(), currentFSId);
 
 });
 
-$(".submit").click(function(){
+$("#msform .submit").click(function(){
   return false;
 });
 
