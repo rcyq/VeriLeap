@@ -102,7 +102,7 @@ var onDisconnected = function(){
 var isValidTracking = function(){
   var currentFSId = $('fieldset:visible').attr('id');
   if(!window.isTrackingStart ||  isPlayback() ||
-    (window.isRegstration && currentFSId != "s1" && currentFSId != "s2" && 
+    (window.isRegistration && currentFSId != "s1" && currentFSId != "s2" && 
     currentFSId != "s3") || (window.isLogin && currentFSId != "l1")){
     return false;
   }
@@ -112,30 +112,37 @@ var isValidTracking = function(){
 var onHandFound = function(hand){
 
   var currentFSId = $('fieldset:visible').attr('id');
-  if(!window.isTrackingStart || 
-    (currentFSId != "s1" && currentFSId != "s2" && 
-    currentFSId != "s3")){
+    if(!window.isTrackingStart ||
+    (window.isRegistration && currentFSId != "s1" && currentFSId != "s2" && 
+    currentFSId != "s3") || (window.isLogin && currentFSId != "l1")){
     return false;
+  }
+
+  if(isPlayback()){
+    console.log('playback hand found');
+  }else{
+    console.log('real hand found');
   }
 
   if(isConnected && !isPlayback() && 
     window.isTrackingStart && !window.leapTrainer.recordingPose){
-    Record.start(registration.username, registration.round);
-  }
-
-  if(!isPlayback()){
-    console.log('real hand found');
-  }else{
-    console.log('playback hand found');
+    
+    console.log('hand found => start recording');
+    
+    if(window.isLogin){
+      Record.start(login.username, login.count);  
+    }else if(window.isRegistration){
+      Record.start(registration.username, registration.round)
+    }
   }
 };
 
 var onHandLost = function(hand){
 
   var currentFSId = $('fieldset:visible').attr('id');
-  if(!window.isTrackingStart || 
-    (currentFSId != "s1" && currentFSId != "s2" && 
-    currentFSId != "s3")){
+    if(!window.isTrackingStart ||
+    (window.isRegistration && currentFSId != "s1" && currentFSId != "s2" && 
+    currentFSId != "s3") || (window.isLogin && currentFSId != "l1")){
     return false;
   }
   
@@ -156,6 +163,7 @@ var onHandLost = function(hand){
     actionButton = $('#msform .action-button');
     actionButton.attr('disabled', false);    
 
+    console.log('hand lost => stop recording');
     Record.stop();
   }else{
     console.log('playback hand lost');
@@ -265,7 +273,23 @@ var registration = {
   round : ''
 };
 
+var login = {
+  username: '',
+  count : 0
+}
+
 var Record = {
+
+  startLogin : function(username){
+    window.isTrackingStart = true;
+
+    login.username = username;
+    login.count = 1;
+
+    if(!isPlayback()){
+      Record.start(username, login.count);
+    }
+  },
 
   startVerify :function(username, round){
     window.isTrackingStart = true;
@@ -295,9 +319,14 @@ var Record = {
     window.leapTrainer.resume();
     
     if(!window.isVerify){
-      console.log('not verify');
+      console.log('create: '+username+round);
       window.leapTrainer.create(username+round);   
     }
+  },
+
+  stopLogin : function(){
+    window.isTrackingStart = false;
+    Record.stop();
   },
 
   stopVerify : function () {
@@ -312,6 +341,7 @@ var Record = {
   },
 
   stop: function(){
+    console.log('stop');
     window.leapTrainer.pause();
   },
 
@@ -319,9 +349,9 @@ var Record = {
     if(!isValidTracking()){
       return false;
     }
-
+    console.log('countdown: '+countdown);
     var currentFSId = $('fieldset:visible').attr('id');
-    var actionButton = $('#msform .action-button');
+    var actionButton = $('.action-button');
     actionButton.attr('disabled', true);
     $('fieldset#'+currentFSId+' .fs-subtitle').text('Ready in '+countdown);
   },
@@ -334,7 +364,7 @@ var Record = {
     console.log("training-started");
 
     var currentFSId = $('fieldset:visible').attr('id');
-    $('fieldset#'+currentFSId+' .fs-subtitle').text('Analysing...');
+    $('fieldset#'+currentFSId+' .fs-subtitle').text('Recording...');
   },
 
   onRecording: function () {
@@ -357,7 +387,7 @@ var Record = {
       var hit = 0.0;
       if((gesture.pose && frameCount == 1) || !gesture.pose){
 
-        var currentFSId = $('fieldset:visible').attr('id');
+        var currentFSId = $('#msform fieldset:visible').attr('id');
         var gestureName = registration.username + currentFSId;
         var previousGesture = window.gestureStored[currentFSId];
         hit = window.leapTrainer.correlate(gestureName, previousGesture.data, gesture);
@@ -366,6 +396,7 @@ var Record = {
       Record.stopVerify();
 
     }else if(window.isLogin){
+      
       // login
 
       // data = {
@@ -373,6 +404,18 @@ var Record = {
       //   'gesture' : gesture,
       //   'frameCount': frameCount
       // };
+
+      // if(login.count > 0 && login.count <=3){
+      //   if(login.count == 3 ){
+      //     Record.stopLogin();
+      //   }else{
+      //     Record.stop();
+      //     login.count++;
+      //     Record.start(login.username, login.count);
+      //   }
+      // }else{
+      //   Record.stopLogin();
+      // }
     }
   },
 
@@ -396,7 +439,7 @@ var Record = {
       var JSONobj = JSON.parse(window.leapTrainer.toJSON(gestureName));
       gestureStored[currentFSId] = JSONobj;
 
-      var actionButton = $('#msform .action-button');
+      var actionButton = $('.action-button');
       actionButton.attr('disabled', false);
 
       var recordButton = $('#msform #'+currentFSId+' .action-button.record');
@@ -411,8 +454,34 @@ var Record = {
         verifyButton.removeClass('show');
       }
 
-
       Record.stopRegistration();
+
+    }else if(window.isLogin){
+ 
+      if(login.count > 0 && login.count <=3){
+        
+        if(login.count == 3 ){
+          Record.stopLogin();
+
+
+          // login
+          var currentFSId = $('fieldset:visible').attr('id');
+          $('fieldset#'+currentFSId+' .fs-subtitle').text('Done');
+          $('fieldset#'+currentFSId+' .next').addClass('show').removeClass('hide');
+
+          var actionButton = $('.action-button');
+          actionButton.attr('disabled', false);
+
+        }else{
+          Record.stop();
+          login.count++;
+          $('#msform-login fieldset#l1 .fs-title').text('Gesture '+login.count);
+          Record.start(login.username, login.count);
+        }
+      }else{
+        Record.stopLogin();
+      }
+
     }
   }
 };

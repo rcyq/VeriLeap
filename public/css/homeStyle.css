@@ -2,239 +2,239 @@
 @import url(http://fonts.googleapis.com/css?family=Source+Sans+Pro:700,400,300);
 
 body{
-	margin: 0;
-	padding: 0;
-	background: #fff;
-	color: #fff;
-	font-family: Arial;
-	font-size: 12px;
+  margin: 0;
+  padding: 0;
+  background: #fff;
+  color: #fff;
+  font-family: Arial;
+  font-size: 12px;
 }
 
 .body{
-	position: absolute;
-	top: -20px;
-	left: -20px;
-	right: 0px;
-	bottom: 0px;
-	width: auto;
-	height: auto;
-	background-image: url("../img/homepage.png");
-	background-size: cover;
-	-webkit-filter: blur(7px);
-	z-index: 0;
+  position: absolute;
+  top: -20px;
+  left: -20px;
+  right: 0px;
+  bottom: 0px;
+  width: auto;
+  height: auto;
+  background-image: url("../img/homepage.png");
+  background-size: cover;
+  -webkit-filter: blur(7px);
+  z-index: 0;
 }
 
 .grad{
-	position: absolute;
-	top: -20px;
-	left: -20px;
-	right: 0px;
-	bottom: 0px; 
-	width: auto;
-	height: auto;
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(0,0,0,0)), color-stop(100%,rgba(0,0,0,0.65))); /* Chrome,Safari4+ */
-	z-index: 1;
-	opacity: 0.7;
+  position: absolute;
+  top: -20px;
+  left: -20px;
+  right: 0px;
+  bottom: 0px; 
+  width: auto;
+  height: auto;
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(0,0,0,0)), color-stop(100%,rgba(0,0,0,0.65))); /* Chrome,Safari4+ */
+  z-index: 1;
+  opacity: 0.7;
 }
 
 .header{
-	position: absolute;
-	top: calc(50% - 35px);
-	left: calc(50% - 255px);
-	z-index: 2;
+  position: absolute;
+  top: calc(50% - 35px);
+  left: calc(50% - 255px);
+  z-index: 2;
 }
 
 .header div{
-	float: left;
-	color: #fff;
-	font-family: 'Exo', sans-serif;
-	font-size: 35px;
-	font-weight: 200;
+  float: left;
+  color: #fff;
+  font-family: 'Exo', sans-serif;
+  font-size: 35px;
+  font-weight: 200;
 }
 
 .header div span{
-	color: #5eaa02 !important;
+  color: #5eaa02 !important;
 }
 
 .login{
-	position: absolute;
-	top: calc(50% - 75px);
-	left: calc(50% - 50px);
-	height: 150px;
-	width: 350px;
-	padding: 10px;
-	z-index: 2;
+  position: absolute;
+  top: calc(50% - 75px);
+  left: calc(50% - 50px);
+  height: 150px;
+  width: 350px;
+  padding: 10px;
+  z-index: 2;
 }
 
 .register input[type=text]{
-	width: 250px;
-	height: 30px;
-	background: transparent;
-	border: 1px solid rgba(255,255,255,0.6);
-	border-radius: 2px;
-	color: #fff;
-	font-family: 'Exo', sans-serif;
-	font-size: 16px;
-	font-weight: 400;
-	padding: 4px;
+  width: 250px;
+  height: 30px;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.6);
+  border-radius: 2px;
+  color: #fff;
+  font-family: 'Exo', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  padding: 4px;
 }
 
 .register.show input[type=text]{
-	display: block !important;
+  display: block !important;
 }
 
 .register.hide input[type=text]{
-	display: none !important;
+  display: none !important;
 }
 
 .register.register-message{
-	background: transparent;
-	color: #5eaa02;
-	font-family: 'Exo', sans-serif;
-	font-size: 16px;
-	font-weight: 400;
-	padding: 4px;
-	height: 20px;
+  background: transparent;
+  color: #5eaa02;
+  font-family: 'Exo', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  padding: 4px;
+  height: 20px;
 }
 
 .register.register-message.error{
-	color: #f00 !important;
+  color: #f00 !important;
 }
 
 .login input[type=text]{
-	width: 250px;
-	height: 30px;
-	background: transparent;
-	border: 1px solid rgba(255,255,255,0.6);
-	border-radius: 2px;
-	color: #fff;
-	font-family: 'Exo', sans-serif;
-	font-size: 16px;
-	font-weight: 400;
-	padding: 4px;
+  width: 250px;
+  height: 30px;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.6);
+  border-radius: 2px;
+  color: #fff;
+  font-family: 'Exo', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  padding: 4px;
 }
 
 .login input[type=password]{
-	width: 250px;
-	height: 30px;
-	background: transparent;
-	border: 1px solid rgba(255,255,255,0.6);
-	border-radius: 2px;
-	color: #fff;
-	font-family: 'Exo', sans-serif;
-	font-size: 16px;
-	font-weight: 400;
-	padding: 4px;
-	margin-top: 10px;
+  width: 250px;
+  height: 30px;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.6);
+  border-radius: 2px;
+  color: #fff;
+  font-family: 'Exo', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  padding: 4px;
+  margin-top: 10px;
 }
 
 .login input[type=button]{
-	width: 260px;
-	height: 35px;
-	background: #fff;
-	border: 1px solid #fff;
-	cursor: pointer;
-	border-radius: 2px;
-	color: #a18d6c;
-	font-family: 'Exo', sans-serif;
-	font-size: 16px;
-	font-weight: 400;
-	padding: 6px;
-	margin-top: 10px;
+  width: 260px;
+  height: 35px;
+  background: #fff;
+  border: 1px solid #fff;
+  cursor: pointer;
+  border-radius: 2px;
+  color: #a18d6c;
+  font-family: 'Exo', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  padding: 6px;
+  margin-top: 10px;
 }
 
 .login input[type=button]:hover{
-	opacity: 0.8;
+  opacity: 0.8;
 }
 
 .login input[type=button]:active{
-	opacity: 0.6;
+  opacity: 0.6;
 }
 
 .login input[type=text]:focus{
-	outline: none;
-	border: 1px solid rgba(255,255,255,0.9);
+  outline: none;
+  border: 1px solid rgba(255,255,255,0.9);
 }
 
 .login input[type=password]:focus{
-	outline: none;
-	border: 1px solid rgba(255,255,255,0.9);
+  outline: none;
+  border: 1px solid rgba(255,255,255,0.9);
 }
 
 .login input[type=button]:focus{
-	outline: none;
+  outline: none;
 }
 
 ::-webkit-input-placeholder{
-	color: rgba(255,255,255,0.6);
+  color: rgba(255,255,255,0.6);
 }
 
 ::-moz-input-placeholder{
-	color: rgba(255,255,255,0.6);
+  color: rgba(255,255,255,0.6);
 }
 
 /* So as to enable clicking through canvas (leapHand) 
  * to click on Close button of overlay
  */    
 canvas {
-	pointer-events: none;
-	z-index: 102;
-	display: none;
+  pointer-events: none;
+  z-index: 102;
+  display: none;
 }
 
 canvas.show{
-	display: block !important;
+  display: block !important;
 }
 
  canvas.hide{
-	display: none !important;
+  display: none !important;
 }
 
 
 .account.show{
-	display: block !important;
+  display: block !important;
 }
 
 .account.hide{
-	display: none !important;
+  display: none !important;
 }
 
 /* Create account button in Register overlay */
 .account input[type=button]{
- 	width: 260px;
- 	height: 35px;
- 	background: #fff;
- 	border: 1px solid #fff;
- 	cursor: pointer;
- 	border-radius: 2px;
- 	color: #a18d6c;
- 	font-family: 'Exo', sans-serif;
- 	font-size: 16px;
- 	font-weight: 400;
- 	padding: 6px;
- 	margin-top: 25%;
+  width: 260px;
+  height: 35px;
+  background: #fff;
+  border: 1px solid #fff;
+  cursor: pointer;
+  border-radius: 2px;
+  color: #a18d6c;
+  font-family: 'Exo', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  padding: 6px;
+  margin-top: 25%;
  }
 
 .account input[type=button]:hover{
-	opacity: 0.8;
+  opacity: 0.8;
 }
 
 .account input[type=button]:active{
-	opacity: 0.6;
+  opacity: 0.6;
 }
 
 .account input[type=text]:focus{
-	outline: none;
-	border: 1px solid rgba(255,255,255,0.9);
+  outline: none;
+  border: 1px solid rgba(255,255,255,0.9);
 }
 
 .account input[type=password]:focus{
-	outline: none;
-	border: 1px solid rgba(255,255,255,0.9);
+  outline: none;
+  border: 1px solid rgba(255,255,255,0.9);
 }
 
 .account input[type=button]:focus{
-	outline: none;
+  outline: none;
 }
 
 /* Modal design
@@ -242,95 +242,95 @@ http://codepen.io/m-e-conroy/pen/ALsdF
 */
 
 #connect-leap{
-	cursor: default !important;
-	pointer-events: none !important;
+  cursor: default !important;
+  pointer-events: none !important;
 }
 
 #connect-leap > img{
-	height: auto !important;
-	width: 25% !important;
+  height: auto !important;
+  width: 25% !important;
 }
 
 .connect-leap-show{
-	z-index: 105 !important;
-	display: block !important;
+  z-index: 105 !important;
+  display: block !important;
 }
 
 .connect-leap-hide{
-	z-index: -1 !important;
-	display: none !important; 
+  z-index: -1 !important;
+  display: none !important; 
 }
 
 #overlay-close-button,
 #overlay-register-close-button{
-	z-index: 110 !important;
+  z-index: 110 !important;
 }
 
 /*form styles*/
 #msform,
 #msform-login{
-	width: 80%;
-	margin: 5px auto;
-	text-align: center;
-	position: relative;
+  width: 80%;
+  margin: 5px auto;
+  text-align: center;
+  position: relative;
 }
 
 #msform.show,
 #msform-login.show{
-	display: initial !important;
+  display: initial !important;
 }
 
 #msform.hide,
 #msform-login.hide{
-	display: none !important;
+  display: none !important;
 }
 
 #msform fieldset,
 #msform-login fieldset {
-	background: transparent;
-	border: 0 none;
-	border-radius: 3px;
-	box-shadow: 0 0 15px 1px rgba(0, 0, 0, 0.4);
-	padding: 15% 20px 30px 30px;
-	
-	box-sizing: border-box;
-	width: 80%;
-	margin: 0 10%;
-	
-	/*stacking fieldsets above each other*/
-	position: absolute;
+  background: transparent;
+  border: 0 none;
+  border-radius: 3px;
+  box-shadow: 0 0 15px 1px rgba(0, 0, 0, 0.4);
+  padding: 15% 20px 30px 30px;
+  
+  box-sizing: border-box;
+  width: 80%;
+  margin: 0 10%;
+  
+  /*stacking fieldsets above each other*/
+  position: absolute;
 }
 /*Hide all except first fieldset*/
 #msform fieldset:not(:first-of-type) ,
 #msform-login fieldset:not(:first-of-type) {
-	display: none;
+  display: none;
 }
 /*inputs*/
 #msform input, #msform textarea,
 #msform-login input, #msform-login textarea {
-	padding: 4px;
-	border-radius: 3px;
-	margin-bottom: 10px;
-	width: 30%;
-	font-family: 'Exo' ,sans-serif;
-	font-size: 13px;
-	background: transparent;
-	border: 1px solid rgba(255,255,255,0.6);
-	border-radius: 2px;
-	color: #fff;
+  padding: 4px;
+  border-radius: 3px;
+  margin-bottom: 10px;
+  width: 30%;
+  font-family: 'Exo' ,sans-serif;
+  font-size: 13px;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.6);
+  border-radius: 2px;
+  color: #fff;
 }
 /*buttons*/
 #msform .action-button,
 #msform-login .action-button {
-	width: 100px;
-	background: #5eaa02;
-	font-weight: bold;
-	color: white;
-	border: 0 none;
-	border-radius: 1px;
-	cursor: pointer;
-	padding: 10px 5px;
-	margin: 10px 5px;
+  width: 100px;
+  background: #5eaa02;
+  font-weight: bold;
+  color: white;
+  border: 0 none;
+  border-radius: 1px;
+  cursor: pointer;
+  padding: 10px 5px;
+  margin: 10px 5px;
 }
 #msform .action-button.record,
 #msform .action-button.verify,
@@ -338,10 +338,10 @@ http://codepen.io/m-e-conroy/pen/ALsdF
 #msform-login .action-button.record,
 #msform-login .action-button.verify,
 #msform-login .action-button.submit{
- 	background: #fff;
- 	border: 1px solid #fff;
- 	color: #a18d6c;
- 	font-family: 'Exo', sans-serif;
+  background: #fff;
+  border: 1px solid #fff;
+  color: #a18d6c;
+  font-family: 'Exo', sans-serif;
 }
 
 #msform .action-button.verify:hover,
@@ -356,99 +356,100 @@ http://codepen.io/m-e-conroy/pen/ALsdF
 #msform-login .action-button.record:focus,
 #msform-login .action-button.submit:focus,
 #msform-login .action-button.submit:hover{
-	box-shadow: 0 0 0 2px white, 0 0 0 3px #a18d6c;
+  box-shadow: 0 0 0 2px white, 0 0 0 3px #a18d6c;
 }
 #msform .action-button.show,
 #msform-login .action-button.show {
-	display: initial;
+  display: initial;
 }
-#msform .action-button.hide {
-	display: none;
+#msform .action-button.hide,
+#msform-login .action-button.hide {
+  display: none;
 }
 #msform .action-button:hover, 
 #msform .action-button:focus,
 #msform-login .action-button:hover, 
 #msform-login .action-button:focus {
-	box-shadow: 0 0 0 2px white, 0 0 0 3px #5eaa02;
+  box-shadow: 0 0 0 2px white, 0 0 0 3px #5eaa02;
 }
 #msform .action-button:disabled, 
 #msform .action-button:disabled,
 #msform-login .action-button:disabled, 
 #msform-login .action-button:disabled{
-		opacity: 0.6;
+    opacity: 0.6;
 }
 #msform .action-button:hover:disabled, 
 #msform .action-button:focus:disabled,
 #msform-login .action-button:hover:disabled, 
 #msform-login .action-button:focus:disabled{
-	box-shadow: none;
+  box-shadow: none;
 }
 /*headings*/
 .fs-title {
-	font-size: 15px;
-	text-transform: uppercase;
-	color: white;
-	margin-bottom: 10px;
-	font-family: 'Exo' ,sans-serif;
+  font-size: 15px;
+  text-transform: uppercase;
+  color: white;
+  margin-bottom: 10px;
+  font-family: 'Exo' ,sans-serif;
 }
 .fs-subtitle {
-	font-weight: normal;
-	font-size: 13px;
-	color: white;
-	margin-bottom: 20px;
-	font-family: 'Exo' ,sans-serif;
+  font-weight: normal;
+  font-size: 13px;
+  color: white;
+  margin-bottom: 20px;
+  font-family: 'Exo' ,sans-serif;
 }
 /*progressbar*/
 #progressbar {
-	width: 100% !important;
-	height: 40px !important;
-	margin-bottom: 5px;
-	overflow: hidden;
-	/*CSS counters to number the steps*/
-	counter-reset: step;
+  width: 100% !important;
+  height: 40px !important;
+  margin-bottom: 5px;
+  overflow: hidden;
+  /*CSS counters to number the steps*/
+  counter-reset: step;
 }
 #progressbar li {
-	list-style-type: none;
-	color: white;
-	text-transform: uppercase;
-	font-size: 9px;
-	width: 20%;
-	float: left;
-	font-family: 'Exo' ,sans-serif;
-	position: relative;
+  list-style-type: none;
+  color: white;
+  text-transform: uppercase;
+  font-size: 9px;
+  width: 20%;
+  float: left;
+  font-family: 'Exo' ,sans-serif;
+  position: relative;
 }
 #progressbar li:before {
-	content: counter(step);
-	counter-increment: step;
-	width: 20px;
-	line-height: 20px;
-	display: block;
-	font-size: 10px;
-	color: #333;
-	background: white;
-	border-radius: 3px;
-	margin: 0 auto 5px auto;
+  content: counter(step);
+  counter-increment: step;
+  width: 20px;
+  line-height: 20px;
+  display: block;
+  font-size: 10px;
+  color: #333;
+  background: white;
+  border-radius: 3px;
+  margin: 0 auto 5px auto;
 }
 /*progressbar connectors*/
 #progressbar li:after {
-	content: '';
-	width: 100%;
-	height: 2px;
-	background: white;
-	position: absolute;
-	left: -50%;
-	top: 9px;
-	z-index: -1; /*put it behind the numbers*/
+  content: '';
+  width: 100%;
+  height: 2px;
+  background: white;
+  position: absolute;
+  left: -50%;
+  top: 9px;
+  z-index: -1; /*put it behind the numbers*/
 }
 #progressbar li:first-child:after {
-	/*connector not needed before the first step*/
-	content: none; 
+  /*connector not needed before the first step*/
+  content: none; 
 }
 /*marking active/completed steps green*/
 /*The number of the step and the connector before it = green*/
 #progressbar li.active:before,  #progressbar li.active:after{
-	background: #5eaa02;
-	color: white;
+  background: #5eaa02;
+  color: white;
 }
 
 
