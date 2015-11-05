@@ -58,6 +58,31 @@
     <button id="overlay-close-button" type="button" class="overlay-close">Close</button>
     <nav>
       <h6 id="registerMessage-login"class="register register-message">message</h6>
+
+      <!-- multistep form -->
+      <form id="msform-login" class="">
+        <!-- fieldsets -->
+        <fieldset id="l0">
+          <h2 class="fs-title">Enter username</h2>
+          <div id="informationInput">
+            <input class="register"type="text" placeholder="Enter username" name="username" id="username-login">
+          </div>
+          <input type="button" name="next" class="next action-button" value="Next" />
+        </fieldset>
+        <fieldset id="l1">
+          <h2 class="fs-title">Gesuture</h2>
+          <h3 class="fs-subtitle">Place your gesture</h3>
+          <input type="button" name="previous" class="previous action-button" value="Previous" />
+          <input type="button" name="next" class="next action-button" value="Next" />
+        </fieldset>
+        <fieldset id="l2">
+          <h2 class="fs-title">Confirmation</h2>
+          <h3 class="fs-subtitle">You are ready to create an account</h3>
+          <input type="button" name="previous" class="previous action-button" value="Previous" />
+          <input id="createAccountButton" type="submit" name="submit" class="account submit action-button" value="Create" />
+        </fieldset>
+      </form>
+
     </nav>
   </div>
 
@@ -82,10 +107,10 @@
         <fieldset id="s0">
           <h2 class="fs-title">Information</h2>
           <h3 class="fs-subtitle">Please enter the following information</h3>
-          <div id="informationInput">
+          <div>
             <input class="register"type="text" placeholder="Enter username" name="username" id="username">
           </div>
-          <div id="informationInput">
+          <div>
             <input class="register"type="text" placeholder="Enter email" name="email" id="email">
           </div>
           <input type="button" name="next" class="next action-button" value="Next" />
