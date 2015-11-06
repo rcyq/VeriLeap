@@ -58,6 +58,30 @@
     <button id="overlay-close-button" type="button" class="overlay-close">Close</button>
     <nav>
       <h6 id="registerMessage-login"class="register register-message">message</h6>
+
+      <!-- multistep form -->
+      <form id="msform-login" class="">
+        <!-- fieldsets -->
+        <fieldset id="l0">
+          <h2 class="fs-title">Enter username</h2>
+          <div id="informationInput">
+            <input class="register"type="text" placeholder="Enter username" name="username" id="username-login">
+          </div>
+          <input type="button" name="next" class="next action-button" value="Next" />
+        </fieldset>
+        <fieldset id="l1">
+          <h2 class="fs-title">Gesuture</h2>
+          <h3 class="fs-subtitle">Place your gesture</h3>
+          <input type="button" name="previous" class="previous action-button" value="Previous" />
+          <input type="button" name="next" class="next action-button" value="Next" />
+        </fieldset>
+        <fieldset id="l2">
+          <h2 class="fs-title">Result</h2>
+          <h3 class="fs-subtitle">Your login has failed</h3>
+          <input type="button" name="previous" class="previous action-button" value="Previous" />
+        </fieldset>
+      </form>
+
     </nav>
   </div>
 
@@ -79,18 +103,18 @@
           <li>Confirmation</li>
         </ul>
         <!-- fieldsets -->
-        <fieldset id="zero">
+        <fieldset id="s0">
           <h2 class="fs-title">Information</h2>
           <h3 class="fs-subtitle">Please enter the following information</h3>
-          <div id="informationInput">
+          <div>
             <input class="register"type="text" placeholder="Enter username" name="username" id="username">
           </div>
-          <div id="informationInput">
+          <div>
             <input class="register"type="text" placeholder="Enter email" name="email" id="email">
           </div>
           <input type="button" name="next" class="next action-button" value="Next" />
         </fieldset>
-        <fieldset id="first">
+        <fieldset id="s1">
           <h2 class="fs-title">Gesture 1</h2>
           <h3 class="fs-subtitle">Place your hand</h3>
           <input type="button" name="previous" class="previous action-button" value="Previous" />
@@ -98,7 +122,7 @@
           <input type="button" name="verify" class="verify action-button hide" value="Verify" />
           <input type="button" name="next" class="next action-button" value="Next" />
         </fieldset>
-        <fieldset id="second">
+        <fieldset id="s2">
           <h2 class="fs-title">Gesture 2</h2>
           <h3 class="fs-subtitle">Place your hand</h3>
           <input type="button" name="previous" class="previous action-button" value="Previous" />
@@ -106,7 +130,7 @@
           <input type="button" name="verify" class="verify action-button hide" value="Verify" />
           <input type="button" name="next" class="next action-button" value="Next" />
         </fieldset>
-        <fieldset id="last">
+        <fieldset id="s3">
           <h2 class="fs-title">Gesture 3</h2>
           <h3 class="fs-subtitle">Place your hand</h3>
           <input type="button" name="previous" class="previous action-button" value="Previous" />
@@ -114,7 +138,7 @@
           <input type="button" name="verify" class="verify action-button hide" value="Verify" />
           <input type="button" name="next" class="next action-button" value="Next" />
         </fieldset>
-        <fieldset id="confirm">
+        <fieldset id="s4">
           <h2 class="fs-title">Confirmation</h2>
           <h3 class="fs-subtitle">You are ready to create an account</h3>
           <input type="button" name="previous" class="previous action-button" value="Previous" />

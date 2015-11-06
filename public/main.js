@@ -102,8 +102,8 @@ var onDisconnected = function(){
 var isValidTracking = function(){
   var currentFSId = $('fieldset:visible').attr('id');
   if(!window.isTrackingStart ||  isPlayback() ||
-    (currentFSId != "first" && currentFSId != "second" && 
-    currentFSId != "last")){
+    (window.isRegistration && currentFSId != "s1" && currentFSId != "s2" && 
+    currentFSId != "s3") || (window.isLogin && currentFSId != "l1")){
     return false;
   }
   return true;
@@ -112,30 +112,41 @@ var isValidTracking = function(){
 var onHandFound = function(hand){
 
   var currentFSId = $('fieldset:visible').attr('id');
-  if(!window.isTrackingStart || 
-    (currentFSId != "first" && currentFSId != "second" && 
-    currentFSId != "last")){
+    if(!window.isTrackingStart ||
+    (window.isRegistration && currentFSId != "s1" && currentFSId != "s2" && 
+    currentFSId != "s3") || (window.isLogin && currentFSId != "l1")){
     return false;
+  }
+
+  if(isPlayback()){
+    console.log('playback hand found');
+  }else{
+    console.log('real hand found');
   }
 
   if(isConnected && !isPlayback() && 
     window.isTrackingStart && !window.leapTrainer.recordingPose){
-    Record.start(registration.username, registration.round);
-  }
+    
+    console.log('hand found => start recording');
+    
 
-  if(!isPlayback()){
-    console.log('real hand found');
-  }else{
-    console.log('playback hand found');
+    var actionButton = $('.action-button');
+    actionButton.attr('disabled', true);
+
+    if(window.isLogin){
+      Record.start(login.username, login.count);  
+    }else if(window.isRegistration){
+      Record.start(registration.username, registration.round)
+    }
   }
 };
 
 var onHandLost = function(hand){
 
   var currentFSId = $('fieldset:visible').attr('id');
-  if(!window.isTrackingStart || 
-    (currentFSId != "first" && currentFSId != "second" && 
-    currentFSId != "last")){
+    if(!window.isTrackingStart ||
+    (window.isRegistration && currentFSId != "s1" && currentFSId != "s2" && 
+    currentFSId != "s3") || (window.isLogin && currentFSId != "l1")){
     return false;
   }
   
@@ -147,15 +158,22 @@ var onHandLost = function(hand){
     console.log('real hand lost');
 
     var msg = 'Place your hand';
+    if(window.isLogin){
+      msg = 'Place your hand (may replace with OTP)';
+    }
+
     if(!window.isTrackingStart){
       msg= 'Done';
     }
     currentFSId = $('fieldset:visible').attr('id');
     $('fieldset#'+currentFSId+' .fs-subtitle').text(msg);
 
-    actionButton = $('#msform .action-button');
-    actionButton.attr('disabled', false);    
+    if(!window.isVerify && !window.isRerecord){
+      actionButton = $('.action-button');
+      actionButton.attr('disabled', false);
+    }
 
+    console.log('hand lost => stop recording');
     Record.stop();
   }else{
     console.log('playback hand lost');
@@ -248,6 +266,7 @@ var startLeap = function() {
 
 window.isTrackingStart = false;
 window.isVerify= false;
+window.isRerecord = false;
 window.isRegistration = false;
 window.isLogin = false;
 window.gestureStored = {};
@@ -265,35 +284,82 @@ var registration = {
   round : ''
 };
 
+var login = {
+  username: '',
+  count : 0
+}
+
 var Record = {
 
-  startVerify :function(){
+  startLogin : function(username){
     window.isTrackingStart = true;
-    window.isVerify = true;
+
+    login.username = username;
+    login.count = 1;
+
+    console.log('start login');
 
     if(!isPlayback()){
-      Record.start(username, round);
+      var actionButton = $('.action-button');
+      actionButton.attr('disabled', true);
+
+      Record.start(username, login.count);
     }
   },
 
-  startRegistration :function(username, round){
+  startVerify :function(isDisable, username, round){
+    window.isTrackingStart = true;
+    window.isVerify = true;
+    
+    registration.username = username;
+    registration.round = round;
+
+    console.log('start verify');
+
+    var actionButton = $('.action-button');
+    actionButton.attr('disabled', true);
+
+    if(!isPlayback()){
+      Record.start(username, round+'_verify');
+    }
+  },
+
+  startRegistration :function(isDisable, username, round){
     window.isTrackingStart = true;
     registration.username = username;
     registration.round = round;
 
+    console.log('start registration');
+
+    if(window.isRerecord){
+      var actionButton = $('.action-button');
+      actionButton.attr('disabled', true);
+    }
+
     if(!isPlayback()){
+
+      if(!window.isRerecord){
+        var actionButton = $('.action-button');
+        actionButton.attr('disabled', true);
+      }
+
       Record.start(username, round);
     }
   },
 
   start: function(username, round){
+
     console.log('start:'+username+'-'+round);
 
     window.leapTrainer.resume();
     
-    if(!window.isVerify){
-      window.leapTrainer.create(username+round);   
-    }
+    console.log('create: '+username+round);
+    window.leapTrainer.create(username+round);   
+  },
+
+  stopLogin : function(){
+    window.isTrackingStart = false;
+    Record.stop();
   },
 
   stopVerify : function () {
@@ -308,6 +374,7 @@ var Record = {
   },
 
   stop: function(){
+    console.log('stop');
     window.leapTrainer.pause();
   },
 
@@ -315,10 +382,8 @@ var Record = {
     if(!isValidTracking()){
       return false;
     }
-
+    console.log('countdown: '+countdown);
     var currentFSId = $('fieldset:visible').attr('id');
-    var actionButton = $('#msform .action-button');
-    actionButton.attr('disabled', true);
     $('fieldset#'+currentFSId+' .fs-subtitle').text('Ready in '+countdown);
   },
 
@@ -330,7 +395,7 @@ var Record = {
     console.log("training-started");
 
     var currentFSId = $('fieldset:visible').attr('id');
-    $('fieldset#'+currentFSId+' .fs-subtitle').text('Analysing...');
+    $('fieldset#'+currentFSId+' .fs-subtitle').text('Recording...');
   },
 
   onRecording: function () {
@@ -349,15 +414,20 @@ var Record = {
 
     if(window.isRegistration && window.isVerify){
       // local verification
-
-      var hit = 0.0;
-      if((gesture.pose && frameCount == 1) || !gesture.pose){
-        var gestureName = registration.username + registration.round;
-        hit = window.leapTrainer.correlate(gestureName, gesture.data, gesture);
-      }
-      Record.stopVerify();
+      // console.log('local verification');
+      // var hit = 0.0;
+      // if((gesture.pose && frameCount == 1) || !gesture.pose){
+console.log(JSON.stringify(gesture));
+      //   var currentFSId = $('#msform fieldset:visible').attr('id');
+      //   var gestureName = registration.username + currentFSId;
+      //   var previousGesture = window.gestureStored[currentFSId];
+      //   hit = window.leapTrainer.correlate(gestureName, previousGesture.data, gesture);
+      // }
+      // console.log('hit:'+hit);
+      // Record.stopVerify();
 
     }else if(window.isLogin){
+      
       // login
 
       // data = {
@@ -365,6 +435,18 @@ var Record = {
       //   'gesture' : gesture,
       //   'frameCount': frameCount
       // };
+
+      // if(login.count > 0 && login.count <=3){
+      //   if(login.count == 3 ){
+      //     Record.stopLogin();
+      //   }else{
+      //     Record.stop();
+      //     login.count++;
+      //     Record.start(login.username, login.count);
+      //   }
+      // }else{
+      //   Record.stopLogin();
+      // }
     }
   },
 
@@ -376,6 +458,11 @@ var Record = {
     }
 
     console.log(gestureName + (isPose ? ' pose' : ' gesture') + ' learned!'); 
+    
+    var actionButton = $('.action-button');
+    actionButton.attr('disabled', false);
+
+    window.isRerecord = false;
 
     if(window.isRegistration && !window.isVerify){
 
@@ -388,16 +475,70 @@ var Record = {
       var JSONobj = JSON.parse(window.leapTrainer.toJSON(gestureName));
       gestureStored[currentFSId] = JSONobj;
 
-      var actionButton = $('#msform .action-button');
-      actionButton.attr('disabled', false);
-
       var recordButton = $('#msform #'+currentFSId+' .action-button.record');
       if(recordButton){
         recordButton.removeClass('hide');
         recordButton.removeClass('show');
       }
 
+      var verifyButton = $('#msform #'+currentFSId+' .action-button.verify');
+      if(verifyButton){
+        verifyButton.removeClass('hide');
+        verifyButton.removeClass('show');
+      }
+
       Record.stopRegistration();
+
+    }else if(window.isRegistration && window.isVerify){
+
+      // local verification
+      var currentFSId = $('fieldset:visible').attr('id');
+      $('fieldset#'+currentFSId+' .fs-subtitle').text('Done');
+      $('fieldset#'+currentFSId+' .next').addClass('show').removeClass('hide');
+
+
+      var JSONobj = JSON.parse(window.leapTrainer.toJSON(gestureName));
+
+      var hit = 0.0;
+      if((JSONobj.pose && JSONobj.data.length == 1) || !JSONobj.pose){
+
+        var storedGestureName = registration.username + currentFSId;
+        var previousGesture = window.gestureStored[currentFSId];
+        
+        console.log('correlate');
+        console.log(JSON.stringify(trainingSet));
+        console.log(JSON.stringify(JSONobj.data));
+        console.log(JSON.stringify(previousGesture.data));
+
+        hit = window.leapTrainer.correlate(storedGestureName, trainingSet, previousGesture.data);
+      }
+      console.log('hit:'+hit);
+      Record.stopVerify();
+
+    }else if(window.isLogin){
+ 
+      if(login.count > 0 && login.count <=3){
+        
+        if(login.count == 3 ){
+          Record.stopLogin();
+
+          // login
+          var currentFSId = $('fieldset:visible').attr('id');
+          $('fieldset#'+currentFSId+' .fs-subtitle').text('Done');
+          $('fieldset#'+currentFSId+' .next').addClass('show').removeClass('hide');
+
+        }else{
+          Record.stop();
+          login.count++;
+          $('#msform-login fieldset#l1 .fs-title').text('Gesture '+login.count);
+          Record.start(login.username, login.count);
+        }
+      }else{
+        Record.stopLogin();
+      }
+
+    }else{
+      Record.stop();
     }
   }
 };
