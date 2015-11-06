@@ -32,6 +32,10 @@ var transporter = nodemailer.createTransport({
 var email_resend_threshold_in_seconds = 300; // 5 minutes
 var gesture_regen_threshold_in_seconds = 900; // 15 minutes
 var gesturePoolSize = 6;
+var gids = ["s1", "s2", "s3"];
+var correlate_threshold_normal = 90;
+var correlate_threshold_random = 70;
+
 
 var port = process.env.PORT || 4344;
 console.log("Listening on port "+port);
@@ -79,44 +83,6 @@ function sendEmail(username, email, id, sequence, callback) {
 
 }
 
-// sendEmail("Pengran", "zhaopengran@gmail.com", 1);
-
-
-function updateDatabaseNewUser(userName, email, threeGestures, callback) {
-
-	var parsedGestures = JSON.parse(threeGestures);
-	var eventsToWait = 4;
-	var err_reply = {
-		flag: false,
-		message: "Error in adding to database"
-	}
-	var success_reply = {
-		flag: true,
-		message: "Successfully registered the user"
-	}
-	// update email address
-	db.emails.update( {_id: userName, email: email, gesture: null, sequence:null, timestamp: null},  {upsert: true}, function(err) {
-		if (err) {
-			callback(err_reply);
-		}
-		eventsToWait --;
-		if (eventsToWait == 0) callback(success_reply)
-	});
-	
-	// update gestures
-	for (var gid in parsedGestures) {
-    	if (parsedGestures.hasOwnProperty(gid)) {
-    		gesture = parsedGestures.gid;
-    		db.users.update( {_id: gid}, { user: userName, _id: gid, gesture: gesture }, {upsert: true}, function(err) {
-				if (err) {
-					callback(err_reply);
-				}
-				eventsToWait --;
-				if (eventsToWait == 0) callback(success_reply)
-			});
-		}
-	}	
-}
 
 function db_find(findOne, table, criteria, callback) {
 	if (findOne){
@@ -165,29 +131,80 @@ app.post('/checkExisting', textParser, function(req, res) {
 
 
 // before register, checkExisting should be called to make sure the user name does not exist
-app.post('/register', textParser, function(req, res) {
-	updateDatabaseNewUser(req.body.userName, req.body.email, req.body.gestures, function(reply) {
-		res.send(JSON.stringify(reply));
+app.post('/register', jsonParser, function(req, res) {
+
+	userName = req.body.userName;
+	email = req.body.email;
+	parsedGestures = req.body.gestures;
+	
+	var eventsToWait = 4;
+	var err_reply = {
+		flag: false,
+		msg: "Error in adding to database"
+	}
+	var success_reply = {
+		flag: true,
+		msg: "Successfully registered the user"
+	}
+	// update email address
+	db.emails.update( {_id:userName}, {_id: userName, email: email, gesture: null, sequence:null, timestamp: null},  {upsert: true}, function(err) {
+		eventsToWait --;
+		if (err && eventsToWait >= 0) {
+			eventsToWait = -1;
+			res.send(JSON.stringify(err_reply));
+		} else 
+			if (eventsToWait == 0) res.send(JSON.stringify(success_reply));
 	});
 	
+	// update gestures
+	console.log(gids);
+	for (i=0; i<3; i++) {
+		gid = gids[i];
+		console.log("i" + i);
+		console.log("gid" + gid);
+    	gesture = JSON.stringify(parsedGestures[gid]);
+    	console.log("gesture" + gesture);
+		db.users.update( {_id: userName+gid}, { user: userName, _id: userName+gid, gesture: gesture }, {upsert: true}, function(err) {
+			eventsToWait --;
+			if (err && eventsToWait >= 0) {
+				eventsToWait = -1;
+				res.send(JSON.stringify(err_reply));
+			} else 
+				if (eventsToWait == 0) res.send(JSON.stringify(success_reply));
+		});
+	}	
 });
 
-function preVerification (username, toSendEmail, callback) {
+function preVerification (username, callback) {
 	
-	var reply = {
-		success: true,
-		message: "An email has been sent to your mailbox just now",
-	};
+	var replies = [
+		{flag: true,
+		 msg: "An email has been sent to your mailbox",
+		},
+		{
+		flag: false,
+		msg: "No user found",
+		},
+		{
+		flag: false,
+		msg: "Error in sending email. Please try again",
+		},
+		{
+		flag: false,
+		msg: "Error in updating database. Please try again",
+		},
+		];
+
 
 	db_find(true, db.emails, {_id: username}, function(results) {
 		currentTime = new Date().getTime(); // uNIX timestamp in millisecond
-		if (results == null) {
-			reply.success = false;
-			reply.message = "No user found.";
-			callback(reply)
+		console.log(results);
+		if (results.length == 0) {
+			callback(replies[1]);
 		} else {
-			if (results.gesture == null || (currentTime - results.timestamp >= email_resend_threshold_in_seconds*1000) && toSentEmail) {
-				// if there's no gesture associated or ( the previous email sent is threshold minutes ago and user requested to resend )
+			results = results[0];
+			if (results.gesture == null || (currentTime - results.timestamp >= email_resend_threshold_in_seconds*1000)) {
+				// if there's no gesture associated or ( the previous email sent is threshold minutes ago )
 				if (results.gesture==null || currentTime - results.timestamp >= gesture_regen_threshold_in_seconds*1000) {
 					// regenerate a gesture
 					gestureId = Math.floor((Math.random() * gesturePoolSize) + 1);
@@ -200,28 +217,25 @@ function preVerification (username, toSendEmail, callback) {
 				// send email
 				sendEmail(username, results.email, gestureId, sequence, function(error) {
 					if (error) {
-						reply.success = false;
-						reply.message = "Error in sending email. Please try again";
-						callback(reply)
+						callback(replies[2])
 
 					} else {
 						// successfully send the email. Update database
 						currentTime = new Date().getTime();
 						db.emails.update({_id: username}, {$set: {timestamp: currentTime, gesture: gestureId, sequence: sequence}}, function (err, result) {
 							if (err) {
-								reply.success = false;
-								reply.message = "Error in updating database. Please try again";
-								callback(reply)
+								callback(replies[3])
 							} else 
-								callback(reply, gestureId, sequence)
+								replies[0].msg += " just now.";
+								callback(replies[0], gestureId, sequence)
 						});
 					}
 				});
 
 			} else {
-				reply.success = true;
-				reply.message = "An email has been sent to you " + Math.floor((currentTime - results.timestamp)/1000) + "seconds ago";
-				callback(reply, results.gesture, results.sequence);
+				elapse = Math.floor((currentTime - results.timestamp)/1000);
+				replies[0].msg +=  " " + elapse + " seconds ago. You can retry after " + (email_resend_threshold_in_seconds-elapse) + " seconds.";
+				callback(replies[0], results.gesture, results.sequence);
 			}
 		}
 	});
@@ -229,46 +243,62 @@ function preVerification (username, toSendEmail, callback) {
 
 app.post('/startVerify', textParser, function(req, res) {
 
-	preVerification(req.body, false, function(reply) {
+	preVerification(req.body, function(reply, gesture, sequence) {
 		res.send(JSON.stringify(reply));
 	});
 });
 
 app.post('/verify', jsonParser, function(req, res) {
 
-	// toSendEmail, whether user wants to resend email....
+	userName = req.body.userName;
+	email = req.body.email;
+	parsedGestures = req.body.gestures;
 
-	userName = req.body.id.slice(0, -1);
-	toSentEmail = false;
-	
-	preVerification(userName, false, function(reply, gestureId, sequence) {
-		if (reply.success == false) {
-			/// Oh no! some error occurred.
+	db_find(true, db.emails, {_id: username}, function(results) {
+		currentTime = new Date().getTime(); // uNIX timestamp in millisecond
+		console.log(results);
+		if (results.length == 0) {
+			// no such user
 		} else {
-			if (req.body.id.slice(-1) == sequence) {
-				gestureName = "predifinedGestures" + req.gestureId;
-			} else {
-				gestureName = user.body.id;
-			}
+			login = true;
+			results = results[0];
+			gestureId = result.gesture;
+			randomGid = results.sequence;
+			db_find(true, db.users, {_id: "PREDEFINED"+randomGid}, function(randomTrainingGestures) {
 
-			db_find(true, db.users, {_id: req.body.id}, function(results) {
-				if (results == null) {
-					res.send("no associated user");
-				} else {
-					training = JSON.parse(results.gesture);
-					if (training.pose != (req.body.frameCount == 1)) {
-						hit = 0.0;
-					} else {
-						hit = trainer.correlate(req.body.id, training.data, req.body.gesture);		
-					}		
-					percent = Math.min(parseInt(100 * hit), 100);		
-					res.send("percent = " + percent);
-				}		
-			});
+				randomTrainingGesture = randomTrainingGestures[0];
+
+				db_find(false, db.users, {user: username}, function(trainingGetures) {
+					for (i=0; i<3; i++) {
+						if (randomGid == i)	{
+							gestureToCompareJson = randomTrainingGesture;
+						} else {
+							// in case the data are not in order
+							for (j in trainingGetures) {
+								if (trainingGetures[j]._id == username + gids[i]) {
+									gestureToCompareJson = trainingGetures[j];
+									break;
+								}	
+							}
+						}
+						gestureToCompare = (JSON.parse(gestureToCompareJson)).data;
+						hit = trainer.correlate(username, parsedGestures[gids[i]], gestureToCompare);	
+						percent = Math.min(parseInt(100 * hit), 100);		
+						console.log(percent);		
+						if (percent < correlate_threshold_random) login = false;
+						else if (percent < correlate_threshold_normal && randomGid != i) login = false;
+						if (login == false) {
+							res.send("false");
+						}
+					}
+
+					// update database. reset random gesture etc.
+					db.emails.update( {_id:userName}, {_id: userName, email: results.email, gesture: null, sequence:null, timestamp: null},  {upsert: true}, function(err) {
+						res.send("true");
+					});
+
+				}) // end of db find;
+			})
 		}
 	});
-
-
-
-
 });

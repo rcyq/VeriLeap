@@ -298,25 +298,23 @@ document.getElementById('overlay-register-close-button').addEventListener("click
 document.getElementById('createAccountButton').addEventListener("click", function(){
   console.log("Create account!");
 
-  /*
-  console.log($('#user').val());
-  console.log($("#email").val());
-  
   var dataToSubmit = {
-    userName: $('#user').val(),
-    email: $("#email").val(),
+    userName: $('#msform #username').val(),
+    email: $("#msform #email").val(),
     gestures: window.gestureStored   // format {"first": trained gesture, "second": trained gesture, "last": trained gesture}
   }
-  */
+
   console.log($('#msform #username').val());
+  console.log(dataToSubmit);
 
 
   $.ajax({
       type: "POST",
       url: "/register",
       data: JSON.stringify(dataToSubmit),
-      contentType: "text/plain",
+      contentType: "application/json",
       success: function(data) {
+        data = $.parseJSON(data); 
         console.log(data.flag);
         console.log(data.msg);
       }
@@ -693,6 +691,22 @@ $("#msform-login .next").click(function(){
       animating_login = false;
       return false;
     }
+
+    if (isValidFields) {
+        $.ajax({
+          type: "POST",
+          url: "/startVerify",
+          data: usernameInput.val(),
+          contentType: "text/plain",
+          success: function(data) {
+            data = $.parseJSON(data); 
+            console.log(data.flag);
+            console.log(data.msg);
+          }
+      });
+    }
+
+
   }
 
   var onComplete;

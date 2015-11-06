@@ -821,7 +821,12 @@ LeapTrainer.Controller = Class.extend({
 	 */
 	correlate: function(gestureName, trainingGestures, gesture) {
 
-		gesture = this.templateMatcher.process(gesture);
+		gesture = gesture[0];
+
+
+		// 1. There shall be only 1 training example.
+		// 2. reject one pose one gesture
+		if (gesture.length != trainingGestures[0].length) return 0;  
 
 		var nearest = +Infinity, foundMatch = false, distance;
 
