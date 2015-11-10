@@ -274,7 +274,6 @@ app.post('/verify', jsonParser, function(req, res) {
 	username = req.body.userName;
 	parsedGestures = req.body.gestures;
 
-	console.log(parsedGestures);
 
 	db_find(true, db.emails, {_id: username}, function(results) {
 		currentTime = new Date().getTime(); // uNIX timestamp in millisecond
@@ -284,27 +283,28 @@ app.post('/verify', jsonParser, function(req, res) {
 		} else {
 			login = true;
 			results = results[0];
-			gestureId = result.gesture;
+			gestureId = results.gesture;
 			randomGid = results.sequence;
 			db_find(true, db.users, {_id: "PREDEFINED"+randomGid}, function(randomTrainingGestures) {
 
 				//randomTrainingGesture = randomTrainingGestures[0];
 				randomGid = -1;
-				db_find(false, db.users, {user: username}, function(trainingGetures) {
+				db_find(false, db.users, {user: username}, function(trainingGestures) {
+					console.log("training" + trainingGestures);
 					for (i=0; i<3; i++) {
 						if (randomGid == i)	{
-							//gestureToCompareJson = randomTrainingGesture;
+							//gestureToCompareJson = randomTrainingGesture.gesture;
 						} else {
 							// in case the data are not in order
-							for (j in trainingGetures) {
-								if (trainingGetures[j]._id == username + gids[i]) {
-									gestureToCompareJson = trainingGetures[j];
+							for (j in trainingGestures) {
+								if (trainingGestures[j]._id == username + gids[i]) {
+									gestureToCompareJson = trainingGestures[j].gesture;
 									break;
 								}	
 							}
 						}
 						gestureToCompare = (JSON.parse(gestureToCompareJson)).data;
-						hit = trainer.correlate(username, parsedGestures[gids[i]], gestureToCompare);	
+						hit = trainer.correlate(username, parsedGestures[gids[i]].data, gestureToCompare);	
 						percent = Math.min(parseInt(100 * hit), 100);		
 						console.log(percent);		
 						if (percent < correlate_threshold_random) login = false;
@@ -318,7 +318,7 @@ app.post('/verify', jsonParser, function(req, res) {
 						return;
 					}
 					// update database. reset random gesture etc.
-					db.emails.update( {_id:userName}, {_id: userName, email: results.email, gesture: null, sequence:null, timestamp: null},  {upsert: true}, function(err) {
+					db.emails.update( {_id:username}, {_id: username, email: results.email, gesture: null, sequence:null, timestamp: null},  {upsert: true}, function(err) {
 						res.send("true");
 					});
 
