@@ -199,7 +199,7 @@ var resetForm =function () {
   // clear email
   $('#msform #email').val('');
   // clear error
-  $('#msform .register.error-message').text('');
+  $('.register.error-message').text('');
 
   // reset all fs title and subtitle
   $('#msform fieldset#s0 .fs-title').text('Information');
@@ -216,7 +216,7 @@ var resetForm =function () {
   $('#msform fieldset#s0 .fs-subtitle').text('Please enter the following information');
   $('#msform fieldset#s4 .fs-subtitle').text('You are ready to create an account');
 
-  // enable all action buttons
+  // disable all action buttons
   actionButton = $('#msform .action-button');
   actionButton.attr('disabled', false);
 
@@ -245,7 +245,7 @@ var resetForm =function () {
   $('#msform-login fieldset#l1 .fs-subtitle').text('Place your hand (may replace with OTP)');
   $('#msform-login fieldset#l2 .fs-subtitle').text('Your login has failed');
 
-  // enable all action buttons
+  // disable all action buttons
   actionButton = $('#msform-login .action-button');
   actionButton.attr('disabled', false);
   
@@ -267,9 +267,15 @@ var resetForm =function () {
   }
 
   $('#msform .submit').attr({'disabled': true});
+  $('#msform-login .submit').attr({'disabled': true});
 
   isValidated = false;
   isCreated = false;
+
+  if(timeoutLogin){
+    clearTimeout(timeoutLogin);
+  }
+  timeoutLogin = null;
 }
 
 // Upon triggering Login / Register button, hides / displays login and register
@@ -298,33 +304,6 @@ document.getElementById('overlay-register-close-button').addEventListener("click
   swap('empty','homeButtons');
   swap('empty', 'verileapHeader');
 });
-
-// Create account functions
-// document.getElementById('createAccountButton').addEventListener("click", function(){
-//   console.log("Create account!");
-
-  // var dataToSubmit = {
-  //   userName: $('#msform #username').val(),
-  //   email: $("#msform #email").val(),
-  //   gestures: window.gestureStored   // format {"first": trained gesture, "second": trained gesture, "last": trained gesture}
-  // }
-
-  // console.log($('#msform #username').val());
-  // console.log(dataToSubmit);
-
-
-  // $.ajax({
-  //     type: "POST",
-  //     url: "/register",
-  //     data: JSON.stringify(dataToSubmit),
-  //     contentType: "application/json",
-  //     success: function(data) {
-  //       data = $.parseJSON(data); 
-  //       console.log(data.flag);
-  //       console.log(data.msg);
-  //     }
-  // });
-// });
 
 var validateEmail = function(email) {
     var re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
@@ -430,7 +409,6 @@ $("#msform .next").click(function(e){
       isValidated = false;
 
       e.preventDefault();
-      
       return false;
     }
 
@@ -445,7 +423,7 @@ $("#msform .next").click(function(e){
         // format {"first": trained gesture, "second": trained gesture, "last": trained gesture}
       }
 
-      var fs_subtitle = $('#msform fieldset#'+currentFieldsetId+' .fs-title');
+      var fs_subtitle = $('#msform fieldset#'+currentFieldsetId+' .fs-subtitle');
       var nextBut = $('#msform #'+currentFieldsetId+' .action-button.next');
       var previousBut = $('#msform #'+currentFieldsetId+' .action-button.previous');
 
@@ -512,7 +490,7 @@ $("#msform .next").click(function(e){
     fs_subtitle.text('You are ready to create an account');
     isValidated = false;
     isCreated = false;
-    
+
   }else{
     isValidated = false;
     isCreated = false;
@@ -704,13 +682,13 @@ $("#msform .previous").click(function(){
     canvas.removeClass('show');
     canvas.addClass('hide');
 
-    isValidated = false;
-    isCreated = false;
-
     onComplete = function () {
       Record.stopRegistration();
     };
   }
+
+  isValidated = false;
+  isCreated = false;
 
   $('#msform .submit').attr({'disabled': previousFieldsetId != "s4"});
 
@@ -778,14 +756,14 @@ $("#msform .submit").click(function(){
 
 
 
-
-
 //jQuery time
 var current_fs_login, next_fs_login, previous_fs_login; //fieldsets
 var left_login, opacity_login, scale_login; //fieldset properties which we will animate
 var animating_login; //flag to prevent quick multi-click glitches
+var isLogin;
+var timeoutLogin;
 
-$("#msform-login .next").click(function(){
+$("#msform-login .next").click(function(e){
   if(animating_login) return false;
   animating_login = true;
   
@@ -800,7 +778,8 @@ $("#msform-login .next").click(function(){
   var previousButton = $('#msform-login #'+nextFieldsetId+' .action-button.previous');
   var registerMessage = $('.register.register-message');
   var usernameInput = $("#msform-login #username-login");
-  
+  var errorMessage = $('#msform-login .register.error-message');
+
   // Check username
   if(currentFieldsetId == "l0"){
     var isValidFields = true;
@@ -811,28 +790,68 @@ $("#msform-login .next").click(function(){
       isValidFields = false;
     }
 
-    if(!isValidFields){
-      registerMessage.addClass('error');
-      registerMessage.text(errMsg);
-      animating_login = false;
-      return false;
-    }
+    if(isValidFields){
 
-    if (isValidFields) {
+      if(!isValidated){
+
+        var nextBut = $('#msform-login #'+currentFieldsetId+' .action-button.next');
+        nextBut.attr('disabled', true);
+
+        errorMessage.removeClass('error');
+        errorMessage.text("Login..");
+
+        // check if username has been used
         $.ajax({
           type: "POST",
           url: "/startVerify",
           data: usernameInput.val(),
-          contentType: "text/plain",
-          success: function(data) {
-            data = $.parseJSON(data); 
-            console.log(data.flag);
-            console.log(data.msg);
+          contentType: "text/plain", 
+          success: function(response) {
+
+            response = $.parseJSON(response);
+console.log('success');
+console.log(response);
+            if (response.flag) {
+              errorMessage.removeClass('error');
+              errorMessage.text(response.msg);
+              
+
+              timeoutLogin = setTimeout(function(){
+console.log('timeout');
+                animating_login = false;
+                isValidated = true;
+
+                $("#msform-login .next").click();
+              }, 3000);
+            }else{
+              /// else do what it supposed to do next
+              errorMessage.addClass('error');
+              errorMessage.text(response.msg);
+              isValidated = true;
+              animating_login = false;
+            }
+          },
+          error: function(response){
+            errorMessage.addClass('error');
+            errorMessage.text('Please try again later');
+            animating_login = false;
+            isValidated = false;
           }
-      });
+        });
+
+        e.preventDefault();
+        return false;
+      }
+
+    }else{
+      errorMessage.addClass('error');
+      errorMessage.text(errMsg);
+      animating_login = false;
+      isValidated = false;
+
+      e.preventDefault();
+      return false;
     }
-
-
   }
 
   var onComplete;
@@ -850,7 +869,6 @@ $("#msform-login .next").click(function(){
     // hide next button
     nextButton.removeClass('show');
     nextButton.addClass('hide');
-    console.log(nextButton);
     onComplete = function () {
       Record.startLogin(false, username, nextFieldsetId);
     };
@@ -868,6 +886,9 @@ $("#msform-login .next").click(function(){
     onComplete = function () {
       Record.stopLogin();
     }
+
+    errorMessage.removeClass('error');
+    errorMessage.text('');
   }
 
 
@@ -969,6 +990,8 @@ $("#msform-login .previous").click(function(){
       Record.stopLogin();
     };
   }
+
+  isValidated = false;
 
   registerMessage.removeClass('error');
   registerMessage.text('Login');
