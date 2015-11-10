@@ -155,7 +155,7 @@ app.post('/register', jsonParser, function(req, res) {
 	}
 	var success_reply = {
 		flag: true,
-		msg: "Successfully registered the user"
+		msg: 'Successfully registered "' + userName +'"'
 	}
 	// update email address
 	db_exist(db.users, {user: userName }, function(result) {
