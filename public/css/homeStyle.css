@@ -97,7 +97,18 @@ body{
   height: 20px;
 }
 
-.register.register-message.error{
+.register.error-message{
+  background: transparent;
+  color: #5eaa02;
+  font-family: 'Exo', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  padding: 4px;
+  height: 20px;
+}
+
+.register.register-message.error,
+.register.error-message.error{
   color: #f00 !important;
 }
 
@@ -192,7 +203,7 @@ canvas.show{
 
 
 .account.show{
-  display: block !important;
+  display: initial !important;
 }
 
 .account.hide{
@@ -291,8 +302,7 @@ http://codepen.io/m-e-conroy/pen/ALsdF
   border: 0 none;
   border-radius: 3px;
   box-shadow: 0 0 15px 1px rgba(0, 0, 0, 0.4);
-  padding: 15% 20px 30px 30px;
-  
+  padding: 10% 20px 20px 20px;
   box-sizing: border-box;
   width: 80%;
   margin: 0 10%;
@@ -413,7 +423,7 @@ http://codepen.io/m-e-conroy/pen/ALsdF
   color: white;
   text-transform: uppercase;
   font-size: 9px;
-  width: 20%;
+  width: 16.57%;
   float: left;
   font-family: 'Exo' ,sans-serif;
   position: relative;
