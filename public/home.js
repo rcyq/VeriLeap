@@ -486,7 +486,7 @@ $("#msform .next").click(function(e){
 
   }else if(currentFieldsetId == 's3'){
 
-    var fs_subtitle = $('#msform fieldset#'+nextFieldsetId+' .fs-title');
+    var fs_subtitle = $('#msform fieldset#'+nextFieldsetId+' .fs-subtitle');
     fs_subtitle.text('You are ready to create an account');
     isValidated = false;
     isCreated = false;
@@ -817,16 +817,20 @@ console.log(response);
               
 
               timeoutLogin = setTimeout(function(){
-console.log('timeout');
                 animating_login = false;
                 isValidated = true;
 
+                nextBut.attr('disabled', false);
                 $("#msform-login .next").click();
+
               }, 3000);
             }else{
               /// else do what it supposed to do next
               errorMessage.addClass('error');
               errorMessage.text(response.msg);
+              
+              nextBut.attr('disabled', false);
+
               isValidated = true;
               animating_login = false;
             }
@@ -834,6 +838,8 @@ console.log('timeout');
           error: function(response){
             errorMessage.addClass('error');
             errorMessage.text('Please try again later');
+
+            nextBut.attr('disabled', false);
             animating_login = false;
             isValidated = false;
           }
