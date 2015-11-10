@@ -900,6 +900,25 @@ console.log(response);
 
   if(nextFieldsetId == 'l2'){
     // show previous button
+    // finally submit the login gestures
+
+     var dataToSubmit = {
+        userName: $("#msform-login #username-login").val(),
+        gestures: window.gestureStored   
+      }
+      console.log(dataToSubmit);
+
+    $.ajax({
+          type: "POST",
+          url: "/verify",
+          data: JSON.stringify(dataToSubmit),
+          contentType: "application/json",
+          success: function(response) {
+              console.log(response);
+          }
+    });      
+
+
     previousButton.removeClass('show');
     previousButton.addClass('hide');
   }else{
