@@ -33,6 +33,7 @@ var email_resend_threshold_in_seconds = 300; // 5 minutes
 var gesture_regen_threshold_in_seconds = 900; // 15 minutes
 var gesturePoolSize = 6;
 var gids = ["s1", "s2", "s3"];
+var sequenceTrans = ["1st", "2nd", "3rd"];
 var correlate_threshold_normal = 90;
 var correlate_threshold_random = 70;
 
@@ -45,8 +46,9 @@ server.listen(port);
 function sendEmail(username, email, id, sequence, callback) {
 
 	var html = "Dear " + username + ", <br/>"
-			+"<p><b> Replace which one??  No." + sequence +"</p></b>"
-			+"<p>You are about to login using VeriLeap verification software. Please replace one of your password gesture with our One-Time-Password (OTP)"
+			//+"<p><b> Replace which one??  No." + sequence +"</p></b>"
+			+"<p>You are about to login using VeriLeap verification software. Please replace your"
+			+ "<b> " + sequenceTrans[sequence-1] + " </b> password gesture with our One-Time-Password (OTP)"
 			+" gesture as shown below (also attached to the email) when you are prompted to input your gestures."
 			+"If you did not attempt to login, your account details could have been compromised. Please login and change your password (gestures) immediately.</p>"
 			+"<p>Step 1: Place your Leap Motion device in this orientation</p>"
@@ -147,32 +149,42 @@ app.post('/register', jsonParser, function(req, res) {
 		msg: "Successfully registered the user"
 	}
 	// update email address
-	db.emails.update( {_id:userName}, {_id: userName, email: email, gesture: null, sequence:null, timestamp: null},  {upsert: true}, function(err) {
-		eventsToWait --;
-		if (err && eventsToWait >= 0) {
-			eventsToWait = -1;
+	db_exist(db.users, {user: userName }, function(result) {
+		if (result == false) {  // username doesn't exist
+
+			db.emails.update( {_id:userName}, {_id: userName, email: email, gesture: null, sequence:null, timestamp: null},  {upsert: true}, function(err) {
+				eventsToWait --;
+				if (err && eventsToWait >= 0) {
+					eventsToWait = -1;
+					res.send(JSON.stringify(err_reply));
+				} else 
+					if (eventsToWait == 0) res.send(JSON.stringify(success_reply));
+			});
+			
+			// update gestures
+			console.log(gids);
+			for (i=0; i<3; i++) {
+				gid = gids[i];
+				console.log("i" + i);
+				console.log("gid" + gid);
+		    	gesture = JSON.stringify(parsedGestures[gid]);
+		    	console.log("gesture" + gesture);
+				db.users.update( {_id: userName+gid}, { user: userName, _id: userName+gid, gesture: gesture }, {upsert: true}, function(err) {
+					eventsToWait --;
+					if (err && eventsToWait >= 0) {
+						eventsToWait = -1;
+						res.send(JSON.stringify(err_reply));
+					} else 
+						if (eventsToWait == 0) res.send(JSON.stringify(success_reply));
+				});
+			}	
+
+		} else {
+			err_reply.msg = "Username exists";
 			res.send(JSON.stringify(err_reply));
-		} else 
-			if (eventsToWait == 0) res.send(JSON.stringify(success_reply));
+		}
 	});
-	
-	// update gestures
-	console.log(gids);
-	for (i=0; i<3; i++) {
-		gid = gids[i];
-		console.log("i" + i);
-		console.log("gid" + gid);
-    	gesture = JSON.stringify(parsedGestures[gid]);
-    	console.log("gesture" + gesture);
-		db.users.update( {_id: userName+gid}, { user: userName, _id: userName+gid, gesture: gesture }, {upsert: true}, function(err) {
-			eventsToWait --;
-			if (err && eventsToWait >= 0) {
-				eventsToWait = -1;
-				res.send(JSON.stringify(err_reply));
-			} else 
-				if (eventsToWait == 0) res.send(JSON.stringify(success_reply));
-		});
-	}	
+
 });
 
 function preVerification (username, callback) {
