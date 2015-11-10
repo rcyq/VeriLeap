@@ -1,10 +1,12 @@
 var express = require('express');
 var app = express();
 var server = require('http').Server(app);
+var https = require('https');
 var io = require('socket.io')(server);
 var fs = require('fs');
-var RandomForestClassifier = require('random-forest-classifier').RandomForestClassifier;
-
+var privateKey  = fs.readFileSync('ssl/verileap-key.pem');
+var certificate = fs.readFileSync('ssl/verileap-cert.pem');
+var credentials = {key: privateKey, cert: certificate};
 var bodyParser = require('body-parser')
 var jsonParser = bodyParser.json({limit: '5mb'})
 var textParser = bodyParser.text()
@@ -12,7 +14,7 @@ var textParser = bodyParser.text()
 var trainerFile = require("leaptrainer.js");
 var trainer = new trainerFile.LeapTrainer.Controller({controller:1});
 
-var db = require('mongoskin').db('mongodb://localhost:27017/leap'); 
+var db = require('mongoskin').db('mongodb://localhost:27017/leap', {username: 'verileap', password: 'cs3235steps7db'}); 
 db.bind("users");
 db.bind("emails");
 
@@ -41,6 +43,13 @@ var correlate_threshold_random = 70;
 var port = process.env.PORT || 4344;
 console.log("Listening on port "+port);
 server.listen(port);
+
+https.createServer(credentials, app, function (req, res) {
+  res.writeHead(200);
+  res.end("hello world\n");
+}).listen(8000);
+console.log("HTTPS: Listening on port 8000");
+
 
 
 function sendEmail(username, email, id, sequence, callback) {
