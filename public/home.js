@@ -486,7 +486,7 @@ $("#msform .next").click(function(e){
 
   }else if(currentFieldsetId == 's3'){
 
-    var fs_subtitle = $('#msform fieldset#'+nextFieldsetId+' .fs-title');
+    var fs_subtitle = $('#msform fieldset#'+nextFieldsetId+' .fs-subtitle');
     fs_subtitle.text('You are ready to create an account');
     isValidated = false;
     isCreated = false;
