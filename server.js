@@ -61,9 +61,9 @@ function sendEmail(username, email, id, sequence, callback) {
 			+" gesture as shown below (also attached to the email) when you are prompted to input your gestures." + "<br/>"
 			+ "<b>" + "If you did not attempt to login, your account details could have been compromised. Please login and change your password (gestures) immediately.</p>" + "</b>"
 			+"<p>Step 1: Place your Leap Motion device in this orientation</p>"
-			+'<img src="cid:orientation" style="width:50%;height:auto;border:0; margin-left:auto;margin-right:auto/>'
+			+'<img src="cid:orientation style="width:50%;height:auto;border:0; margin-left:auto;margin-right:auto"/>'
 			+"<p>Step 2: Replace your" + "<b>" + sequenceTrans[sequence-1] + "</b> password gesture with this OTP gesture</p>"
-			+'<img src="cid:gesture" style="width:50%;height:auto;border:0; margin-left:auto;margin-right:auto/>'
+			+'<img src="cid:gesture style="width:50%;height:auto;border:0; margin-left:auto;margin-right:auto"/>'
 			+"<p>-VeriLeap</p>";
 
 	var mailOptions = {
