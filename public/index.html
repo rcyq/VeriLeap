@@ -1,188 +1,159 @@
-<html>
-  <head>
-    <title>Handedness Demo</title>
-    <script src="three.js"></script>
-    <script src="leap-0.6.4.js"></script>
-    <script src="leap-plugins-0.1.6.1.js"></script>
-    <script src="leap.rigged-hand-0.1.3.min.js"></script>
-    <script src="jquery-2.1.4.js"></script>
-    <script src="leaptrainer.min.js"></script>
-
-    <script src="record.js"></script>
-
-    <style>
-    body{
-      font-family: 'Myriad Pro', Helvetica, Arial, 'Lucida Grande', sans-serif;
-      font-size: 24pt;
-      color: white;
-      background-color: #80b865;
-    }
-    label {
-      position: fixed;
-      white-space: nowrap;
-    }
-    canvas {
-      pointer-events: none;
-
-    }
-    </style>
-  </head>
-
-
-  <input id = "username"></input>
-  <button type="button" onclick = "client_register()"> Register </button>
-  <button type="button" onclick = "client_verify()"> Verify </button>
- 
-  <br>
-  <button type="button" id = "buttonStart" onclick = "recordStart()"> Start </button>
-  <button type="button" id = "buttonStop" onclick = "recordStop()"> Stop </button>
-  <button type="button" id = "buttonSend" onclick = "recordSend()"> Send </button>
-  <button type="button" id = "buttonRegister" onclick = "register()"> Create an account </button>
-  <button type="button" id = "buttonLogin" onclick = "login()"> Login </button>
-
-  <div id="labels"></div>
-<!--
-  <script type="text/javascript" class="codepen">
+<!DOCTYPE html>
+<html >
+<head>
+  <meta charset="UTF-8">
+  <title>VeriLeap</title>
+  <link rel="stylesheet" type="text/css" href="/css/homeStyle.css">
+  <link rel="stylesheet" type="text/css" href="css/overlayStyle.css">
+  <link rel="icon" type="image/png" href="img/v-green.png" />
+  <!-- Scripts -->
+  <script src="/prefixfree.min.js"></script>
+  <script src="/modernizr.custom.js"></script>
+  <script src="three.js"></script>
+  <script src="leap-0.6.4.js"></script>
+  <script src="leap-plugins-0.1.6.1.js"></script>
+  <script src="leap.rigged-hand-0.1.3.min.js"></script>
+  <script src="jquery-2.1.4.js"></script>
+  <script src="leaptrainer.js"></script>
   
-  var convertToXYZDirection = function(direction){
-    var namedDirection = {};
-    $.each(direction, function(i, v){
-      if(i == 0){
-        namedDirection["x"] = v;
-      } else if (i == 1){
-        namedDirection["y"] = v;
-      } else if (i == 2){
-       namedDirection["z"] = v; 
-     }
-   });
+  <!-- jQuery -->
+  <script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script> 
+  <!-- jQuery easing plugin -->
+  <script src="http://thecodeplayer.com/uploads/js/jquery.easing.min.js" type="text/javascript"></script>
 
-    return namedDirection;
-  };
+</head>
 
-  var isLoginClick = false;
-  var onLoginClick = function(){
-    isLoginClick = true;
+<body>
+  <div class="body"></div>
+  <div class="grad"></div>
+  <div id="verileapHeader" class="header">
+    <div>Veri<span>Leap</span></div>
+    <br><br>
 
-  }
+    <a href="https://github.com/rcyq/VeriLeap">
+      <img src="img/github-icon.png" style="width:42px;height:42px;border:0; margin-left:auto;margin-right:auto">
+    </a>
 
-  var riggedHandPlugin;
+    <a target="_top" href='mailto:verileap@gmail.com'>
+      <img src="img/email-icon.png" style="width:42px;height:42px;border:0; margin-left:auto;margin-right:auto">
+    </a>
 
-  var isConnected = false;
-
-  var onConnected = function (){
-    isConnected = true;
-  };
-
-  var onDisconnected = function(){
-    isConnected = false;
-  };
-
-  var ctrl = Leap.loop({
-    background: true,
-    enableGesture: true,
-    loopWhileDisconnected: true
-  }, {
-
-    hand: function(hand){
-
-      var label = hand.data('label');
-      if(isLoginClick === false){
-        return;
-      }
-
-      if (!label){
-        console.log("creating label");
-        label = document.createElement('label');
-        document.body.appendChild(label);
+  </div>
 
 
-      // locate 'label' DOM element
-      var label = hand.data('label');
+  <br>
 
-      if (!label){
-        // 'label' does not exists
-        label = document.createElement('label');
-        document.body.appendChild(label);
+  <!-- Use it to hide buttons and header -->
+  <div id="empty"> </div>
+
+  <!-- Login and register button -->
+  <div id="homeButtons" class="login">
+    <input id="trigger-overlay" type="button" value="Login">
+    <input id="trigger-overlay-register" type="button" value="Register">
+
+  </div>
+
+  <!-- Login overlay -->
+  <div id="loginOverlay" class="overlay overlay-hugeinc">
+    <button id="overlay-close-button" type="button" class="overlay-close">Close</button>
+    <nav>
+      <h6 id="registerMessage-login"class="register register-message">message</h6>
+
+      <!-- multistep form -->
+      <form id="msform-login" class="">
+        <!-- fieldsets -->
+        <fieldset id="l0">
+          <h2 class="fs-title">Enter username</h2>
+          <div id="informationInput">
+            <input class="register"type="text" placeholder="Enter username" name="username" id="username-login">
+          </div>
+          <input type="button" name="next" class="next action-button" value="Next" />
+        </fieldset>
+        <fieldset id="l1">
+          <h2 class="fs-title">Gesuture</h2>
+          <h3 class="fs-subtitle">Place your gesture</h3>
+          <input type="button" name="previous" class="previous action-button" value="Previous" />
+          <input type="button" name="next" class="submit next action-button" value="Next" />
+        </fieldset>
+        <fieldset id="l2">
+          <h2 class="fs-title">Result</h2>
+          <h3 class="fs-subtitle">Your login has failed</h3>
+          <input type="button" name="previous" class="previous action-button" value="Previous" />
+        </fieldset>
+        <h6 class="register error-message">message</h6>
+      </form>
+
+    </nav>
+  </div>
+
+  <!-- Register overlay -->
+  <div id="registerOverlay" class="overlay overlay-register overlay-hugeinc">
+    <button id="overlay-register-close-button" type="button" class="overlay-close">Close</button>
+    <nav>
+
+      <h6 id="registerMessage"class="register register-message">message</h6>
+
+      <!-- multistep form -->
+      <form id="msform" class="hide">
+        <!-- progressbar -->
+        <ul id="progressbar">
+          <li class="active">Information</li>
+          <li>Gesture 1</li>
+          <li>Gesture 2</li>
+          <li>Gesture 3</li>
+          <li>Confirmation</li>
+        </ul>
+        <!-- fieldsets -->
+        <fieldset id="s0">
+          <h2 class="fs-title">Information</h2>
+          <h3 class="fs-subtitle">Please enter the following information</h3>
+          <div>
+            <input class="register"type="text" placeholder="Enter username" name="username" id="username">
+          </div>
+          <div>
+            <input class="register"type="text" placeholder="Enter email" name="email" id="email">
+          </div>
+          <input type="button" name="next" class="next action-button" value="Next" />
+        </fieldset>
+        <fieldset id="s1">
+          <h2 class="fs-title">Gesture 1</h2>
+          <h3 class="fs-subtitle">Place your hand</h3>
+          <input type="button" name="previous" class="previous action-button" value="Previous" />
+          <input type="button" name="record" class="record action-button hide" value="Re-record" />
+          <input type="button" name="verify" class="verify action-button hide" value="Verify" />
+          <input type="button" name="next" class="next action-button" value="Next" />
+        </fieldset>
+        <fieldset id="s2">
+          <h2 class="fs-title">Gesture 2</h2>
+          <h3 class="fs-subtitle">Place your hand</h3>
+          <input type="button" name="previous" class="previous action-button" value="Previous" />
+          <input type="button" name="record" class="record action-button hide" value="Re-record" />
+          <input type="button" name="verify" class="verify action-button hide" value="Verify" />
+          <input type="button" name="next" class="next action-button" value="Next" />
+        </fieldset>
+        <fieldset id="s3">
+          <h2 class="fs-title">Gesture 3</h2>
+          <h3 class="fs-subtitle">Place your hand</h3>
+          <input type="button" name="previous" class="previous action-button" value="Previous" />
+          <input type="button" name="record" class="record action-button hide" value="Re-record" />
+          <input type="button" name="verify" class="verify action-button hide" value="Verify" />
+          <input type="button" name="next" class="next action-button" value="Next" />
+        </fieldset>
+        <fieldset id="s4">
+          <h2 class="fs-title">Confirmation</h2>
+          <h3 class="fs-subtitle">You are ready to create an account</h3>
+          <input type="button" name="previous" class="previous action-button" value="Previous" />
+          <input type="button" name="next" class="account submit next action-button" value="Create" />
+        </fieldset>
+        <h6 class="register error-message">message</h6>
+      </form>
+
+    </nav>
+  </div>
 
 
-        /**
-         * Here we set the label to show the hand type
-         */
-         label.innerHTML = hand.type + " hand";
-
-         hand.data('label', label)
-       }
-
-       var handMesh = hand.data('riggedHand.mesh');
-
-       var screenPosition = handMesh.screenPosition(
-        hand.palmPosition,
-        riggedHandPlugin.camera
-        );
-
-       label.style.left = screenPosition.x + 'px';
-       label.style.bottom = screenPosition.y + 'px';
-
-       if(ctrl.connected()){
-
-       }else{
-
-       }
-
-       if(isConnected && isRecording) {
-        var handFingers = hand.fingers;
-        var fingersData = {};
-
-        $.each(handFingers, function(index,value){
-
-          var fingerData = {
-            direction : convertToXYZDirection(value.direction), 
-            length : value.length,
-            width : value.width, 
-            segments: value.bones.map(function(value, index){return value.length})
-          };  
-
-          fingersData[index] = fingerData;
-
-        });
-
-        frames.push({
-          confidence : hand.confidence,
-          palm: convertToXYZDirection(hand.palmPosition),
-          palmWidth : hand.palmWidth,
-          fingers : fingersData
-        });
-
-        console.log("Recording");
-
-      }
-    }
-  }
-})
-
-
-
-.on('streamingStarted', onConnected)
-.on('streamingStopped', onDisconnected)
-
-.use('riggedHand')
-.use('handEntry')
-.use('handHold')
-.on('handLost', function(hand){
-  var label = hand.data('label');
-  if (label){
-    document.body.removeChild(label);
-    hand.data({label: undefined});
-  }
-})
-.use('playback', {
-  recording: './left-or-right-77fps.json.lz',
-  timeBetweenLoops: 1000
-});
-
-  riggedHandPlugin = Leap.loopController.plugins.riggedHand;
-
-</script>
--->
+  <script src="classie.js"></script>
+  <script src="main.js"></script>   
+  <script src="home.js"></script>
 </body>
 </html>
