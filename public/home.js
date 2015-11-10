@@ -269,6 +269,7 @@ var resetForm =function () {
   $('#msform .submit').attr({'disabled': true});
 
   isValidated = false;
+  isCreated = false;
 }
 
 // Upon triggering Login / Register button, hides / displays login and register
@@ -299,31 +300,31 @@ document.getElementById('overlay-register-close-button').addEventListener("click
 });
 
 // Create account functions
-document.getElementById('createAccountButton').addEventListener("click", function(){
-  console.log("Create account!");
+// document.getElementById('createAccountButton').addEventListener("click", function(){
+//   console.log("Create account!");
 
-  var dataToSubmit = {
-    userName: $('#msform #username').val(),
-    email: $("#msform #email").val(),
-    gestures: window.gestureStored   // format {"first": trained gesture, "second": trained gesture, "last": trained gesture}
-  }
+  // var dataToSubmit = {
+  //   userName: $('#msform #username').val(),
+  //   email: $("#msform #email").val(),
+  //   gestures: window.gestureStored   // format {"first": trained gesture, "second": trained gesture, "last": trained gesture}
+  // }
 
-  console.log($('#msform #username').val());
-  console.log(dataToSubmit);
+  // console.log($('#msform #username').val());
+  // console.log(dataToSubmit);
 
 
-  $.ajax({
-      type: "POST",
-      url: "/register",
-      data: JSON.stringify(dataToSubmit),
-      contentType: "application/json",
-      success: function(data) {
-        data = $.parseJSON(data); 
-        console.log(data.flag);
-        console.log(data.msg);
-      }
-  });
-});
+  // $.ajax({
+  //     type: "POST",
+  //     url: "/register",
+  //     data: JSON.stringify(dataToSubmit),
+  //     contentType: "application/json",
+  //     success: function(data) {
+  //       data = $.parseJSON(data); 
+  //       console.log(data.flag);
+  //       console.log(data.msg);
+  //     }
+  // });
+// });
 
 var validateEmail = function(email) {
     var re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
@@ -346,6 +347,7 @@ var current_fs, next_fs, previous_fs; //fieldsets
 var left, opacity, scale; //fieldset properties which we will animate
 var animating; //flag to prevent quick multi-click glitches
 var isValidated;
+var isCreated;
 
 $("#msform .next").click(function(e){
 
@@ -420,6 +422,7 @@ $("#msform .next").click(function(e){
         e.preventDefault();
         return false;
       }
+
     } else{
       errorMessage.addClass('error');
       errorMessage.text(errMsg);
@@ -430,9 +433,92 @@ $("#msform .next").click(function(e){
       
       return false;
     }
+
+  }else if(currentFieldsetId == 's4'){
+    
+    if(!isCreated){
+
+      var dataToSubmit = {
+        userName: $('#msform #username').val(),
+        email: $("#msform #email").val(),
+        gestures: window.gestureStored   
+        // format {"first": trained gesture, "second": trained gesture, "last": trained gesture}
+      }
+
+      var fs_subtitle = $('#msform fieldset#'+currentFieldsetId+' .fs-title');
+      var nextBut = $('#msform #'+currentFieldsetId+' .action-button.next');
+      var previousBut = $('#msform #'+currentFieldsetId+' .action-button.previous');
+
+      fs_subtitle.text('You are ready to create an account');
+      errorMessage.text('');
+      $.ajax({
+          type: "POST",
+          url: "/register",
+          data: JSON.stringify(dataToSubmit),
+          contentType: "application/json",
+          success: function(response) {
+            
+            response = $.parseJSON(response); 
+
+            if (response.flag) {
+              // account created
+              errorMessage.removeClass('error');
+              errorMessage.text(response.msg);
+              animating = false;
+              isCreated = true;
+
+              previousBut.removeClass('show');
+              previousBut.addClass('hide');
+
+              nextBut.removeClass('show');
+              nextBut.addClass('hide');
+
+              fs_subtitle.text('Your account has been created');
+            }else{
+              errorMessage.addClass('error');
+              errorMessage.text('');
+              isCreated = false;
+              animating = false;
+
+              previousBut.removeClass('hide');
+              previousBut.addClass('show');
+
+              nextBut.removeClass('hide');
+              nextBut.addClass('show');
+            }
+          },
+          error: function(response){
+            errorMessage.addClass('error');
+            errorMessage.text('Please try again later');
+            animating = false;
+            isCreated = false;
+
+            previousBut.removeClass('hide');
+            previousBut.addClass('show');
+
+            nextBut.removeClass('hide');
+            nextBut.addClass('show');
+          }
+      });
+
+      e.preventDefault();
+
+      return false;
+    }
+
+  }else if(currentFieldsetId == 's3'){
+
+    var fs_subtitle = $('#msform fieldset#'+nextFieldsetId+' .fs-title');
+    fs_subtitle.text('You are ready to create an account');
+    isValidated = false;
+    isCreated = false;
+    
   }else{
     isValidated = false;
+    isCreated = false;
   }
+
+
   errorMessage.text('');
 
   // check gesture stored
@@ -619,6 +705,7 @@ $("#msform .previous").click(function(){
     canvas.addClass('hide');
 
     isValidated = false;
+    isCreated = false;
 
     onComplete = function () {
       Record.stopRegistration();
@@ -685,7 +772,6 @@ $("#msform .verify").click(function(){
 });
 
 $("#msform .submit").click(function(){
-  return false;
 });
 
 

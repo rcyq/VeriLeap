@@ -203,7 +203,7 @@ canvas.show{
 
 
 .account.show{
-  display: block !important;
+  display: initial !important;
 }
 
 .account.hide{
