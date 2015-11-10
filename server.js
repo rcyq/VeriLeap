@@ -200,7 +200,7 @@ function preVerification (username, callback) {
 	
 	var replies = [
 		{flag: true,
-		 msg: "An email has been sent to your mailbox",
+		 msg: "An email has been sent",
 		},
 		{
 		flag: false,
@@ -255,7 +255,7 @@ function preVerification (username, callback) {
 
 			} else {
 				elapse = Math.floor((currentTime - results.timestamp)/1000);
-				replies[0].msg +=  " " + elapse + " seconds ago. You can retry after " + (email_resend_threshold_in_seconds-elapse) + " seconds.";
+				replies[0].msg +=  " " + elapse + " seconds ago. Retry after " + (email_resend_threshold_in_seconds-elapse) + " seconds.";
 				callback(replies[0], results.gesture, results.sequence);
 			}
 		}
@@ -271,9 +271,10 @@ app.post('/startVerify', textParser, function(req, res) {
 
 app.post('/verify', jsonParser, function(req, res) {
 
-	userName = req.body.userName;
-	email = req.body.email;
+	username = req.body.userName;
 	parsedGestures = req.body.gestures;
+
+	console.log(parsedGestures);
 
 	db_find(true, db.emails, {_id: username}, function(results) {
 		currentTime = new Date().getTime(); // uNIX timestamp in millisecond
@@ -287,12 +288,12 @@ app.post('/verify', jsonParser, function(req, res) {
 			randomGid = results.sequence;
 			db_find(true, db.users, {_id: "PREDEFINED"+randomGid}, function(randomTrainingGestures) {
 
-				randomTrainingGesture = randomTrainingGestures[0];
-
+				//randomTrainingGesture = randomTrainingGestures[0];
+				randomGid = -1;
 				db_find(false, db.users, {user: username}, function(trainingGetures) {
 					for (i=0; i<3; i++) {
 						if (randomGid == i)	{
-							gestureToCompareJson = randomTrainingGesture;
+							//gestureToCompareJson = randomTrainingGesture;
 						} else {
 							// in case the data are not in order
 							for (j in trainingGetures) {
@@ -309,10 +310,13 @@ app.post('/verify', jsonParser, function(req, res) {
 						if (percent < correlate_threshold_random) login = false;
 						else if (percent < correlate_threshold_normal && randomGid != i) login = false;
 						if (login == false) {
-							res.send("false");
+							break;
 						}
 					}
-
+					if (login == false) {
+						res.send("false");
+						return;
+					}
 					// update database. reset random gesture etc.
 					db.emails.update( {_id:userName}, {_id: userName, email: results.email, gesture: null, sequence:null, timestamp: null},  {upsert: true}, function(err) {
 						res.send("true");

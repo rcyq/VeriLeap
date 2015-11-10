@@ -291,7 +291,7 @@ var login = {
 
 var Record = {
 
-  startLogin : function(username){
+  startLogin : function(isDisbale, username){
     window.isTrackingStart = true;
 
     login.username = username;
@@ -519,6 +519,10 @@ console.log(JSON.stringify(gesture));
  
       if(login.count > 0 && login.count <=3){
         
+        var JSONobj = JSON.parse(window.leapTrainer.toJSON(gestureName));
+        var gestureId = "s"+login.count;
+        gestureStored[gestureId] = JSONobj;
+
         if(login.count == 3 ){
           Record.stopLogin();
 
@@ -528,6 +532,7 @@ console.log(JSON.stringify(gesture));
           $('fieldset#'+currentFSId+' .next').addClass('show').removeClass('hide');
 
         }else{
+
           Record.stop();
           login.count++;
           $('#msform-login fieldset#l1 .fs-title').text('Gesture '+login.count);
