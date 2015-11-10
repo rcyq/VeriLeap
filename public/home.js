@@ -198,6 +198,8 @@ var resetForm =function () {
   $('#msform #username').val('');
   // clear email
   $('#msform #email').val('');
+  // clear error
+  $('#msform .register.error-message').text('');
 
   // reset all fs title and subtitle
   $('#msform fieldset#s0 .fs-title').text('Information');
@@ -265,6 +267,8 @@ var resetForm =function () {
   }
 
   $('#msform .submit').attr({'disabled': true});
+
+  isValidated = false;
 }
 
 // Upon triggering Login / Register button, hides / displays login and register
@@ -336,12 +340,15 @@ var isGestureStored = function(fieldsetId){
   }
 }
 
+
 //jQuery time
 var current_fs, next_fs, previous_fs; //fieldsets
 var left, opacity, scale; //fieldset properties which we will animate
 var animating; //flag to prevent quick multi-click glitches
+var isValidated;
 
-$("#msform .next").click(function(){
+$("#msform .next").click(function(e){
+
   if(animating) return false;
   animating = true;
   
@@ -359,6 +366,7 @@ $("#msform .next").click(function(){
   var registerMessage = $('.register.register-message');
   var usernameInput = $("#msform #username");
   var emailInput = $("#msform #email");
+  var errorMessage = $('#msform .register.error-message');
 
   // Check username
   if(currentFieldsetId == "s0"){
@@ -374,6 +382,9 @@ $("#msform .next").click(function(){
     }
 
     if(isValidFields){
+
+      if(!isValidated){
+
         // check if username has been used
         $.ajax({
           type: "POST",
@@ -381,21 +392,48 @@ $("#msform .next").click(function(){
           data: usernameInput.val(),
           contentType: "text/plain", 
           success: function(response) {
-              if (response.flag == true) {
-                  registerMessage.addClass('error');
-                  registerMessage.text(errMsg);
-                  animating = false;
-                  return false;
-              }  /// else do what it supposed to do next
+
+            response = $.parseJSON(response);
+
+            if (response.flag) {
+              errorMessage.addClass('error');
+              errorMessage.text('Username existed');
+              animating = false;
+              isValidated = false;
+            }else{
+              /// else do what it supposed to do next
+              errorMessage.removeClass('error');
+              errorMessage.text('');
+              isValidated = true;
+              animating = false;
+              $("#msform .next").click();
+            }
+          },
+          error: function(response){
+            errorMessage.addClass('error');
+            errorMessage.text('Please try again later');
+            animating = false;
+            isValidated = false;
           }
         });
-    } else {
-        registerMessage.addClass('error');
-        registerMessage.text(errMsg);
-        animating = false;
+
+        e.preventDefault();
         return false;
+      }
+    } else{
+      errorMessage.addClass('error');
+      errorMessage.text(errMsg);
+      animating = false;
+      isValidated = false;
+
+      e.preventDefault();
+      
+      return false;
     }
+  }else{
+    isValidated = false;
   }
+  errorMessage.text('');
 
   // check gesture stored
   var isStored = isGestureStored(nextFieldsetId);
@@ -579,6 +617,8 @@ $("#msform .previous").click(function(){
     // hide canvas
     canvas.removeClass('show');
     canvas.addClass('hide');
+
+    isValidated = false;
 
     onComplete = function () {
       Record.stopRegistration();
