@@ -33,7 +33,7 @@ var transporter = nodemailer.createTransport({
 
 var email_resend_threshold_in_seconds = 300; // 5 minutes
 var gesture_regen_threshold_in_seconds = 900; // 15 minutes
-var gesturePoolSize = 6;
+var gesturePoolSize = 3;
 var gids = ["s1", "s2", "s3"];
 var sequenceTrans = ["1st", "2nd", "3rd"];
 var correlate_threshold_normal = 90;
@@ -228,7 +228,7 @@ function preVerification (username, callback) {
 				// if there's no gesture associated or ( the previous email sent is threshold minutes ago )
 				if (results.gesture==null || currentTime - results.timestamp >= gesture_regen_threshold_in_seconds*1000) {
 					// regenerate a gesture
-					gestureId = Math.floor((Math.random() * gesturePoolSize) + 1);
+					gestureId = Math.floor((Math.random() * gesturePoolSize) + 1); // gestureId be 1 2 3
 					sequence = Math.floor((Math.random() * 3) + 1);
 				} else {
 					gestureId = results.gesture;
@@ -285,15 +285,14 @@ app.post('/verify', jsonParser, function(req, res) {
 			results = results[0];
 			gestureId = results.gesture;
 			randomGid = results.sequence;
-			db_find(true, db.users, {_id: "PREDEFINED"+randomGid}, function(randomTrainingGestures) {
+			db_find(true, db.users, {_id: "PREDEFINED"+gids[randomGid-1]}, function(randomTrainingGestures) {
 
-				//randomTrainingGesture = randomTrainingGestures[0];
-				randomGid = -1;
+				randomTrainingGesture = randomTrainingGestures[0];
 				db_find(false, db.users, {user: username}, function(trainingGestures) {
 					console.log("training" + trainingGestures);
 					for (i=0; i<3; i++) {
-						if (randomGid == i)	{
-							//gestureToCompareJson = randomTrainingGesture.gesture;
+						if (randomGid == (i+1))	{  // randomGid be 1, 2,3 
+							gestureToCompareJson = randomTrainingGesture.gesture;
 						} else {
 							// in case the data are not in order
 							for (j in trainingGestures) {
@@ -303,14 +302,20 @@ app.post('/verify', jsonParser, function(req, res) {
 								}	
 							}
 						}
+
+						//gestureToCompare = randomTrainingGesture.gesture;
 						gestureToCompare = (JSON.parse(gestureToCompareJson)).data;
-						hit = trainer.correlate(username, parsedGestures[gids[i]].data, gestureToCompare);	
+						//console.log(parsedGestures[gids[i]].data);
+
+						//console.log(gestureToCompare);
+						if ((JSON.parse(gestureToCompareJson)).pose != parsedGestures[gids[i]].pose) hit = 0; 
+						else hit = trainer.correlate(username, parsedGestures[gids[i]].data, gestureToCompare);	
 						percent = Math.min(parseInt(100 * hit), 100);		
-						console.log(percent);		
 						if (percent < correlate_threshold_random) login = false;
 						else if (percent < correlate_threshold_normal && randomGid != i) login = false;
+						console.log("i randomGid percent" + i + ' ' + randomGid + " " + percent);
 						if (login == false) {
-							break;
+							//break;
 						}
 					}
 					if (login == false) {
