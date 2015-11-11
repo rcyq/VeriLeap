@@ -38,6 +38,7 @@ var gids = ["s1", "s2", "s3"];
 var sequenceTrans = ["1st", "2nd", "3rd"];
 var correlate_threshold_normal = 90;
 var correlate_threshold_random = 70;
+var correlate_threshold_gesture = 65;
 
 
 var port = process.env.PORT || 4344;
@@ -315,9 +316,14 @@ app.post('/verify', jsonParser, function(req, res) {
 						if (randomGid == (i+1))	{  // randomGid be 1, 2,3 
 							 console.log(randomGid+"   " + percent);	
 						}
+
+						login = true;
 						if (percent < correlate_threshold_random) login = false;
-						else if (percent < correlate_threshold_normal && randomGid != i) login = false;
-						console.log("i randomGid percent" + i + ' ' + randomGid + " " + percent);
+						else if (percent < correlate_threshold_normal && randomGid != (i+1)) login = false;
+						
+						if (parsedGestures[gids[i]].pose == false && percent >= correlate_threshold_gesture) login = true;
+
+						console.log("i randomGid percent" + i + ' ' + randomGid + " " + percent+"  " + login);
 						if (login == false) {
 							//break;
 						}
