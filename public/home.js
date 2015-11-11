@@ -17,6 +17,7 @@
 
     var registerMessage = $('.register.register-message');
     var connectLeap = $('#connect-leap');
+    var msformlogin = $('#msform-login');
 
     if( classie.has( overlay, 'open' ) ) {
 
@@ -31,6 +32,9 @@
       // hide leap connect img
       connectLeap.removeClass('connect-leap-show');
       connectLeap.addClass('connect-leap-hide');
+
+      msformlogin.removeClass('show');
+      msformlogin.addClass('hide');
 
       var onEndTransitionFn = function( ev ) {
         if( support.transitions ) {
@@ -60,6 +64,9 @@
         // hide leap connect img
         connectLeap.removeClass('connect-leap-show');
         connectLeap.addClass('connect-leap-hide');
+
+        msformlogin.removeClass('hide');
+        msformlogin.addClass('show');
       }else{
 
         registerMessage.addClass('error');
@@ -68,6 +75,9 @@
         // show leap connect img
         connectLeap.removeClass('connect-leap-hide');
         connectLeap.addClass('connect-leap-show');
+
+        msformlogin.removeClass('show');
+        msformlogin.addClass('hide');
       }
 
       classie.add( overlay, 'open' );
@@ -104,6 +114,7 @@
 
     var registerMessage = $('.register.register-message');
     var connectLeap = $('#connect-leap');
+    var msform = $('#msform');
 
     if( classie.has( overlay, 'open' ) ) {
 
@@ -117,6 +128,9 @@
       // hide leap connect img
       connectLeap.removeClass('connect-leap-show');
       connectLeap.addClass('connect-leap-hide');
+
+      msform.removeClass('show');
+      msform.addClass('hide');
 
       classie.remove( overlay, 'open' );
       classie.add( overlay, 'close' );
@@ -151,6 +165,9 @@
         // hide leap connect img
         connectLeap.removeClass('connect-leap-show');
         connectLeap.addClass('connect-leap-hide');
+
+        msform.removeClass('hide');
+        msform.addClass('show');
       }else{
 
         registerMessage.addClass('error');
@@ -159,6 +176,9 @@
         // show leap connect img
         connectLeap.removeClass('connect-leap-hide');
         connectLeap.addClass('connect-leap-show');
+
+        msform.removeClass('show');
+        msform.addClass('hide');
       }
 
       classie.add( overlay, 'open' );
@@ -902,11 +922,14 @@ console.log(response);
     // show previous button
     // finally submit the login gestures
 
-     var dataToSubmit = {
-        userName: $("#msform-login #username-login").val(),
-        gestures: window.gestureStored   
-      }
-      console.log(dataToSubmit);
+    var dataToSubmit = {
+      userName: $("#msform-login #username-login").val(),
+      gestures: window.gestureStored   
+    }
+    console.log(dataToSubmit);
+
+    var fs_subtitle = $('#msform-login fieldset#'+nextFieldsetId+' .fs-subtitle');
+    fs_subtitle.text('Please wait..');
 
     $.ajax({
           type: "POST",
@@ -915,12 +938,24 @@ console.log(response);
           contentType: "application/json",
           success: function(response) {
               console.log(response);
+
+              response = $.parseJSON(response);
+
+              if(response){
+
+                fs_subtitle.text('Your login is successfull');
+              }else{
+                fs_subtitle.text('Your login has failed');
+              }
+          }, error: function(){
+            fs_subtitle.text('Please try it again later');
           }
     });      
 
 
     previousButton.removeClass('show');
     previousButton.addClass('hide');
+    previousButton.attr('disabled', true);
   }else{
     // show previous button
     previousButton.removeClass('hide');
@@ -1017,6 +1052,7 @@ $("#msform-login .previous").click(function(){
   }
 
   isValidated = false;
+  isLogin = false;
 
   registerMessage.removeClass('error');
   registerMessage.text('Login');

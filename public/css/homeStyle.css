@@ -288,7 +288,7 @@ http://codepen.io/m-e-conroy/pen/ALsdF
 
 #msform.show,
 #msform-login.show{
-  display: initial !important;
+  display: block !important;
 }
 
 #msform.hide,

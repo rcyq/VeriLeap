@@ -26,6 +26,7 @@ var onConnected = function (){
   var canvas = $('canvas');
   var connectLeap = $('#connect-leap');
   var msform = $('#msform');
+  var msformlogin = $('#msform-login');
   var registerMessage = $('.register.register-message');
   if(connectLeap && canvas){
     
@@ -40,17 +41,21 @@ var onConnected = function (){
       registerMessage.removeClass('error');
       if(window.isRegistration){
         registerMessage.text('Registration');
+        msform.removeClass('hide');
+        msform.addClass('show');
       }else if(window.isLogin){
         registerMessage.text('Login');
+        msformlogin.removeClass('hide');
+        msformlogin.addClass('show');
       }else{
         registerMessage.text('');
       }
-      
-      msform.removeClass('hide');
-      msform.addClass('show');   
+       
     }else{
       msform.removeClass('show');
       msform.addClass('hide');  
+      msformlogin.removeClass('show');
+      msformlogin.addClass('hide');
     }
   }
 };
@@ -63,7 +68,9 @@ var onDisconnected = function(){
   var canvas = $('canvas');
   var connectLeap = $('#connect-leap');
   var msform = $('#msform');
+  var msformlogin = $('#msform-login');
   var registerMessage = $('.register.register-message');
+  
   if(connectLeap && canvas){
     
     var isOverlayOpen = $('div.overlay').hasClass('open');
@@ -72,9 +79,6 @@ var onDisconnected = function(){
       // and overlay is opened
       connectLeap.removeClass('connect-leap-hide');
       connectLeap.addClass('connect-leap-show');
-
-      msform.removeClass('show');
-      msform.addClass('hide');
 
       registerMessage.addClass('error');
       registerMessage.text('Please connect leap motion device');
@@ -85,17 +89,14 @@ var onDisconnected = function(){
       connectLeap.removeClass('connect-leap-show');
       connectLeap.addClass('connect-leap-hide');
 
-      if(isOverlayOpen){
-        msform.removeClass('hide');
-        msform.addClass('show');   
-      }else{
-        msform.removeClass('show');
-        msform.addClass('hide');  
-      }
-
       registerMessage.removeClass('error');
       registerMessage.text('');
     }
+
+    msform.removeClass('show');
+    msform.addClass('hide');
+    msformlogin.removeClass('show');
+    msformlogin.addClass('hide');
   }
 };
 
@@ -411,43 +412,6 @@ var Record = {
     }
 
     console.log('Gesture Detected');
-
-    if(window.isRegistration && window.isVerify){
-      // local verification
-      // console.log('local verification');
-      // var hit = 0.0;
-      // if((gesture.pose && frameCount == 1) || !gesture.pose){
-console.log(JSON.stringify(gesture));
-      //   var currentFSId = $('#msform fieldset:visible').attr('id');
-      //   var gestureName = registration.username + currentFSId;
-      //   var previousGesture = window.gestureStored[currentFSId];
-      //   hit = window.leapTrainer.correlate(gestureName, previousGesture.data, gesture);
-      // }
-      // console.log('hit:'+hit);
-      // Record.stopVerify();
-
-    }else if(window.isLogin){
-      
-      // login
-
-      // data = {
-      //   'id': $("#username").val()+round,
-      //   'gesture' : gesture,
-      //   'frameCount': frameCount
-      // };
-
-      // if(login.count > 0 && login.count <=3){
-      //   if(login.count == 3 ){
-      //     Record.stopLogin();
-      //   }else{
-      //     Record.stop();
-      //     login.count++;
-      //     Record.start(login.username, login.count);
-      //   }
-      // }else{
-      //   Record.stopLogin();
-      // }
-    }
   },
 
   onCompleted : function(gestureName, trainingSet, isPose) {
@@ -544,6 +508,8 @@ console.log(JSON.stringify(gesture));
           Record.stop();
           login.count++;
           $('#msform-login fieldset#l1 .fs-title').text('Gesture '+login.count);
+          var actionButton = $('.action-button');
+          actionButton.attr('disabled', true);
           Record.start(login.username, login.count);
         }
       }else{
