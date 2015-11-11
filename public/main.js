@@ -463,11 +463,11 @@ console.log(JSON.stringify(gesture));
     actionButton.attr('disabled', false);
 
     window.isRerecord = false;
+    var currentFSId = $('fieldset:visible').attr('id');
 
     if(window.isRegistration && !window.isVerify){
 
       // registration
-      var currentFSId = $('fieldset:visible').attr('id');
       $('fieldset#'+currentFSId+' .fs-subtitle').text('Done');
       $('fieldset#'+currentFSId+' .next').addClass('show').removeClass('hide');
 
@@ -492,7 +492,6 @@ console.log(JSON.stringify(gesture));
     }else if(window.isRegistration && window.isVerify){
 
       // local verification
-      var currentFSId = $('fieldset:visible').attr('id');
       $('fieldset#'+currentFSId+' .fs-subtitle').text('Done');
       $('fieldset#'+currentFSId+' .next').addClass('show').removeClass('hide');
 
@@ -513,6 +512,12 @@ console.log(JSON.stringify(gesture));
         hit = window.leapTrainer.correlate(storedGestureName, trainingSet, previousGesture.data);
       }
       console.log('hit:'+hit);
+
+      if(hit > 90){
+          $('fieldset#'+currentFSId+' .fs-subtitle').text('Passed');
+      }else{
+          $('fieldset#'+currentFSId+' .fs-subtitle').text('Failed');
+      }
       Record.stopVerify();
 
     }else if(window.isLogin){
