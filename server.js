@@ -317,17 +317,26 @@ app.post('/verify', jsonParser, function(req, res) {
 							 console.log(randomGid+"   " + percent);	
 						}
 
-						login = true;
+						login = false;
+
+						if (parsedGestures[gids[i]].pose == false  && percent >= correlate_threshold_gesture) login = true;
+						else if (parsedGestures[gids[i]].pose == true && percent >= correlate_threshold_normal) login = true;
+						else if (parsedGestures[gids[i]].pose == true && 
+							randomGid == (i+1) && percent >= correlate_threshold_random) login = true;
+
+						/*
+
 						if (percent < correlate_threshold_random) login = false;
 						else if (percent < correlate_threshold_normal && randomGid != (i+1)) login = false;
 						
 						if (parsedGestures[gids[i]].pose == false && percent >= correlate_threshold_gesture) login = true;
+						*/
 
 						console.log("i randomGid percent" + i + ' ' + randomGid + " " + percent+"  " + login);
 						if (login == false) {
 							//break;
 						}
-					}
+					} // end of for loop
 					if (login == false) {
 						res.send("false");
 						return;

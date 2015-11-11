@@ -509,11 +509,14 @@ console.log(JSON.stringify(gesture));
         console.log(JSON.stringify(JSONobj.data));
         console.log(JSON.stringify(previousGesture.data));
 
-        hit = window.leapTrainer.correlate(storedGestureName, trainingSet, previousGesture.data);
+        if (JSONobj.pose != previousGesture.pose) hit = 0; 
+        else {
+          hit = window.leapTrainer.correlate(storedGestureName, trainingSet, previousGesture.data);
+        }
       }
       console.log('hit:'+hit);
 
-      if(hit > 90){
+      if ( (JSONobj.pose == true && hit >= 0.9) || (JSONobj.pose == false && hit >= 0.65)  ){
           $('fieldset#'+currentFSId+' .fs-subtitle').text('Passed');
       }else{
           $('fieldset#'+currentFSId+' .fs-subtitle').text('Failed');
