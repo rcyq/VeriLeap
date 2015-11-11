@@ -310,7 +310,11 @@ app.post('/verify', jsonParser, function(req, res) {
 						//console.log(gestureToCompare);
 						if ((JSON.parse(gestureToCompareJson)).pose != parsedGestures[gids[i]].pose) hit = 0; 
 						else hit = trainer.correlate(username, parsedGestures[gids[i]].data, gestureToCompare);	
-						percent = Math.min(parseInt(100 * hit), 100);		
+						percent = Math.min(parseInt(100 * hit), 100);	
+
+						if (randomGid == (i+1))	{  // randomGid be 1, 2,3 
+							 console.log(randomGid+"   " + percent);	
+						}
 						if (percent < correlate_threshold_random) login = false;
 						else if (percent < correlate_threshold_normal && randomGid != i) login = false;
 						console.log("i randomGid percent" + i + ' ' + randomGid + " " + percent);
