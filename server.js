@@ -334,17 +334,18 @@ app.post('/verify', jsonParser, function(req, res) {
 
 						console.log("i randomGid percent" + i + ' ' + randomGid + " " + percent+"  " + login);
 						if (login == false) {
-							//break;
+							break;
 						}
 					} // end of for loop
 					if (login == false) {
 						res.send("false");
 						return;
+					} else{
+						// update database. reset random gesture etc.
+						db.emails.update( {_id:username}, {_id: username, email: results.email, gesture: null, sequence:null, timestamp: null},  {upsert: true}, function(err) {
+							res.send("true");
+						});	
 					}
-					// update database. reset random gesture etc.
-					db.emails.update( {_id:username}, {_id: username, email: results.email, gesture: null, sequence:null, timestamp: null},  {upsert: true}, function(err) {
-						res.send("true");
-					});
 
 				}) // end of db find;
 			})
