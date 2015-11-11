@@ -902,63 +902,25 @@ console.log(response);
     // show previous button
     // finally submit the login gestures
 
-    if(!isLogin){
-
-      previousButton.removeClass('show');
-      previousButton.addClass('hide');
-      previousButton.attr('disabled', true);
-      
-      var fs_subtitle = $('#msform fieldset#'+nextFieldsetId+' .fs-subtitle');
-      fs_subtitle.text('Please wait..');
-      
-      errorMessage.removeClass('error');
-      errorMessage.text("Login..");
-
-      var dataToSubmit = {
+     var dataToSubmit = {
         userName: $("#msform-login #username-login").val(),
         gestures: window.gestureStored   
       }
       console.log(dataToSubmit);
 
-      $.ajax({
-            type: "POST",
-            url: "/verify",
-            data: JSON.stringify(dataToSubmit),
-            contentType: "application/json",
-            success: function(response) {
-                console.log(response);
+    $.ajax({
+          type: "POST",
+          url: "/verify",
+          data: JSON.stringify(dataToSubmit),
+          contentType: "application/json",
+          success: function(response) {
+              console.log(response);
+          }
+    });      
 
-                if(response){
-                  isLogin = true;
 
-                  previousButton.removeClass('show');
-                  previousButton.addClass('hide');
-                  previousButton.attr('disabled', true);
-
-                }else{
-                  isLogin = false;
-
-                  previousButton.removeClass('hide');
-                  previousButton.addClass('show');
-                  previousButton.attr('disabled', false);
-                }
-
-            }, error: function(){
-              errorMessage.addClass('error');
-              errorMessage.text('Please try again later');
-              
-              previousButton.removeClass('hide');
-              previousButton.addClass('show');
-              previousButton.attr('disabled', false);
-
-              animating_login = false;
-              isLogin = false;
-            }
-      });
-
-      return false;
-    }
-
+    previousButton.removeClass('show');
+    previousButton.addClass('hide');
   }else{
     // show previous button
     previousButton.removeClass('hide');
