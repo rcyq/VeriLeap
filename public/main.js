@@ -513,7 +513,7 @@ console.log(JSON.stringify(gesture));
       }
       console.log('hit:'+hit);
 
-      if(hit > 90){
+      if(hit > 0.9){
           $('fieldset#'+currentFSId+' .fs-subtitle').text('Passed');
       }else{
           $('fieldset#'+currentFSId+' .fs-subtitle').text('Failed');
