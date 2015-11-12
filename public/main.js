@@ -169,7 +169,7 @@ var onHandLost = function(hand){
     currentFSId = $('fieldset:visible').attr('id');
     $('fieldset#'+currentFSId+' .fs-subtitle').text(msg);
 
-    if(!window.isVerify && !window.isRerecord && !window.isLogin){
+    if(!window.isVerify && !window.isRerecord && !login.count){
       actionButton = $('.action-button');
       actionButton.attr('disabled', false);
     }
