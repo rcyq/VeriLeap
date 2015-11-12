@@ -885,7 +885,10 @@ console.log(response);
     username = usernameInput.val();
 
     // reset gesture count and gesture name
-    $('#msform-login fieldset#'+nextFieldsetId+' .fs-title').text('Gesture 1');
+    var fs_title = $('#msform-login fieldset#'+nextFieldsetId+' .fs-title');
+    fs_title.text('Gesture 1');
+    var fs_subtitle = $('#msform-login fieldset#'+nextFieldsetId+' .fs-subtitle');
+    fs_subtitle.text('Place your hand');
     login.count = 0;
 
     // show canvas
@@ -895,6 +898,7 @@ console.log(response);
     // hide next button
     nextButton.removeClass('show');
     nextButton.addClass('hide');
+    
     onComplete = function () {
       Record.startLogin(false, username, nextFieldsetId);
     };
@@ -1026,7 +1030,12 @@ $("#msform-login .previous").click(function(){
     nextButton.addClass('hide');
 
     // reset gesture count and gesture name
-    $('#msform-login fieldset#'+previousFieldsetId+' .fs-title').text('Gesture 1');
+    var fs_title = $('#msform-login fieldset#'+previousFieldsetId+' .fs-title');
+    fs_title.text('Gesture 1');
+    
+    var fs_subtitle = $('#msform-login fieldset#'+previousFieldsetId+' .fs-subtitle');
+    fs_subtitle.text('Place your hand');
+    
     login.count = 0;
 
     onComplete = function () {
@@ -1034,6 +1043,7 @@ $("#msform-login .previous").click(function(){
     };
 
   }else{
+
     // hide previous button
     previousButton.removeClass('show');
     previousButton.addClass('hide');
