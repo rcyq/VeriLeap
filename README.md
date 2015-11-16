@@ -9,3 +9,4 @@
 * Open your terminal and run cmd ``mongod`` to setup **MongoDB** to run on default port 27017
 * Open a new terminal and run cmd ``node server.js`` from your project root directory, ``server.js`` will run on port **4344** (http) and **8000** (https self-signed) by default
 
+* [Click here for video introduction](https://youtu.be/ic8szPvEC7M)
